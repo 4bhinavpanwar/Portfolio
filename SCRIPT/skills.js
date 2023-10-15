@@ -1,10 +1,12 @@
 let hamMenuIcon = document.getElementById("ham-menu");
 let navBar = document.getElementById("nav-bar");
 let navLinks = navBar.querySelectorAll("li");
+let hide = document.getElementById("box");
 
 hamMenuIcon.addEventListener("click", () => {
   navBar.classList.toggle("active");
   hamMenuIcon.classList.toggle("fa-times");
+  hide.style.display = hide.style.display === "none" ? "flex" : "none";
 });
 navLinks.forEach((navLinks) => {
   navLinks.addEventListener("click", () => {
