@@ -1,0 +1,324 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+}
+
+.popup-show {
+  opacity: 1;
+}
+
+html {
+  font-size: 62.5%;
+}
+*:not(i) {
+  font-family: "Poppins", sans-serif;
+}
+header {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+  background-color: transparent;
+  padding: 3rem 5rem;
+}
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+}
+nav a {
+  font-size: 2rem;
+  text-decoration: none;
+}
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+#blink {
+  animation: blink 2s infinite;
+}
+nav a#logo {
+  color: white;
+  font-weight: 700;
+  cursor: default;
+}
+nav ul a {
+  color: white;
+  font-weight: 600;
+}
+nav ul a:hover {
+  border-bottom: 2px solid white;
+}
+h1 {
+  font-size: 4rem;
+}
+#ham-menu {
+  display: none;
+}
+nav ul.active {
+  left: 0;
+}
+@media only screen and (max-width: 991px) {
+  header {
+    padding: 2.2rem 5rem;
+  }
+  nav a {
+    font-size: 2rem;
+  }
+}
+@media only screen and (max-width: 767px) {
+  #ham-menu {
+    display: block;
+    color: white;
+  }
+  nav a#logo,
+  #ham-menu {
+    font-size: 3.2rem;
+  }
+  nav ul {
+    background-color: transparent;
+    position: fixed;
+    left: -100vw;
+    top: 80px;
+    width: 100vw;
+    height: calc(100vh - 80px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    transition: 1s;
+    gap: 0;
+  }
+  nav a {
+    font-size: 3rem;
+  }
+}
+
+@media only screen and (max-width: 575px) {
+  header {
+    padding: 2rem 3rem;
+  }
+  nav ul {
+    top: 80px;
+    height: calc(100vh - 80px);
+  }
+  nav a {
+    font-size: 3rem;
+  }
+}
+
+.sticky-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: black; /* Change this to your desired background color */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Optional shadow effect */
+  z-index: 9999;
+  display: none;
+}
+
+#S1 {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: black; /* Dark background color */
+  overflow: hidden;
+}
+
+#particles-container {
+  width: 100%;
+  height: 100%;
+}
+
+.container {
+  text-align: center;
+  z-index: 1;
+  position: relative;
+  color: #00ff00; /* Bright neon green color */
+}
+
+h1 {
+  font-size: 3rem;
+}
+
+p {
+  font-size: 1.5rem;
+}
+
+#box {
+  width: 100%;
+  top: 150px;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.container__progressbars {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+  min-width: 270px;
+  width: 70%;
+  min-height: 100%;
+}
+.progressbar {
+  position: relative;
+  width: 170px;
+  height: 170px;
+  margin: 1em;
+  transform: rotate(-90deg);
+}
+.progressbar__svg {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.progressbar__svg-circle {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke-width: 10;
+  stroke-dasharray: 440;
+  stroke-dashoffset: 440;
+  stroke: #fff;
+  stroke-linecap: round;
+  transform: translate(5px, 5px);
+}
+.shadow-html {
+  filter: drop-shadow(0 0 5px #f63);
+}
+.shadow-css {
+  filter: drop-shadow(0 0 5px #3bf);
+}
+.shadow-js {
+  filter: drop-shadow(0 0 5px #ff3);
+}
+.shadow-c {
+  filter: drop-shadow(0 0 5px #3ff);
+}
+.shadow-cpp {
+  filter: drop-shadow(0 0 5px #37f);
+}
+.shadow-py {
+  filter: drop-shadow(0 0 5px #5f3);
+}
+.circle-html {
+  animation: anim_circle-html 1s ease-in-out forwards;
+}
+.circle-css {
+  animation: anim_circle-css 1s ease-in-out forwards;
+}
+.circle-js {
+  animation: anim_circle-js 1s ease-in-out forwards;
+}
+.circle-c {
+  animation: anim_circle-html 1s ease-in-out forwards;
+}
+.circle-cpp {
+  animation: anim_circle-css 1s ease-in-out forwards;
+}
+.circle-py {
+  animation: anim_circle-js 1s ease-in-out forwards;
+}
+.progressbar__text {
+  font-size: 20px;
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  padding: 0.25em 0.5em;
+  color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+  border-radius: 0.25em;
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+@keyframes anim_circle-html {
+  to {
+    stroke-dashoffset: 80;
+  }
+}
+@keyframes anim_circle-css {
+  to {
+    stroke-dashoffset: 80;
+  }
+}
+@keyframes anim_circle-js {
+  to {
+    stroke-dashoffset: 70;
+  }
+}
+@keyframes anim_circle-c {
+  to {
+    stroke-dashoffset: 80;
+  }
+}
+@keyframes anim_circle-cpp {
+  to {
+    stroke-dashoffset: 70;
+  }
+}
+@keyframes anim_circle-py {
+  to {
+    stroke-dashoffset: 80;
+  }
+}
+
+@media only screen and (max-width: 800px) {
+  #S1 {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 1000px;
+    background-color: black; /* Dark background color */
+    overflow: hidden;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  #S1 {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 1500px;
+    background-color: black; /* Dark background color */
+    overflow: hidden;
+  }
+}

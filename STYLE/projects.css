@@ -1,0 +1,435 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@800&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  background-color: black;
+}
+
+#container {
+  height: 100vh;
+  width: 69vw;
+  background-color: black;
+}
+
+#nav {
+  background-color: #a5e245;
+  height: 60px;
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+}
+
+#h1 {
+  margin-left: 20px;
+  font-family: "Poppins", sans-serif;
+  cursor: default;
+}
+
+.animation {
+  background-color: #344817;
+  width: 100%;
+  height: 200px;
+  position: relative;
+  overflow: hidden;
+}
+.acute-angle-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 9px,
+    #2b3b13 9px,
+    #2b3b13 18px
+  );
+  background-size: 200% 100%;
+  animation: moveLines 30s linear infinite;
+}
+
+@keyframes moveLines {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+#h5a {
+  font-family: "Poppins", sans-serif;
+  color: white;
+  margin-top: 20px;
+  margin-left: 20px;
+  font-size: 24px;
+  cursor: default;
+}
+
+.dashed-line {
+  margin-top: 4px;
+  height: 7px;
+  border-top: 7px dashed #a5e245;
+}
+
+#h1b {
+  font-family: "Poppins", sans-serif;
+  color: #a5e245;
+  margin-left: 20px;
+  margin-top: 20px;
+  cursor: default;
+}
+
+#sites {
+  height: 450px;
+  display: flex;
+  flex-direction: column;
+  color: #a5e245;
+  font-size: 24px;
+  margin-left: 20px;
+  margin-top: 20px;
+  font-family: "Poppins", sans-serif;
+  overflow: hidden;
+}
+
+.a {
+  margin-bottom: 10px;
+  cursor: pointer;
+  color: #a5e245;
+  text-decoration: none;
+}
+
+.highlighted {
+  background-color: #a5e245;
+  animation: blink 1s infinite alternate;
+  color: white;
+}
+
+@keyframes blink {
+  0% {
+    background-color: #344817;
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+#footer {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  position: relative;
+  bottom: 0px;
+  background-color: black;
+  height: 80px;
+  width: 69vw;
+}
+
+#dashed-line-two {
+  width: 100%;
+  height: 7px;
+  border-top: 7px dashed #a5e245;
+  margin-bottom: 20px;
+}
+
+.f2 {
+  color: bisque;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 69vw;
+}
+
+#footimg1 {
+  width: 120px;
+  height: 40px;
+  margin-right: 7px;
+}
+
+#footimg2 {
+  width: 120px;
+  height: 40px;
+  margin-left: 7px;
+}
+
+.text-container {
+  position: absolute;
+  right: 10px;
+  width: 200px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  perspective: 1000px; /* Adding perspective for 3D effect */
+}
+
+#one {
+  color: #a5e245;
+}
+
+#two {
+  color: white;
+}
+
+.text {
+  cursor: default;
+  font-family: "Poppins", sans-serif;
+  font-size: 20px;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backface-visibility: hidden; /* Hide the back side during flip */
+  transform: rotateX(0deg); /* Rotate vertically */
+  transition: transform 1s ease-in-out;
+}
+
+.text:nth-child(even) {
+  background-color: black;
+}
+
+.text:nth-child(odd) {
+  background-color: black;
+}
+
+.text.flip {
+  transform: rotateX(180deg); /* Rotate vertically to reveal the other side */
+}
+
+@media only screen and (max-width: 700px) {
+  #footimg1 {
+    width: 90px;
+    height: 30px;
+    margin-right: 7px;
+  }
+
+  #footimg2 {
+    width: 90px;
+    height: 30px;
+    margin-left: 7px;
+  }
+  .text-container {
+    position: absolute;
+    right: 10px;
+    width: 150px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 1000px; /* Adding perspective for 3D effect */
+  }
+  .text {
+    cursor: default;
+    font-family: "Poppins", sans-serif;
+    font-size: 15px;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backface-visibility: hidden; /* Hide the back side during flip */
+    transform: rotateX(0deg); /* Rotate vertically */
+    transition: transform 1s ease-in-out;
+  }
+  #sites {
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    color: #a5e245;
+    font-size: 18px;
+    margin-left: 20px;
+    margin-top: 20px;
+    font-family: "Poppins", sans-serif;
+    overflow: hidden;
+  }
+  #h5a {
+    font-family: "Poppins", sans-serif;
+    color: white;
+    margin-top: 20px;
+    margin-left: 20px;
+    font-size: 18px;
+  }
+  h1 {
+    font-size: 22px;
+  }
+  .animation {
+    background-color: #344817;
+    width: 100%;
+    height: 150px;
+    position: relative;
+    overflow: hidden;
+  }
+  #footer {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    position: relative;
+    bottom: 0px;
+    background-color: black;
+    height: 80px;
+    width: 69vw;
+  }
+}
+
+@media only screen and (max-width: 550px) {
+  #footimg1 {
+    width: 70px;
+    height: 22px;
+    margin-right: 7px;
+  }
+
+  #footimg2 {
+    width: 70px;
+    height: 22px;
+    margin-left: 7px;
+  }
+  .text-container {
+    position: absolute;
+    right: 10px;
+    width: 100px;
+    height: 22px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 1000px; /* Adding perspective for 3D effect */
+  }
+  .text {
+    cursor: default;
+    font-family: "Poppins", sans-serif;
+    font-size: 12px;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backface-visibility: hidden; /* Hide the back side during flip */
+    transform: rotateX(0deg); /* Rotate vertically */
+    transition: transform 1s ease-in-out;
+  }
+  #sites {
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    color: #a5e245;
+    font-size: 14px;
+    margin-left: 20px;
+    margin-top: 20px;
+    font-family: "Poppins", sans-serif;
+    overflow: hidden;
+  }
+  #h5a {
+    font-family: "Poppins", sans-serif;
+    color: white;
+    margin-top: 20px;
+    margin-left: 20px;
+    font-size: 14px;
+  }
+  h1 {
+    font-size: 19px;
+  }
+  .animation {
+    background-color: #344817;
+    width: 100%;
+    height: 120px;
+    position: relative;
+    overflow: hidden;
+  }
+  #footer {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    position: relative;
+    bottom: 0px;
+    background-color: black;
+    height: 80px;
+    width: 69vw;
+  }
+}
+
+@media only screen and (max-width: 400px) {
+  #footimg1 {
+    width: 55px;
+    height: 18px;
+    margin-right: 6px;
+  }
+
+  #footimg2 {
+    width: 55px;
+    height: 18px;
+    margin-left: 6px;
+  }
+  .text-container {
+    position: absolute;
+    right: 10px;
+    width: 60px;
+    height: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 1000px; /* Adding perspective for 3D effect */
+  }
+  .text {
+    cursor: default;
+    font-family: "Poppins", sans-serif;
+    font-size: 10px;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backface-visibility: hidden; /* Hide the back side during flip */
+    transform: rotateX(0deg); /* Rotate vertically */
+    transition: transform 1s ease-in-out;
+  }
+  #sites {
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    color: #a5e245;
+    font-size: 12px;
+    margin-left: 20px;
+    margin-top: 20px;
+    font-family: "Poppins", sans-serif;
+    overflow: hidden;
+  }
+  #h5a {
+    font-family: "Poppins", sans-serif;
+    color: white;
+    margin-top: 20px;
+    margin-left: 20px;
+    font-size: 12px;
+  }
+  h1 {
+    font-size: 15px;
+  }
+  .animation {
+    background-color: #344817;
+    width: 100%;
+    height: 90px;
+    position: relative;
+    overflow: hidden;
+  }
+  #footer {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    position: relative;
+    bottom: 0px;
+    background-color: black;
+    height: 80px;
+    width: 69vw;
+  }
+}

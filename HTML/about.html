@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About</title>
+    <link rel="icon" href="../IMG/icon.png" />
+    <!-- Font Awesome Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../STYLE/about.css" />
+  </head>
+  <body>
+    <header>
+      <nav>
+        <a id="logo">@panwar</a>
+        <i class="fas fa-bars" id="ham-menu"></i>
+        <ul id="nav-bar">
+          <li>
+            <a href="../index.html">Home</a>
+          </li>
+          <li>
+            <a href="about.html" id="blink">About</a>
+          </li>
+          <li>
+            <a href="skills.html">Skills</a>
+          </li>
+          <li>
+            <a href="projects.html">Projects</a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+    <section id="S1">
+      <div id="midsec">
+        <div id="profile"></div>
+        <div id="arc"></div>
+      </div>
+      <div id="handles">
+        <a class="fa-regular fa-file fa-2xl" href="" target="_blank"></a>
+        <a
+          class="fa-brands fa-linkedin fa-2xl"
+          href="https://www.linkedin.com/in/abhinav-panwar-908302252/"
+          target="_blank"
+        ></a>
+        <a
+          class="fa-brands fa-github fa-2xl"
+          href="https://github.com/ABHINAVpanwar"
+          target="_blank"
+        ></a>
+        <a
+          class="fa-brands fa-instagram fa-2xl"
+          href="https://www.instagram.com/abhinavpanwar199/"
+          target="_blank"
+        ></a>
+      </div>
+    </section>
+    <div id="FH">
+      <h2 id="heading">Who Am I</h2>
+      <p>
+        I'm a passionate web developer, mathematics enthusiast, and calisthenics
+        aficionado.
+      </p>
+      <p>
+        I thrive on the challenges of coding and problem-solving, always pushing
+        myself to build efficient and creative applications while writing
+        elegant code. My interests lie in web performance optimization and
+        refactoring, where I constantly seek to improve my skills and stay
+        up-to-date with the latest techniques.
+      </p>
+      <p>
+        Outside of the digital world, I'm a kid at heart who enjoys designing
+        experiences, whether through web development, mathematical puzzles, or
+        staying active with calisthenics routines.
+      </p>
+    </div>
+    <div id="SH">
+      <div class="skill-bar">
+        <div class="skill-name">Focus</div>
+        <div class="bar-container">
+          <div class="bar" id="F"></div>
+        </div>
+        <div class="skill-name">Stress Management</div>
+        <div class="bar-container">
+          <div class="bar" id="SM"></div>
+        </div>
+        <div class="skill-name">Time Management</div>
+        <div class="bar-container">
+          <div class="bar" id="TM"></div>
+        </div>
+        <div class="skill-name">Problem Solving</div>
+        <div class="bar-container">
+          <div class="bar" id="PS"></div>
+        </div>
+        <div class="skill-name">Decision Making</div>
+        <div class="bar-container">
+          <div class="bar" id="DM"></div>
+        </div>
+        <div class="skill-name">Confidence</div>
+        <div class="bar-container">
+          <div class="bar" id="C"></div>
+        </div>
+      </div>
+    </div>
+    <div id="B1">
+      <button id="experience" class="btn" onclick="f1()">My Experiences</button>
+      <button id="education" class="btn" onclick="f2()">My Education</button>
+      <button id="interest" class="btn" onclick="f3()">My Interests</button>
+    </div>
+    <div id="B2">
+      <div id="exp"></div>
+      <div id="edu">
+        <div id="timeline">
+          <div class="timeline-item">
+            <div class="timeline-date">2019</div>
+            <div class="timeline-description">
+              <p>X TH FROM LPS [CBSE]</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-date">2021</div>
+            <div class="timeline-description">
+              <p>XII TH FROM LPS (PCM) [CBSE]</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-date">2021-Present</div>
+            <div class="timeline-description">
+              <p>B.TECH FROM SRM KTR (ECE CORE)</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="int">
+        <div class="mySlides fade">
+          <img src="../IMG/calisthenics.jpg" class="x" />
+        </div>
+        <div class="mySlides fade">
+          <img src="../IMG/tennis.jpeg" class="x" />
+        </div>
+        <a class="prev" onclick="plusSlides(-1)">❮</a>
+        <a class="next" onclick="plusSlides(1)">❯</a>
+      </div>
+    </div>
+    <script src="../SCRIPT/about.js"></script>
+  </body>
+</html>

@@ -1,0 +1,424 @@
+@import url("https://fonts.googleapis.com/css2?family=Tajawal:wght@200&display=swap");
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+#preloader {
+  background-color: #000000;
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#PL {
+  height: 300px;
+  width: 300px;
+}
+
+.popup {
+  display: none;
+  font-family: "Tajawal", sans-serif;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+#greeting {
+  text-align: center;
+}
+
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+}
+
+.popup-show {
+  opacity: 1;
+}
+
+html {
+  font-size: 62.5%;
+}
+*:not(i) {
+  font-family: "Poppins", sans-serif;
+}
+header {
+  position: absolute;
+  z-index: 9999;
+  width: 100%;
+  top: 0;
+  left: 0;
+  background-color: transparent;
+  padding: 3rem 5rem;
+}
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+}
+nav a {
+  font-size: 2rem;
+  text-decoration: none;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+#blink {
+  animation: blink 2s infinite;
+}
+
+nav a#logo {
+  color: #000000;
+  font-weight: 700;
+  cursor: default;
+}
+nav ul a {
+  color: black;
+  font-weight: 600;
+}
+nav ul a:hover {
+  border-bottom: 2px solid black;
+}
+section#home {
+  height: 100vh;
+  display: grid;
+  place-items: center;
+}
+h1 {
+  font-size: 4rem;
+}
+#ham-menu {
+  display: none;
+}
+nav ul.active {
+  left: 0;
+}
+@media only screen and (max-width: 991px) {
+  header {
+    padding: 2.2rem 5rem;
+  }
+  nav a {
+    font-size: 2rem;
+  }
+}
+
+#h1 {
+  font-weight: 100;
+  font-size: 6rem;
+  line-height: 0.88;
+  font-family: "Tajawal", sans-serif;
+}
+
+#h2 {
+  font-weight: 100;
+  font-size: 6.8rem;
+}
+
+@media only screen and (max-width: 767px) {
+  #h1 {
+    font-size: 5rem;
+  }
+  #h2 {
+    font-size: 5.8rem;
+  }
+  #ham-menu {
+    display: block;
+    color: black;
+  }
+  nav a#logo,
+  #ham-menu {
+    font-size: 3.2rem;
+  }
+  nav ul {
+    background-color: transparent;
+    position: fixed;
+    left: -100vw;
+    top: 80px;
+    width: 100vw;
+    height: calc(100vh - 80px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    transition: 1s;
+    gap: 0;
+  }
+  nav a {
+    font-size: 3rem;
+  }
+}
+
+@media only screen and (max-width: 575px) {
+  #h1 {
+    font-size: 4.5rem;
+  }
+  #h2 {
+    font-size: 5.3rem;
+  }
+  header {
+    padding: 2rem 3rem;
+  }
+  nav ul {
+    top: 80px;
+    height: calc(100vh - 80px);
+  }
+  nav a {
+    font-size: 3rem;
+  }
+}
+
+#parallax {
+  background-color: #353;
+  height: 100vh;
+}
+
+main {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+#bgd {
+  position: absolute;
+  width: 2500px;
+  top: calc(50% - 320px);
+  left: calc(50% + 0px);
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+
+#f7 {
+  position: absolute;
+  width: 1900px;
+  top: calc(50% -100px);
+  left: calc(50% +300px);
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+
+#m10 {
+  position: absolute;
+  z-index: 3;
+  top: calc(50% + 69px);
+  width: 892px;
+  left: calc(50% + 230px);
+  transform: translate(-50%, -50%);
+}
+
+#f6 {
+  position: absolute;
+  z-index: 4;
+  top: calc(50% + 85px);
+  left: calc(50% + 10px);
+  width: 1610px;
+  transform: translate(-50%, -50%);
+}
+
+#m9 {
+  position: absolute;
+  z-index: 5;
+  top: calc(50% + 168px);
+  width: 450px;
+  left: calc(50% - 457px);
+  transform: translate(-50%, -50%);
+}
+
+#m8 {
+  position: absolute;
+  z-index: 6;
+  top: calc(50% + 106px);
+  width: 760px;
+  left: calc(50% - 202px);
+  transform: translate(-50%, -50%);
+}
+
+#f5 {
+  position: absolute;
+  z-index: 7;
+  top: calc(50% + 160px);
+  left: calc(50% + 20px);
+  width: 450px;
+  transform: translate(-50%, -50%);
+}
+
+#m7 {
+  position: absolute;
+  z-index: 8;
+  width: 538px;
+  top: calc(50% + 123px);
+  left: calc(50% + 305px);
+  transform: translate(-50%, -50%);
+}
+
+.TextParallax {
+  position: absolute;
+  z-index: 9;
+  top: calc(50% - 100px);
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  text-transform: uppercase;
+  color: #fff;
+  pointer-events: auto;
+}
+
+#m6 {
+  position: absolute;
+  z-index: 10;
+  top: calc(50% + 60px);
+  width: 408px;
+  left: calc(50% + 590px);
+  transform: translate(-50%, -50%);
+}
+
+#f4 {
+  position: absolute;
+  z-index: 11;
+  top: calc(50% + 223px);
+  left: calc(50% - 64px);
+  width: 590px;
+  transform: translate(-50%, -50%);
+}
+
+#m5 {
+  position: absolute;
+  z-index: 12;
+  top: calc(50% + 250px);
+  width: 625px;
+  left: calc(50% + 130px);
+  transform: translate(-50%, -50%);
+}
+
+#f3 {
+  position: absolute;
+  z-index: 13;
+  top: calc(50% + 110px);
+  left: calc(50% - 15px);
+  width: 600px;
+  transform: translate(-50%, -50%);
+}
+
+#m4 {
+  position: absolute;
+  z-index: 14;
+  top: calc(50% + 196px);
+  width: 740px;
+  left: calc(50% - 381.5px);
+  transform: translate(-50%, -50%);
+}
+
+#m3 {
+  position: absolute;
+  z-index: 15;
+  top: calc(50% + 133px);
+  left: calc(50% + 650px);
+  width: 419px;
+  transform: translate(-50%, -50%);
+}
+
+#f2 {
+  position: absolute;
+  z-index: 16;
+  top: calc(50% + 95px);
+  left: calc(50% + 7px);
+  width: 1833px;
+  transform: translate(-50%, -50%);
+}
+
+#m2 {
+  position: absolute;
+  z-index: 17;
+  top: calc(50% + 153px);
+  left: calc(50% + 412px);
+  width: 625px;
+  transform: translate(-50%, -50%);
+}
+
+#m1 {
+  position: absolute;
+  z-index: 18;
+  top: calc(50% + 91.5px);
+  left: calc(50% - 560px);
+  width: 450px;
+  transform: translate(-50%, -50%);
+}
+
+#sr {
+  position: absolute;
+  z-index: 19;
+  top: 0;
+  right: 0;
+  width: 595px;
+}
+
+#bs {
+  position: absolute;
+  z-index: 20;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+}
+
+#f1 {
+  position: absolute;
+  z-index: 21;
+  width: 1600px;
+  top: calc(100% - 355px);
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.vignette {
+  position: absolute;
+  z-index: 100;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0) 65%,
+    rgba(0, 0, 0, 0.7)
+  );
+}
+
+.Parallax {
+  pointer-events: none;
+  transition: 0.45s;
+}
