@@ -72,18 +72,21 @@ container.addEventListener("keydown", (event) => {
     );
   }
   if (event.key == "Enter" && currentIndeX == 4) {
-    window.open("https://kingofcards.netlify.app/", "_blank");
+    window.open("https://utkarshpanwar-ap.netlify.app/", "_blank");
   }
   if (event.key == "Enter" && currentIndeX == 5) {
-    window.open("https://abhinavpanwar.github.io/world_clock/", "_blank");
+    window.open("https://kingofcards.netlify.app/", "_blank");
   }
   if (event.key == "Enter" && currentIndeX == 6) {
-    window.open("https://abhinavpanwar.github.io/calculator/", "_blank");
+    window.open("https://abhinavpanwar.github.io/world_clock/", "_blank");
   }
   if (event.key == "Enter" && currentIndeX == 7) {
-    window.open("https://abhinavpanwar.github.io/AOT_QUIZ/", "_blank");
+    window.open("https://abhinavpanwar.github.io/calculator/", "_blank");
   }
   if (event.key == "Enter" && currentIndeX == 8) {
+    window.open("https://abhinavpanwar.github.io/AOT_QUIZ/", "_blank");
+  }
+  if (event.key == "Enter" && currentIndeX == 9) {
     window.open("https://abhinavpanwar.github.io/BILL/", "_blank");
   }
   if (event.key === "ArrowUp") {
