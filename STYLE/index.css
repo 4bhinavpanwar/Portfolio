@@ -422,3 +422,234 @@ main {
   pointer-events: none;
   transition: 0.45s;
 }
+
+@media only screen and (min-width: 1400px) {
+  #bgd {
+    position: absolute;
+    width: 3000px; /* Increased width for a larger PC screen */
+    top: calc(50% - 400px); /* Adjusted position */
+    left: calc(50% + 100px); /* Adjusted position */
+    transform: translate(-50%, -50%);
+    z-index: 1;
+  }
+
+  #f7 {
+    position: absolute;
+    width: 2200px; /* Increased width */
+    top: calc(50% - 150px); /* Adjusted position */
+    left: calc(50% + 400px); /* Adjusted position */
+    transform: translate(-50%, -50%);
+    z-index: 2;
+  }
+
+  #m10 {
+    position: absolute;
+    z-index: 3;
+    top: calc(50% + 100px); /* Adjusted position */
+    width: 1000px; /* Adjusted width */
+    left: calc(50% + 300px); /* Adjusted position */
+    transform: translate(-50%, -50%);
+  }
+
+  #f6 {
+    position: absolute;
+    z-index: 4;
+    top: calc(50% + 120px); /* Adjusted position */
+    left: calc(50% + 50px); /* Adjusted position */
+    width: 2000px; /* Adjusted width */
+    transform: translate(-50%, -50%);
+  }
+
+  #m9 {
+    position: absolute;
+    z-index: 5;
+    top: calc(50% + 200px); /* Adjusted position */
+    width: 600px; /* Adjusted width */
+    left: calc(50% - 600px); /* Adjusted position */
+    transform: translate(-50%, -50%);
+  }
+
+  #m8 {
+    position: absolute;
+    z-index: 6;
+    top: calc(50% + 150px); /* Adjusted position */
+    width: 1000px; /* Adjusted width */
+    left: calc(50% - 300px); /* Adjusted position */
+    transform: translate(-50%, -50%);
+  }
+
+  #f5 {
+    position: absolute;
+    z-index: 7;
+    top: calc(50% + 180px); /* Adjusted position */
+    left: calc(50% + 30px); /* Adjusted position */
+    width: 600px; /* Adjusted width */
+    transform: translate(-50%, -50%);
+  }
+
+  #m7 {
+    position: absolute;
+    z-index: 8;
+    top: calc(50% + 200px); /* Adjusted position */
+    width: 700px; /* Adjusted width */
+    left: calc(50% + 400px); /* Adjusted position */
+    transform: translate(-50%, -50%);
+  }
+
+  .TextParallax {
+    position: absolute;
+    z-index: 9;
+    top: calc(50% - 150px); /* Adjusted position */
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    text-transform: uppercase;
+    color: #fff;
+    pointer-events: auto;
+  }
+
+  #m6 {
+    position: absolute;
+    z-index: 10;
+    top: calc(50% + 100px); /* Adjusted position */
+    width: 600px; /* Adjusted width */
+    left: calc(50% + 700px); /* Adjusted position */
+    transform: translate(-50%, -50%);
+  }
+
+  #f4 {
+    position: absolute;
+    z-index: 11;
+    top: calc(50% + 280px); /* Adjusted position */
+    left: calc(50% - 100px); /* Adjusted position */
+    width: 800px; /* Adjusted width */
+    transform: translate(-50%, -50%);
+  }
+
+  #m5 {
+    position: absolute;
+    z-index: 12;
+    top: calc(50% + 300px); /* Adjusted position */
+    width: 800px; /* Adjusted width */
+    left: calc(50% + 200px); /* Adjusted position */
+    transform: translate(-50%, -50%);
+  }
+
+  #f3 {
+    position: absolute;
+    z-index: 13;
+    top: calc(50% + 150px); /* Adjusted position */
+    left: calc(50% - 25px); /* Adjusted position */
+    width: 800px; /* Adjusted width */
+    transform: translate(-50%, -50%);
+  }
+
+  #m4 {
+    position: absolute;
+    z-index: 14;
+    top: calc(50% + 250px); /* Adjusted position */
+    width: 1000px; /* Adjusted width */
+    left: calc(50% - 500px); /* Adjusted position */
+    transform: translate(-50%, -50%);
+  }
+
+  #m3 {
+    position: absolute;
+    z-index: 15;
+    top: calc(50% + 200px); /* Adjusted position */
+    left: calc(50% + 900px); /* Adjusted position */
+    width: 550px; /* Adjusted width */
+    transform: translate(-50%, -50%);
+  }
+
+  #f2 {
+    position: absolute;
+    z-index: 16;
+    top: calc(50% + 150px); /* Adjusted position */
+    left: calc(50% + 10px); /* Adjusted position */
+    width: 2400px; /* Adjusted width */
+    transform: translate(-50%, -50%);
+  }
+
+  #m2 {
+    position: absolute;
+    z-index: 17;
+    top: calc(50% + 200px); /* Adjusted position */
+    width: 800px; /* Adjusted width */
+    left: calc(50% + 500px); /* Adjusted position */
+    transform: translate(-50%, -50%);
+  }
+
+  #m1 {
+    position: absolute;
+    z-index: 18;
+    top: calc(50% + 150px); /* Adjusted position */
+    width: 600px; /* Adjusted width */
+    left: calc(50% - 700px); /* Adjusted position */
+    transform: translate(-50%, -50%);
+  }
+
+  #sr {
+    position: absolute;
+    z-index: 19;
+    top: 0;
+    right: 0;
+    width: 800px; /* Adjusted width */
+  }
+
+  #bs {
+    position: absolute;
+    z-index: 20;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+  }
+
+  #f1 {
+    position: absolute;
+    z-index: 21;
+    width: 2000px; /* Adjusted width */
+    top: calc(100% - 355px);
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .vignette {
+    position: absolute;
+    z-index: 100;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(0, 0, 0, 0) 65%,
+      rgba(0, 0, 0, 0.7)
+    );
+  }
+
+  .Parallax {
+    pointer-events: none;
+    transition: 0.45s;
+  }
+
+  #greeting {
+    font-size: 30px;
+  }
+
+  #h1 {
+    font-size: 120px;
+  }
+
+  #h2 {
+    font-size: 100px;
+  }
+  header {
+    padding: 4rem 7rem;
+  }
+  nav a {
+    font-size: 4rem;
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+}
