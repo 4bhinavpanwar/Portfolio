@@ -433,3 +433,142 @@ body {
     width: 69vw;
   }
 }
+
+@media only screen and (min-width: 1400px) {
+  #container {
+    height: 100vh;
+    width: 69vw;
+    background-color: black;
+  }
+  #nav {
+    background-color: #a5e245;
+    height: 100px;
+    margin-top: 40px;
+    display: flex;
+    align-items: center;
+  }
+  #h1 {
+    font-size: 40px;
+    margin-left: 40px;
+    font-family: "Poppins", sans-serif;
+    cursor: default;
+  }
+  .animation {
+    background-color: #344817;
+    width: 100%;
+    height: 380px;
+    position: relative;
+    overflow: hidden;
+  }
+  .acute-angle-lines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 18px,
+      #2b3b13 18px,
+      #2b3b13 36px
+    );
+    background-size: 200% 100%;
+    animation: moveLines 30s linear infinite;
+  }
+  #h5a {
+    font-family: "Poppins", sans-serif;
+    color: white;
+    margin-top: 40px;
+    margin-left: 40px;
+    font-size: 36px;
+    cursor: default;
+  }
+  .dashed-line {
+    margin-top: 8px;
+    height: 14px;
+    border-top: 14px dashed #a5e245;
+  }
+  #h1b {
+    font-family: "Poppins", sans-serif;
+    color: #a5e245;
+    margin-left: 40px;
+    margin-top: 40px;
+    cursor: default;
+    font-size: 38px;
+  }
+  #sites {
+    height: 1000px;
+    display: flex;
+    flex-direction: column;
+    color: #a5e245;
+    font-size: 36px;
+    margin-left: 40px;
+    margin-top: 40px;
+    font-family: "Poppins", sans-serif;
+    overflow: hidden;
+  }
+  .a {
+    margin-bottom: 20px;
+    cursor: pointer;
+    color: #a5e245;
+    text-decoration: none;
+  }
+  #footer {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    position: relative;
+    bottom: 0px;
+    background-color: black;
+    height: 160px;
+    width: 69vw;
+  }
+  #dashed-line-two {
+    width: 100%;
+    height: 14px;
+    border-top: 14px dashed #a5e245;
+    margin-bottom: 40px;
+  }
+  .f2 {
+    color: bisque;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 69vw;
+  }
+  #footimg1 {
+    width: 200px;
+    height: 70px;
+    margin-right: 14px;
+  }
+  #footimg2 {
+    width: 200px;
+    height: 70px;
+    margin-left: 14px;
+  }
+  .text-container {
+    position: absolute;
+    right: 20px;
+    width: 340px;
+    height: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 1000px; /* Adding perspective for 3D effect */
+  }
+  .text {
+    cursor: default;
+    font-family: "Poppins", sans-serif;
+    font-size: 36px;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backface-visibility: hidden; /* Hide the back side during flip */
+    transform: rotateX(0deg); /* Rotate vertically */
+    transition: transform 1s ease-in-out;
+  }
+}
