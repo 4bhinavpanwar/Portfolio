@@ -72,7 +72,7 @@ container.addEventListener("keydown", (event) => {
     );
   }
   if (event.key == "Enter" && currentIndeX == 4) {
-    window.open("https://utkarshpanwar-ap.netlify.app/", "_blank");
+    window.open("https://utkarshpanwar.netlify.app/", "_blank");
   }
   if (event.key == "Enter" && currentIndeX == 5) {
     window.open("https://kingofcards.netlify.app/", "_blank");
