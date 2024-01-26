@@ -87,6 +87,9 @@ container.addEventListener("keydown", (event) => {
     window.open("https://abhinavpanwar.github.io/AOT_QUIZ/", "_blank");
   }
   if (event.key == "Enter" && currentIndeX == 9) {
+    window.open("https://abhinavpanwar.github.io/CRUD/", "_blank");
+  }
+  if (event.key == "Enter" && currentIndeX == 10) {
     window.open("https://abhinavpanwar.github.io/BILL/", "_blank");
   }
   if (event.key === "ArrowUp") {
