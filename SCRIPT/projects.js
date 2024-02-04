@@ -92,6 +92,9 @@ container.addEventListener("keydown", (event) => {
   if (event.key == "Enter" && currentIndeX == 10) {
     window.open("https://abhinavpanwar.github.io/BILL/", "_blank");
   }
+  if (event.key == "Enter" && currentIndeX == 11) {
+    window.open("https://virtua1assistant.netlify.app/", "_blank");
+  }
   if (event.key === "ArrowUp") {
     scrollToIndex(currentIndeX - 1);
   } else if (event.key === "ArrowDown") {
