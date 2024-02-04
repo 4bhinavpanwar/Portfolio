@@ -89,7 +89,7 @@ body {
 }
 
 #sites {
-  height: 550px;
+  height: 600px;
   display: flex;
   flex-direction: column;
   color: #a5e245;
@@ -319,7 +319,7 @@ body {
     transition: transform 1s ease-in-out;
   }
   #sites {
-    height: 450px;
+    height: 500px;
     display: flex;
     flex-direction: column;
     color: #a5e245;
