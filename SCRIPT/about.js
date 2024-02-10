@@ -9,6 +9,14 @@ hamMenuIcon.addEventListener("click", () => {
   hamMenuIcon.classList.toggle("fa-times");
   midsec.style.display = midsec.style.display === "none" ? "flex" : "none";
   handles.style.display = handles.style.display === "none" ? "flex" : "none";
+  document.getElementById("FH").style.display =
+    document.getElementById("FH").style.display === "none" ? "flex" : "none";
+  document.getElementById("SH").style.display =
+    document.getElementById("SH").style.display === "none" ? "flex" : "none";
+  document.getElementById("B1").style.display =
+    document.getElementById("B1").style.display === "none" ? "flex" : "none";
+  document.getElementById("B2").style.display =
+    document.getElementById("B2").style.display === "none" ? "flex" : "none";
 });
 navLinks.forEach((navLinks) => {
   navLinks.addEventListener("click", () => {
