@@ -89,7 +89,7 @@ body {
 }
 
 #sites {
-  height: 600px;
+  height: 650px;
   display: flex;
   flex-direction: column;
   color: #a5e245;
@@ -498,7 +498,7 @@ body {
     font-size: 38px;
   }
   #sites {
-    height: 1000px;
+    height: 1050px;
     display: flex;
     flex-direction: column;
     color: #a5e245;
