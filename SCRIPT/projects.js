@@ -51,22 +51,22 @@ function scrollToIndex(index) {
 
 container.addEventListener("keydown", (event) => {
   if (event.key == "Enter" && currentIndeX == 0) {
-    window.open("https://abhinavpanwar.github.io/VLSI/", "_blank");
-  }
-  if (event.key == "Enter" && currentIndeX == 1) {
     window.open(
       "https://abhinavpanwar.github.io/STONE_PAPER_SCISSORS/",
       "_blank"
     );
   }
-  if (event.key == "Enter" && currentIndeX == 2) {
+  if (event.key == "Enter" && currentIndeX == 1) {
     window.open("https://abhinavpanwar.github.io/2023_WC_SCHEDULE/", "_blank");
   }
-  if (event.key == "Enter" && currentIndeX == 3) {
+  if (event.key == "Enter" && currentIndeX == 2) {
     window.open(
       "https://abhinavpanwar.github.io/FOOD_ORDERING_WEBSITE/FOOD_ORDERING_WEBSITE",
       "_blank"
     );
+  }
+  if (event.key == "Enter" && currentIndeX == 3) {
+    window.open("https://abhinavpanwar.github.io/VLSI/", "_blank");
   }
   if (event.key == "Enter" && currentIndeX == 4) {
     window.open(
@@ -90,12 +90,15 @@ container.addEventListener("keydown", (event) => {
     window.open("https://abhinavpanwar.github.io/AOT_QUIZ/", "_blank");
   }
   if (event.key == "Enter" && currentIndeX == 10) {
-    window.open("https://abhinavpanwar.github.io/CRUD/", "_blank");
+    window.open("https://mytierlist.netlify.app/", "_blank");
   }
   if (event.key == "Enter" && currentIndeX == 11) {
-    window.open("https://abhinavpanwar.github.io/BILL/", "_blank");
+    window.open("https://abhinavpanwar.github.io/CRUD/", "_blank");
   }
   if (event.key == "Enter" && currentIndeX == 12) {
+    window.open("https://abhinavpanwar.github.io/BILL/", "_blank");
+  }
+  if (event.key == "Enter" && currentIndeX == 13) {
     window.open("https://virtua1assistant.netlify.app/", "_blank");
   }
   if (event.key === "ArrowUp") {
