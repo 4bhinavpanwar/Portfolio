@@ -213,6 +213,17 @@ body {
   color: white;
   font-family: "Poppins", sans-serif;
   text-align: center;
+  animation: smoothBlink 4s infinite;
+}
+
+@keyframes smoothBlink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
 
 .mySlides {
