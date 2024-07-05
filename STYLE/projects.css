@@ -211,6 +211,7 @@ body {
 #h2proj {
   margin-top: 20px;
   color: white;
+  cursor: default;
   font-family: "Poppins", sans-serif;
   text-align: center;
   animation: smoothBlink 4s infinite;
