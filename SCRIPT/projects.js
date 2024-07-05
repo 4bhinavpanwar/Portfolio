@@ -110,3 +110,36 @@ container.addEventListener("keydown", (event) => {
 
 // Initial highlighting
 divs[currentIndeX].classList.add("highlighted");
+
+// section2
+
+var slideIndex = 1;
+var urls = [
+  "https://github.com/ABHINAVpanwar/Enhanced-Surveillance-with-Real-Time-Object-Detection",
+];
+var captions = ["Real Time Object Detection"];
+showDivs(slideIndex);
+
+function plusDivs(n) {
+  showDivs((slideIndex += n));
+}
+
+function showDivs(n) {
+  var i;
+  var x = document.getElementsByClassName("mySlides");
+  if (n > x.length) {
+    slideIndex = 1;
+  }
+  if (n < 1) {
+    slideIndex = x.length;
+  }
+  for (i = 0; i < x.length; i++) {
+    x[i].style.display = "none";
+    x[i].onclick = null;
+  }
+  x[slideIndex - 1].style.display = "block";
+  x[slideIndex - 1].onclick = function () {
+    window.open(urls[slideIndex - 1], "_blank");
+  };
+  document.getElementById("h2proj").innerText = captions[slideIndex - 1];
+}
