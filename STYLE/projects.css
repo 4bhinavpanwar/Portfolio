@@ -206,6 +206,69 @@ body {
   transform: rotateX(180deg); /* Rotate vertically to reveal the other side */
 }
 
+/* section2 */
+
+#h2proj {
+  margin-top: 20px;
+  color: white;
+  font-family: "Poppins", sans-serif;
+  text-align: center;
+}
+
+.mySlides {
+  height: 400px;
+  cursor: pointer;
+}
+
+.w3-content {
+  margin-bottom: 30px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+.w3-button {
+  cursor: pointer;
+  font-size: 36px;
+  border: transparent;
+  background-color: transparent;
+  color: #a5e245;
+}
+
+@media only screen and (max-width: 1100px) {
+  /* section2 */
+
+  #h2proj {
+    margin-top: 20px;
+    color: white;
+    font-size: 20px;
+    font-family: "Poppins", sans-serif;
+    text-align: center;
+  }
+
+  .mySlides {
+    height: 320px;
+    cursor: pointer;
+  }
+
+  .w3-content {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .w3-button {
+    cursor: pointer;
+    font-size: 30px;
+    border: transparent;
+    background-color: transparent;
+    color: #a5e245;
+  }
+}
+
 @media only screen and (max-width: 700px) {
   #footimg1 {
     width: 90px;
@@ -279,6 +342,37 @@ body {
     background-color: black;
     height: 80px;
     width: 69vw;
+  }
+
+  /* section2 */
+
+  #h2proj {
+    margin-top: 15px;
+    color: white;
+    font-size: 16px;
+    font-family: "Poppins", sans-serif;
+    text-align: center;
+  }
+
+  .mySlides {
+    height: 250px;
+    cursor: pointer;
+  }
+
+  .w3-content {
+    margin-bottom: 15px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .w3-button {
+    cursor: pointer;
+    font-size: 25px;
+    border: transparent;
+    background-color: transparent;
+    color: #a5e245;
   }
 }
 
@@ -356,6 +450,37 @@ body {
     height: 80px;
     width: 69vw;
   }
+
+  /* section2 */
+
+  #h2proj {
+    margin-top: 15px;
+    color: white;
+    font-size: 13px;
+    font-family: "Poppins", sans-serif;
+    text-align: center;
+  }
+
+  .mySlides {
+    height: 180px;
+    cursor: pointer;
+  }
+
+  .w3-content {
+    margin-bottom: 15px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .w3-button {
+    cursor: pointer;
+    font-size: 25px;
+    border: transparent;
+    background-color: transparent;
+    color: #a5e245;
+  }
 }
 
 @media only screen and (max-width: 400px) {
@@ -431,6 +556,37 @@ body {
     background-color: black;
     height: 80px;
     width: 69vw;
+  }
+
+  /* section2 */
+
+  #h2proj {
+    margin-top: 10px;
+    color: white;
+    font-size: 10px;
+    font-family: "Poppins", sans-serif;
+    text-align: center;
+  }
+
+  .mySlides {
+    height: 150px;
+    cursor: pointer;
+  }
+
+  .w3-content {
+    margin-bottom: 10px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .w3-button {
+    cursor: pointer;
+    font-size: 20px;
+    border: transparent;
+    background-color: transparent;
+    color: #a5e245;
   }
 }
 
@@ -570,5 +726,35 @@ body {
     backface-visibility: hidden; /* Hide the back side during flip */
     transform: rotateX(0deg); /* Rotate vertically */
     transition: transform 1s ease-in-out;
+  }
+  /* section2 */
+
+  #h2proj {
+    margin-top: 40px;
+    color: white;
+    font-size: 36px;
+    font-family: "Poppins", sans-serif;
+    text-align: center;
+  }
+
+  .mySlides {
+    height: 600px;
+    cursor: pointer;
+  }
+
+  .w3-content {
+    margin-bottom: 40px;
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .w3-button {
+    cursor: pointer;
+    font-size: 50px;
+    border: transparent;
+    background-color: transparent;
+    color: #a5e245;
   }
 }
