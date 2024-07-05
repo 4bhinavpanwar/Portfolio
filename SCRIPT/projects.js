@@ -143,3 +143,12 @@ function showDivs(n) {
   };
   document.getElementById("h2proj").innerText = captions[slideIndex - 1];
 }
+
+// Add event listeners for left and right arrow keys
+document.addEventListener("keydown", function (event) {
+  if (event.key === "ArrowLeft") {
+    plusDivs(-1);
+  } else if (event.key === "ArrowRight") {
+    plusDivs(1);
+  }
+});
