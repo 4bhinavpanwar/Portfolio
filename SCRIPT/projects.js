@@ -116,8 +116,9 @@ divs[currentIndeX].classList.add("highlighted");
 var slideIndex = 1;
 var urls = [
   "https://github.com/ABHINAVpanwar/Enhanced-Surveillance-with-Real-Time-Object-Detection",
+  "https://github.com/ABHINAVpanwar/Employee-management-system",
 ];
-var captions = ["Real Time Object Detection"];
+var captions = ["Real Time Object Detection", "Employee Management System"];
 showDivs(slideIndex);
 
 function plusDivs(n) {
