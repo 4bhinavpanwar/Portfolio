@@ -1,6 +1,7 @@
 window.addEventListener("load", function () {
   this.document.getElementById("preloader").style.display = "none";
   this.document.getElementById("PL").style.display = "none";
+  this.document.getElementById("ASHOK_CHAKRA").style.display = "none";
 });
 
 function showPopup() {
