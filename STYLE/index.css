@@ -21,6 +21,12 @@
   width: 150px;
 }
 
+#ASHOK_CHAKRA {
+  position: absolute;
+  height: 22px;
+  width: 22px;
+}
+
 .popup {
   display: none;
   font-family: "Tajawal", sans-serif;
