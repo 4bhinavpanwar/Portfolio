@@ -11,12 +11,6 @@ function playSound() {
 document.getElementById("PL").addEventListener("click", playSound);
 document.getElementById("ASHOK_CHAKRA").addEventListener("click", playSound);
 
-window.addEventListener("load", function () {
-  this.document.getElementById("preloader").style.display = "none";
-  this.document.getElementById("PL").style.display = "none";
-  this.document.getElementById("ASHOK_CHAKRA").style.display = "none";
-});
-
 function showPopup() {
   TP.style.display = "none";
   document.getElementById("overlay").style.display = "block";
@@ -37,9 +31,15 @@ function closePopup() {
   }, 500);
 }
 
-setTimeout(function () {
-  showPopup();
-}, 2500);
+window.addEventListener("load", function () {
+  this.document.getElementById("preloader").style.display = "none";
+  this.document.getElementById("PL").style.display = "none";
+  this.document.getElementById("ASHOK_CHAKRA").style.display = "none";
+
+  setTimeout(function () {
+    showPopup();
+  }, 2500);
+});
 
 function myEventHandler() {
   closePopup();
