@@ -39,13 +39,11 @@ window.addEventListener("load", function () {
   setTimeout(function () {
     showPopup();
   }, 2500);
+
+  setTimeout(function () {
+    closePopup();
+  }, 5500);
 });
-
-function myEventHandler() {
-  closePopup();
-}
-
-document.addEventListener("click", myEventHandler, { once: true });
 
 let hamMenuIcon = document.getElementById("ham-menu");
 let navBar = document.getElementById("nav-bar");
