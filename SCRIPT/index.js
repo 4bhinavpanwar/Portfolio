@@ -1,3 +1,28 @@
+// Play sound on hover
+function playSound() {
+  document
+    .getElementById("preloadSound")
+    .play()
+    .catch((error) => {
+      console.error("Error playing sound:", error);
+    });
+}
+
+// Pause sound when hover ends
+function pauseSound() {
+  document.getElementById("preloadSound").pause();
+  document.getElementById("preloadSound").currentTime = 0; // Reset sound to the start
+}
+
+this.document.getElementById("PL").addEventListener("mouseover", playSound);
+this.document.getElementById("PL").addEventListener("mouseout", pauseSound);
+document
+  .getElementById("ASHOK_CHAKRA")
+  .addEventListener("mouseover", playSound);
+document
+  .getElementById("ASHOK_CHAKRA")
+  .addEventListener("mouseout", pauseSound);
+
 window.addEventListener("load", function () {
   this.document.getElementById("preloader").style.display = "none";
   this.document.getElementById("PL").style.display = "none";
