@@ -40,11 +40,11 @@ window.addEventListener("load", function () {
 
   setTimeout(function () {
     showPopup();
-  }, 2500);
+  }, 1000);
 
   setTimeout(function () {
     closePopup();
-  }, 5500);
+  }, 4000);
 
   setTimeout(function () {
     var img = document.getElementById("contactmeimg");
@@ -52,7 +52,7 @@ window.addEventListener("load", function () {
     setTimeout(function () {
       img.classList.add("hover-effect");
     }, 0); // Delay before starting hover effect
-  }, 6500); // Delay of 500ms before popping up
+  }, 5000); // Delay of 500ms before popping up
 });
 
 let hamMenuIcon = document.getElementById("ham-menu");
