@@ -13,7 +13,9 @@ document.getElementById("ASHOK_CHAKRA").addEventListener("click", playSound);
 
 function showPopup() {
   TP.style.display = "none";
-  document.getElementById("ham-menu").style.display = "none";
+  if (window.innerWidth < 767) {
+    document.getElementById("ham-menu").style.display = "none";
+  }
   document.getElementById("overlay").style.display = "block";
   document.getElementById("popup").style.display = "block";
   document.body.style.cursor = "pointer";
@@ -28,7 +30,9 @@ function closePopup() {
     document.getElementById("overlay").style.display = "none";
     document.getElementById("popup").style.display = "none";
     TP.style.display = "block";
-    document.getElementById("ham-menu").style.display = "block";
+    if (window.innerWidth < 767) {
+      document.getElementById("ham-menu").style.display = "block";
+    }
     document.body.style.cursor = "default";
   }, 500);
 }
