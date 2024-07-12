@@ -66,9 +66,13 @@ hamMenuIcon.addEventListener("click", () => {
   hamMenuIcon.classList.toggle("fa-times");
   TP.style.display = TP.style.display === "none" ? "block" : "none";
   CMI.style.display = CMI.style.display === "none" ? "block" : "none";
-  overlay.style.display = overlay.style.display === "none" ? "block" : "none";
-  formContainer.style.display =
-    formContainer.style.display === "none" ? "block" : "none";
+  if (overlay.style.display === "block") {
+    overlay.style.display = overlay.style.display === "none" ? "block" : "none";
+  }
+  if (formContainer.style.display === "block") {
+    formContainer.style.display =
+      formContainer.style.display === "none" ? "block" : "none";
+  }
 });
 navLinks.forEach((navLinks) => {
   navLinks.addEventListener("click", () => {
