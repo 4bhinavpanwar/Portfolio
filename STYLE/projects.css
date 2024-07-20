@@ -610,13 +610,13 @@ body {
   }
   #nav {
     background-color: #a5e245;
-    height: 100px;
-    margin-top: 40px;
+    height: 80px;
+    margin-top: 30px;
     display: flex;
     align-items: center;
   }
   #h1 {
-    font-size: 40px;
+    font-size: 35px;
     margin-left: 40px;
     font-family: "Poppins", sans-serif;
     cursor: default;
@@ -624,7 +624,7 @@ body {
   .animation {
     background-color: #344817;
     width: 100%;
-    height: 380px;
+    height: 330px;
     position: relative;
     overflow: hidden;
   }
@@ -647,32 +647,32 @@ body {
   #h5a {
     font-family: "Poppins", sans-serif;
     color: white;
-    margin-top: 40px;
+    margin-top: 30px;
     margin-left: 40px;
-    font-size: 36px;
+    font-size: 32px;
     cursor: default;
   }
   .dashed-line {
-    margin-top: 8px;
-    height: 14px;
-    border-top: 14px dashed #a5e245;
+    margin-top: 6px;
+    height: 12px;
+    border-top: 12px dashed #a5e245;
   }
   #h1b {
     font-family: "Poppins", sans-serif;
     color: #a5e245;
     margin-left: 40px;
-    margin-top: 40px;
+    margin-top: 30px;
     cursor: default;
-    font-size: 38px;
+    font-size: 34px;
   }
   #sites {
-    height: 1150px;
+    height: 1050px;
     display: flex;
     flex-direction: column;
     color: #a5e245;
-    font-size: 36px;
+    font-size: 32px;
     margin-left: 40px;
-    margin-top: 40px;
+    margin-top: 30px;
     font-family: "Poppins", sans-serif;
     overflow: hidden;
   }
@@ -694,9 +694,9 @@ body {
   }
   #dashed-line-two {
     width: 100%;
-    height: 14px;
-    border-top: 14px dashed #a5e245;
-    margin-bottom: 40px;
+    height: 12px;
+    border-top: 12px dashed #a5e245;
+    margin-bottom: 30px;
   }
   .f2 {
     color: bisque;
@@ -706,20 +706,20 @@ body {
     width: 69vw;
   }
   #footimg1 {
-    width: 200px;
-    height: 70px;
+    width: 180px;
+    height: 60px;
     margin-right: 14px;
   }
   #footimg2 {
-    width: 200px;
-    height: 70px;
+    width: 180px;
+    height: 60px;
     margin-left: 14px;
   }
   .text-container {
     position: absolute;
     right: 20px;
     width: 340px;
-    height: 70px;
+    height: 60px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -728,7 +728,7 @@ body {
   .text {
     cursor: default;
     font-family: "Poppins", sans-serif;
-    font-size: 36px;
+    font-size: 32px;
     width: 100%;
     height: 100%;
     position: absolute;
@@ -742,29 +742,29 @@ body {
   /* section2 */
 
   #h2proj {
-    margin-top: 40px;
+    margin-top: 30px;
     color: white;
-    font-size: 36px;
+    font-size: 34px;
     font-family: "Poppins", sans-serif;
     text-align: center;
   }
 
   .mySlides {
-    height: 600px;
+    height: 550px;
     cursor: pointer;
   }
 
   .w3-content {
-    margin-bottom: 40px;
+    margin-bottom: 30px;
     display: flex;
-    gap: 40px;
+    gap: 30px;
     align-items: center;
     justify-content: center;
   }
 
   .w3-button {
     cursor: pointer;
-    font-size: 50px;
+    font-size: 35px;
     border: transparent;
     background-color: transparent;
     color: #a5e245;
