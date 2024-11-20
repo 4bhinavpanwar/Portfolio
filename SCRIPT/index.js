@@ -13,7 +13,7 @@ document.getElementById("ASHOK_CHAKRA").addEventListener("click", playSound);
 
 function showPopup() {
   TP.style.display = "none";
-  if (window.innerWidth < 767) {
+  if (window.innerWidth <= 767) {
     document.getElementById("ham-menu").style.display = "none";
   }
   document.getElementById("overlay").style.display = "block";
@@ -30,7 +30,7 @@ function closePopup() {
     document.getElementById("overlay").style.display = "none";
     document.getElementById("popup").style.display = "none";
     TP.style.display = "block";
-    if (window.innerWidth < 767) {
+    if (window.innerWidth <= 767) {
       document.getElementById("ham-menu").style.display = "block";
     }
     document.body.style.cursor = "default";
@@ -57,6 +57,19 @@ window.addEventListener("load", function () {
       img.classList.add("hover-effect");
     }, 0); // Delay before starting hover effect
   }, 5000); // Delay of 500ms before popping up
+
+  // Time delay in milliseconds (e.g., 2000ms = 2 seconds)
+  const delay = 5000;
+
+  // Select elements by their IDs
+  const elements = ["h1", "h2"]
+    .map((id) => document.getElementById(id)) // Map to DOM elements
+    .filter((el) => el !== null); // Filter out null values
+
+  // Apply 'visible' class after the delay
+  setTimeout(() => {
+    elements.forEach((el) => el.classList.add("visible"));
+  }, delay);
 });
 
 let hamMenuIcon = document.getElementById("ham-menu");
