@@ -148,11 +148,46 @@ nav ul.active {
   font-size: 6rem;
   line-height: 0.88;
   font-family: "Tajawal", sans-serif;
+  opacity: 0;
+  transform: scale(5) translateY(-500px) rotate(-45deg); /* Start with rotation */
+  transition: transform 1s, opacity 1s; /* Smooth fallback */
 }
 
 #h2 {
   font-weight: 100;
   font-size: 6.8rem;
+  opacity: 0;
+  transform: scale(5) translateY(-500px) rotate(-45deg); /* Start with rotation */
+  transition: transform 1s, opacity 1s; /* Smooth fallback */
+}
+
+/* Animation Trigger Class */
+#h1.visible,
+#h2.visible {
+  animation: smashIn 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; /* Eased for bounce effect */
+}
+
+/* Keyframes for Smash Effect */
+@keyframes smashIn {
+  0% {
+    opacity: 0;
+    transform: scale(5) translateY(-500px) rotate(-45deg); /* Adds dramatic entry */
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1.4) translateY(50px) rotate(10deg); /* Bounce with slight rotation */
+    filter: blur(3px); /* Temporary blur effect for emphasis */
+  }
+  60% {
+    transform: scale(0.9) translateY(-10px) rotate(-5deg); /* Settling into place */
+    filter: blur(1px); /* Reduced blur */
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0) rotate(0deg); /* Final position */
+    filter: none; /* Clear blur */
+    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.4); /* Add depth with shadow */
+  }
 }
 
 @media only screen and (max-width: 767px) {
