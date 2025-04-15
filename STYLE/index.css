@@ -946,6 +946,17 @@ main {
 }
 
 @media screen and (max-width: 500px) {
+  #messagebox {
+    position: absolute;
+    bottom: 10px;
+    left: 30px;
+    height: 150px;
+    width: 300px;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
   #output {
     color: transparent;
   }
