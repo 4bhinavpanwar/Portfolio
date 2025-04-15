@@ -946,11 +946,7 @@ main {
 }
 
 @media screen and (max-width: 500px) {
-  #messagebox {
-    display: none;
-  }
-
   #output {
-    display: none;
+    color: transparent;
   }
 }
