@@ -946,27 +946,7 @@ main {
 }
 
 @media screen and (max-width: 500px) {
-  #messagebox {
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    height: 150px;
-    width: 300px;
-    background-color: transparent;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
   #output {
-    position: absolute;
-    left: 0px;
-    bottom: 0px;
-    color: white;
-    font-size: 12px;
-    font-family: "Orbitron", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 700;
-    font-style: normal;
+    color: transparent;
   }
 }
