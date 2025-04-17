@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Home</title>
-    <link rel="icon" href="IMG/icon.png" />
+    <title>About</title>
+    <link rel="icon" href="../IMG/icon.png" />
     <!-- Font Awesome Icons -->
     <link
       rel="stylesheet"
@@ -14,817 +15,153 @@
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap"
-      rel="stylesheet"
-    />
-    <!-- Stylesheet -->
-    <link rel="stylesheet" href="STYLE/index.css" />
+    <link rel="stylesheet" href="../STYLE/about.css" />
   </head>
-  <body id="button">
-    <div id="preloader">
-      <img src="GIF/preloader.gif" id="PL" />
-      <img src="GIF/Ashok_Chakra.gif" id="ASHOK_CHAKRA" />
-      <audio id="preloadSound">
-        <source src="./GIF/Lakshya.mp3" type="audio/mp3" />
-      </audio>
-    </div>
-
-    <div id="messagebox">
-      <div id="output"></div>
-    </div>
-
-    <div class="overlay" id="overlay"></div>
-    <div class="popup" id="popup">
-      <h2 id="greeting">HELLO AND WELCOME TO MY PORTFOLIO</h2>
-    </div>
-
+  <body>
     <header>
       <nav>
         <a id="logo">@panwar</a>
         <i class="fas fa-bars" id="ham-menu"></i>
         <ul id="nav-bar">
           <li>
-            <a href="index.html" id="blink">Home</a>
+            <a href="../index.html">Home</a>
           </li>
           <li>
-            <a href="HTML/about.html">About</a>
+            <a href="about.html" id="blink">About</a>
           </li>
           <li>
-            <a href="HTML/skills.html">Skills</a>
+            <a href="skills.html">Skills</a>
           </li>
           <li>
-            <a href="HTML/projects.html">Projects</a>
+            <a href="projects.html">Projects</a>
           </li>
         </ul>
       </nav>
     </header>
-    <main id="parallax">
-      <div class="vignette"></div>
-      <img
-        src="IMG/background.png"
-        class="Parallax"
-        id="bgd"
-        data-speedx="0.3"
-        data-speedy="0.38"
-        data-speedz="0"
-        data-rotation="0"
-      />
-      <img src="IMG/black_shadow.png" class="Parallax" id="bs" />
-      <img
-        src="IMG/fog_1.png"
-        class="Parallax"
-        id="f1"
-        data-speedx="0.12"
-        data-speedy="0.01"
-        data-speedz="0"
-        data-rotation="0"
-      />
-      <img
-        src="IMG/fog_2.png"
-        class="Parallax"
-        id="f2"
-        data-speedx="0.35"
-        data-speedy="0.01"
-        data-speedz="0"
-        data-rotation="0"
-      />
-      <img
-        src="IMG/fog_3.png"
-        class="Parallax"
-        id="f3"
-        data-speedx="0.11"
-        data-speedy="0.018"
-        data-speedz="0"
-        data-rotation="0"
-      />
-      <img
-        src="IMG/fog_4.png"
-        class="Parallax"
-        id="f4"
-        data-speedx="0.135"
-        data-speedy="0.04"
-        data-speedz="0"
-        data-rotation="0"
-      />
-      <img
-        src="IMG/fog_5.png"
-        class="Parallax"
-        id="f5"
-        data-speedx="0.16"
-        data-speedy="0.105"
-        data-speedz="0"
-        data-rotation="0"
-      />
-      <img
-        src="IMG/fog_6.png"
-        class="Parallax"
-        id="f6"
-        data-speedx="0.25"
-        data-speedy="0.28"
-        data-speedz="0"
-        data-rotation="0"
-      />
-      <img
-        src="IMG/fog_7.png"
-        class="Parallax"
-        id="f7"
-        data-speedx="0.27"
-        data-speedy="0.32"
-        data-speedz="0"
-        data-rotation="0"
-      />
-      <img
-        src="IMG/mountain_1.png"
-        class="Parallax"
-        id="m1"
-        data-speedx="0.027"
-        data-speedy="0.018"
-        data-speedz="0.53"
-        data-rotation="0.2"
-      />
-      <img
-        src="IMG/mountain_2.png"
-        class="Parallax"
-        id="m2"
-        data-speedx="0.0235"
-        data-speedy="0.013"
-        data-speedz="0.42"
-        data-rotation="0.15"
-      />
-      <img
-        src="IMG/mountain_3.png"
-        class="Parallax"
-        id="m3"
-        data-speedx="0.04"
-        data-speedy="0.018"
-        data-speedz="0"
-        data-rotation="0"
-      />
-      <img
-        src="IMG/mountain_4.png"
-        class="Parallax"
-        id="m4"
-        data-speedx="0.059"
-        data-speedy="0.024"
-        data-speedz="0"
-        data-rotation="0.14"
-      />
-      <img
-        src="IMG/mountain_5.png"
-        class="Parallax"
-        id="m5"
-        data-speedx="0.08"
-        data-speedy="0.03"
-        data-speedz="0.13"
-        data-rotation="0"
-      />
-      <img
-        src="IMG/mountain_6.png"
-        class="Parallax"
-        id="m6"
-        data-speedx="0.065"
-        data-speedy="0.05"
-        data-speedz="0.05"
-        data-rotation="0.12"
-      />
-      <img
-        src="IMG/mountain_7.png"
-        class="Parallax"
-        id="m7"
-        data-speedx="0.1"
-        data-speedy="0.1"
-        data-speedz="0"
-        data-rotation="0.09"
-      />
-      <img
-        src="IMG/mountain_8.png"
-        class="Parallax"
-        id="m8"
-        data-speedx="0.1"
-        data-speedy="0.11"
-        data-speedz="0"
-        data-rotation="0.02"
-      />
-      <img
-        src="IMG/mountain_9.png"
-        class="Parallax"
-        id="m9"
-        data-speedx="0.125"
-        data-speedy="0.155"
-        data-speedz="0.15"
-        data-rotation="0.02"
-      />
-      <img
-        src="IMG/mountain_10.png"
-        class="Parallax"
-        id="m10"
-        data-speedx="0.195"
-        data-speedy="0.305"
-        data-speedz="0"
-        data-rotation="0"
-      />
-      <img src="IMG/sun_rays.png" class="Parallax" id="sr" />
-      <div
-        id="TP"
-        class="TextParallax"
-        data-speedx="0.07"
-        data-speedy="0.07"
-        data-speedz="0"
-        data-rotation="0.11"
-      >
-        <h1 id="h1">I am</h1>
-        <h2 id="h2">Abhinav Panwar</h2>
+    <section id="S1">
+      <div id="midsec">
+        <div id="profile"></div>
+        <div id="arc"></div>
       </div>
-      <div id="contactmebtn">
-        <img src="./IMG/contactme.png" id="contactmeimg" />
+      <div id="handles">
+        <a
+          class="fa-regular fa-file fa-2xl"
+          href="../DOC/Resume.pdf"
+          target="_blank"
+        ></a>
+        <a
+          class="fa-brands fa-linkedin fa-2xl"
+          href="https://www.linkedin.com/in/abhinav-panwar-908302252/"
+          target="_blank"
+        ></a>
+        <a
+          class="fa-brands fa-github fa-2xl"
+          href="https://github.com/ABHINAVpanwar"
+          target="_blank"
+        ></a>
+        <a
+          class="fa-brands fa-instagram fa-2xl"
+          href="https://www.instagram.com/abhinavpanwar199/"
+          target="_blank"
+        ></a>
       </div>
-      <div id="overlay2"></div>
-      <div id="S7">
-        <form id="form" action="https://api.web3forms.com/submit" method="POST">
-          <h3 id="contactme">Contact me</h3>
-          <input
-            type="hidden"
-            name="access_key"
-            value="4b490f5d-d424-4b8a-8474-f18ac12f4b52"
-          />
-          <input
-            type="text"
-            name="name"
-            placeholder="Your Name"
-            required
-            class="wao"
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder="Your E-mail"
-            required
-            class="wao"
-          />
-          <textarea
-            name="message"
-            placeholder="Your Message"
-            required
-            class="wao"
-          ></textarea>
-          <button type="submit" id="goo">Submit</button>
-        </form>
+    </section>
+    <div id="FH">
+      <h2 id="heading">Who Am I</h2>
+      <p>
+        I'm a passionate web developer, mathematics enthusiast, and calisthenics
+        aficionado.
+      </p>
+      <p>
+        I thrive on the challenges of coding and problem-solving, always pushing
+        myself to build efficient and creative applications while writing
+        elegant code. My interests lie in web performance optimization and
+        refactoring, where I constantly seek to improve my skills and stay
+        up-to-date with the latest techniques.
+      </p>
+      <p>
+        Outside of the digital world, I'm a kid at heart who enjoys designing
+        experiences, whether through web development, mathematical puzzles, or
+        staying active with calisthenics routines.
+      </p>
+    </div>
+    <div id="SH">
+      <div class="skill-bar">
+        <div class="skill-name">Focus</div>
+        <div class="bar-container">
+          <div class="bar" id="F"></div>
+        </div>
+        <div class="skill-name">Stress Management</div>
+        <div class="bar-container">
+          <div class="bar" id="SM"></div>
+        </div>
+        <div class="skill-name">Time Management</div>
+        <div class="bar-container">
+          <div class="bar" id="TM"></div>
+        </div>
+        <div class="skill-name">Problem Solving</div>
+        <div class="bar-container">
+          <div class="bar" id="PS"></div>
+        </div>
+        <div class="skill-name">Decision Making</div>
+        <div class="bar-container">
+          <div class="bar" id="DM"></div>
+        </div>
+        <div class="skill-name">Confidence</div>
+        <div class="bar-container">
+          <div class="bar" id="C"></div>
+        </div>
       </div>
-    </main>
-    <!-- Script -->
-    <script src="SCRIPT/index.js"></script>
-    <script>
-      button = document.getElementById("button");
-      output = document.getElementById("output");
-
-      // Function for the typewriter effect
-      function typeWriter(text, speed) {
-        output.innerHTML = "";
-        let i = 0;
-        function type() {
-          if (i < text.length) {
-            output.innerHTML += text.charAt(i);
-            i++;
-            setTimeout(type, speed);
-          }
-        }
-        type();
-      }
-
-      document.addEventListener("DOMContentLoaded", function () {
-        const output = document.getElementById("output");
-        // Execute the typeWriter function after 2 seconds
-        setTimeout(function () {
-          typeWriter("CLICK ON THE SCREEN AND ASK ME ANYTHING", 50);
-        }, 2000);
-      });
-
-      button.addEventListener("click", function () {
-        // Function for voice feedback
-        // function speak(message) {
-        //   const synth = window.speechSynthesis;
-        //   const utterance = new SpeechSynthesisUtterance(message);
-        //   synth.speak(utterance);
-        // }
-
-        SpeechRecognition =
-          window.SpeechRecognition || window.webkitSpeechRecognition;
-        let recognition = new SpeechRecognition();
-
-        recognition.onstart = () => {
-          typeWriter("", 50);
-        };
-
-        recognition.onspeechend = () => {
-          recognition.stop();
-        };
-
-        recognition.onresult = (result) => {
-          console.log(result.results[0][0].transcript.toUpperCase());
-          if (result.results[0][0].transcript.toLowerCase().includes("hello")) {
-            var greetings = [
-              "HELLO THERE! HOW CAN I HELP YOU?",
-              "HI! WHAT CAN I DO FOR YOU?",
-              "GREETINGS! HOW MAY I ASSIST YOU?",
-              "WELCOME! HOW CAN I MAKE YOUR DAY BETTER?",
-              "HEY THERE! WHAT BRINGS YOU TODAY?",
-            ];
-
-            var randomGreeting =
-              greetings[Math.floor(Math.random() * greetings.length)];
-            typeWriter(randomGreeting, 50);
-          } else if (
-            result.results[0][0].transcript.toLowerCase().includes("goodbye") ||
-            result.results[0][0].transcript.toLowerCase().includes("bye")
-          ) {
-            var farewells = [
-              "HAVE A GREAT DAY!",
-              "GOODBYE! TAKE CARE!",
-              "SEE YOU LATER!",
-              "UNTIL WE MEET AGAIN!",
-              "FAREWELL! WISHING YOU THE BEST!",
-            ];
-
-            var randomFarewell =
-              farewells[Math.floor(Math.random() * farewells.length)];
-            typeWriter(randomFarewell, 50);
-          } else if (
-            result.results[0][0].transcript.toLowerCase() === "open twitch"
-          ) {
-            window.open("https://www.twitch.tv/", "_blank");
-            typeWriter("OPENING TWITCH", 50);
-          } else if (
-            result.results[0][0].transcript.toLowerCase() ===
-            "open my portfolio"
-          ) {
-            window.open("https://abhinavpanwar.netlify.app/", "_blank");
-            typeWriter("OPENING YOUR PORTFOLIO", 50);
-          } else if (
-            result.results[0][0].transcript.toLowerCase() === "open whatsapp"
-          ) {
-            window.open("https://web.whatsapp.com/", "_blank");
-            typeWriter("OPENING WHATSAPP", 50);
-          } else if (
-            result.results[0][0].transcript.toLowerCase() === "open github"
-          ) {
-            window.open("https://github.com/ABHINAVpanwar", "_blank");
-            typeWriter("OPENING GITHUB", 50);
-          } else if (
-            result.results[0][0].transcript.toLowerCase() === "open jio cinema"
-          ) {
-            window.open("https://www.jiocinema.com/", "_blank");
-            typeWriter("OPENING JIO CINEMA", 50);
-          } else if (
-            result.results[0][0].transcript.toLowerCase() === "open instagram"
-          ) {
-            window.open("https://www.instagram.com/", "_blank");
-            typeWriter("OPENING INSTAGRAM", 50);
-          } else if (
-            result.results[0][0].transcript.toLowerCase().includes("timer of")
-          ) {
-            t = result.results[0][0].transcript.toLowerCase();
-            t = t.substring(t.indexOf("timer of") + 8).trim();
-            t = t.split(" ");
-
-            if (t[1] == "hour" || t[1] == "hours") {
-              displayCountdown(t[0] * 60 * 60 * 1000);
-            } else if (t[1] == "minute" || t[1] == "minutes") {
-              displayCountdown(t[0] * 60 * 1000);
-            } else if (t[1] == "second" || t[1] == "seconds") {
-              displayCountdown(t[0] * 1000);
-            }
-
-            function displayCountdown(remainingTime) {
-              // Function to update the countdown display
-              let intervalId = setInterval(function () {
-                let hours = Math.floor(
-                  (remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-                );
-                let minutes = Math.floor(
-                  (remainingTime % (1000 * 60 * 60)) / (1000 * 60)
-                );
-                let seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
-                output.textContent = `${hours} : ${minutes} : ${seconds}`;
-
-                if (remainingTime <= 0) {
-                  clearInterval(intervalId);
-                  typeWriter("TIME IS UP !", 50);
-                } else {
-                  remainingTime -= 1000;
-                }
-              }, 1000);
-            }
-          } else if (
-            result.results[0][0].transcript.toLowerCase().includes("time in")
-          ) {
-            citytime = result.results[0][0].transcript.toLowerCase();
-            citytime = citytime
-              .substring(citytime.indexOf("time in") + 7)
-              .trim();
-
-            const apiKey = "fsrqvnWVJQwcyoIomsF7lA==tLDvpk1irPxBu8fi";
-
-            fetch(`https://api.api-ninjas.com/v1/worldtime?city=${citytime}`, {
-              method: "GET",
-              headers: {
-                "X-Api-Key": apiKey,
-                "Content-Type": "application/json",
-              },
-            })
-              .then((response) => {
-                if (!response.ok) {
-                  throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.json();
-              })
-              .then((data) => {
-                typeWriter(
-                  `CURRENT TIME IN ${citytime.toUpperCase()} IS ${data.hour}:${
-                    data.minute
-                  }:${data.second} , ${data.day_of_week
-                    .substring(0, 3)
-                    .toUpperCase()}`,
-                  50
-                );
-              })
-              .catch((error) => {
-                console.error("Error:", error);
-              });
-          } else if (
-            result.results[0][0].transcript.toLowerCase().includes("time")
-          ) {
-            const currentTime = new Date().toLocaleTimeString();
-            typeWriter(`CURRENT TIME IS ${currentTime}`, 50);
-          } else if (
-            result.results[0][0].transcript.toLowerCase().includes("date")
-          ) {
-            const currentDate = new Date().toLocaleDateString();
-            typeWriter(`TODAY'S DATE IS ${currentDate}`, 50);
-          } else if (
-            result.results[0][0].transcript.toLowerCase().includes("joke")
-          ) {
-            const url =
-              "https://jokeapi-v2.p.rapidapi.com/joke/Any?format=json&blacklistFlags=nsfw%2Cracist";
-
-            const options = {
-              method: "GET",
-              headers: {
-                "X-RapidAPI-Key":
-                  "b9d6108ademsh4abb9aa4a2e82b5p13f220jsn4a91389425ae",
-                "X-RapidAPI-Host": "jokeapi-v2.p.rapidapi.com",
-              },
-            };
-
-            fetch(url, options)
-              .then((response) => {
-                if (!response.ok) {
-                  throw new Error("Network response was not ok");
-                }
-                return response.json();
-              })
-              .then((result) => {
-                // Check if it's a two-part joke (has both setup and delivery)
-                if (result.type === "twopart") {
-                  typeWriter(`${result.setup}  ${result.delivery}`, 50);
-                } else {
-                  // For one-liner jokes
-                  typeWriter(result.joke, 50);
-                }
-              })
-              .catch((error) => {
-                console.error("Error:", error);
-              });
-          } else if (
-            result.results[0][0].transcript
-              .toLowerCase()
-              .includes("directions from")
-          ) {
-            const apiKey =
-              "5b3ce3597851110001cf6248228510d0766f420584e4a4dccc1cd89f"; // Replace with your actual OpenRouteService API key
-
-            const locationCommand = result.results[0][0].transcript
-              .toLowerCase()
-              .replace("directions from", "")
-              .trim();
-
-            // Split the command into starting and destination parts
-            const [startLocation, destination] = locationCommand.split(" to ");
-
-            // Use OpenRouteService Geocoding API to get coordinates for the starting location
-            const startGeocodingUrl = `https://api.openrouteservice.org/geocode/search?api_key=${apiKey}&text=${encodeURIComponent(
-              startLocation
-            )}`;
-
-            fetch(startGeocodingUrl)
-              .then((response) => response.json())
-              .then((startData) => {
-                // Extract coordinates from the first feature in the geocoding response
-                const startCoords = startData.features[0].geometry.coordinates;
-                // Use OpenRouteService Geocoding API to get coordinates for the destination
-                const destinationGeocodingUrl = `https://api.openrouteservice.org/geocode/search?api_key=${apiKey}&text=${encodeURIComponent(
-                  destination
-                )}`;
-
-                fetch(destinationGeocodingUrl)
-                  .then((response) => response.json())
-                  .then((destinationData) => {
-                    // Extract coordinates from the first feature in the geocoding response
-                    const destinationCoords =
-                      destinationData.features[0].geometry.coordinates;
-
-                    // Use the obtained startCoords and destinationCoords in the directions URL
-                    const directionsUrl = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=${apiKey}&start=${startCoords.join(
-                      ","
-                    )}&end=${destinationCoords.join(",")}`;
-
-                    // Continue with the existing code for fetching directions
-                    fetch(directionsUrl)
-                      .then((response) => response.json())
-                      .then((data) => {
-                        fetch(directionsUrl)
-                          .then((response) => response.json())
-                          .then((data) => {
-                            if (data.features && data.features.length > 0) {
-                              // Extract relevant information from the directions response
-                              const duration =
-                                data.features[0].properties.segments[0]
-                                  .duration;
-                              const distance =
-                                data.features[0].properties.segments[0]
-                                  .distance;
-
-                              // Display the information in an alert
-                              typeWriter(
-                                `DIRECTIONS FROM ${startLocation.toUpperCase()} TO ${destination.toUpperCase()} :  DURATION : ${(
-                                  duration / 3600
-                                ).toFixed(2)} HRS  DISTANCE : ${(
-                                  distance / 1000
-                                ).toFixed(2)} KM`,
-                                50
-                              );
-                            } else {
-                              typeWriter(
-                                `Unable to get directions from ${startLocation} to ${destination}. Please try again.`,
-                                50
-                              );
-                            }
-                          })
-                          .catch((error) => {
-                            console.error("Error fetching directions:", error);
-                            typeWriter(
-                              "Error fetching directions. Please try again.",
-                              50
-                            );
-                          });
-                      })
-                      .catch((error) => {
-                        console.error("Error fetching directions:", error);
-                        typeWriter(
-                          "Error fetching directions. Please try again.",
-                          50
-                        );
-                      });
-                  })
-                  .catch((error) => {
-                    console.error(
-                      "Error fetching destination geocoding data:",
-                      error
-                    );
-                    typeWriter(
-                      "Error fetching destination geocoding data. Please try again.",
-                      50
-                    );
-                  });
-              })
-              .catch((error) => {
-                console.error(
-                  "Error fetching starting location geocoding data:",
-                  error
-                );
-                typeWriter(
-                  "Error fetching starting location geocoding data. Please try again.",
-                  50
-                );
-              });
-          } else if (
-            result.results[0][0].transcript.toLowerCase().includes("meaning of")
-          ) {
-            const word = result.results[0][0].transcript
-              .toLowerCase()
-              .replace("meaning of", "")
-              .trim();
-
-            var apiKey = "fsrqvnWVJQwcyoIomsF7lA==tLDvpk1irPxBu8fi"; // Replace with your actual API key
-
-            fetch("https://api.api-ninjas.com/v1/dictionary?word=" + word, {
-              method: "GET",
-              headers: {
-                "X-Api-Key": apiKey,
-                "Content-Type": "application/json",
-              },
-            })
-              .then((response) => {
-                if (!response.ok) {
-                  throw new Error("Network response was not ok");
-                }
-                return response.json();
-              })
-              .then((data) => {
-                typeWriter(
-                  `${word.toUpperCase()} - ${data.definition.slice(
-                    0,
-                    data.definition.indexOf("3")
-                  )}`,
-                  50
-                );
-              })
-              .catch((error) => {
-                console.error("Error:", error);
-              });
-          } else if (
-            result.results[0][0].transcript.toLowerCase().includes("movie")
-          ) {
-            const apiKey = "a974b84a0e4c4ecf7867c911669b4c9a"; // Your TMDb API key
-            const apiReadToken =
-              "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhOTc0Yjg0YTBlNGM0ZWNmNzg2N2M5MTE2NjliNGM5YSIsInN1YiI6IjY1Yjk0NjI0OTBmY2EzMDBjOTA1Nzc3MSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.tXlwbp1kJvAeplLvj2P_RdO1FJ1jfTQBSVSiUunoOGg";
-
-            // URL for TMDb API endpoint (replace with the actual endpoint you want to use)
-            const apiUrl = "https://api.themoviedb.org/3/movie/popular";
-
-            // Fetching data from TMDb API using the provided JWT for read access
-            fetch(apiUrl, {
-              method: "GET",
-              headers: {
-                Authorization: `Bearer ${apiReadToken}`,
-                "Content-Type": "application/json",
-              },
-            })
-              .then((response) => {
-                if (!response.ok) {
-                  throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.json();
-              })
-              .then((data) => {
-                for (let i = 0; i < data.results.length; i++) {
-                  const x = data.results[i].title;
-                  const z = data.results[i].vote_average;
-                  const y = data.results[i].release_date;
-
-                  if (
-                    !confirm(
-                      `${x.toUpperCase()}\nRELEASE DATE : ${y}\nRATING : ${z}`
-                    )
-                  ) {
-                    break;
-                  }
-                }
-                typeWriter(
-                  `THESE WERE TOP ${data.results.length} LATEST MOVIES`,
-                  50
-                );
-              })
-              .catch((error) => {
-                console.error("Error:", error);
-              });
-          } else if (
-            result.results[0][0].transcript.toLowerCase().includes("calculate")
-          ) {
-            let expression = result.results[0][0].transcript
-              .toLowerCase()
-              .replace("calculate", "")
-              .trim();
-
-            if (expression.includes("x")) {
-              expression = expression.replace("x", "*");
-            }
-
-            typeWriter(`${expression} = ${eval(expression)}`, 50);
-          }
-          // else if (result.results[0][0].transcript.toLowerCase().includes("news")) {
-          //   // Replace 'YOUR_API_KEY' with your actual News API key
-          //   var apiKey = "024b649e788045f980852117fca7e78e";
-
-          //   // News API endpoint
-          //   var apiUrl = `https://newsapi.org/v2/top-headlines?country=in&apiKey=${apiKey}`;
-
-          //   // Fetch options
-          //   var fetchOptions = {
-          //     method: "GET",
-          //   };
-
-          //   // Make the fetch request
-          //   fetch(apiUrl, fetchOptions)
-          //     .then((response) => {
-          //       if (!response.ok) {
-          //         throw new Error(`HTTP error! Status: ${response.status}`);
-          //       }
-          //       return response.json();
-          //     })
-          //     .then((data) => {
-          //       for (let i = 0; i < data.articles.length; i++) {
-          //         const articleTitle = data.articles[i].title;
-          //         if (!confirm(`${articleTitle}`)) {
-          //           break;
-          //         }
-          //       }
-          //       typeWriter(
-          //         `THESE WERE TODAY'S TOP ${data.articles.length} HEADLINES`,
-          //         50
-          //       );
-          //     })
-          //     .catch((error) => {
-          //       console.error("Error:", error);
-          //     });
-          // }
-          else if (
-            result.results[0][0].transcript
-              .toLowerCase()
-              .includes("search wikipedia for")
-          ) {
-            const wiki = result.results[0][0].transcript
-              .toLowerCase()
-              .replace("search wikipedia for", "")
-              .trim();
-            window.open(
-              `https://en.wikipedia.org/wiki/${encodeURIComponent(wiki)}`,
-              "_blank"
-            );
-            typeWriter(`SEARCHING WIKIPEDIA FOR ${wiki.toUpperCase()}`, 50);
-          } else if (
-            result.results[0][0].transcript
-              .toLowerCase()
-              .includes("search youtube for")
-          ) {
-            const you = result.results[0][0].transcript
-              .toLowerCase()
-              .replace("search youtube for", "")
-              .trim();
-            window.open(
-              `https://www.youtube.com/results?search_query=${encodeURIComponent(
-                you
-              )}`,
-              "_blank"
-            );
-            typeWriter(`SEARCHING YOUTUBE FOR ${you.toUpperCase()}`, 50);
-          } else if (
-            result.results[0][0].transcript.toLowerCase().includes("play")
-          ) {
-            const searchTerm = result.results[0][0].transcript
-              .toLowerCase()
-              .replace("play", "")
-              .trim();
-
-            // Perform a search using the YouTube Data API
-            fetch(
-              `https://www.googleapis.com/youtube/v3/search?q=${encodeURIComponent(
-                searchTerm
-              )}&part=snippet&key=AIzaSyBdgQrCmB6XxxOXSN3Oyk8zmsRIxq9V_kg`
-            )
-              .then((response) => response.json())
-              .then((data) => {
-                // Extract the video ID from the first search result
-                const videoId = data.items[0].id.videoId;
-
-                // Open a new tab/window to play the YouTube video
-                window.open(
-                  `https://www.youtube.com/watch?v=${videoId}`,
-                  "_blank"
-                );
-                typeWriter(`PLAYING ${searchTerm.toUpperCase()}`, 50);
-              })
-              .catch((error) => {
-                console.error("Error fetching data from YouTube API:", error);
-              });
-          } else if (
-            result.results[0][0].transcript
-              .toLowerCase()
-              .includes("search instagram for")
-          ) {
-            const insta = result.results[0][0].transcript
-              .toLowerCase()
-              .replace("search instagram for", "")
-              .replace(/\s+/g, "");
-
-            window.open(
-              `https://www.instagram.com/${encodeURIComponent(insta)}/`,
-              "_blank"
-            );
-            typeWriter(`SEARCHING INSTAGRAM FOR ${insta.toUpperCase()}`, 50);
-          } else {
-            const google = result.results[0][0].transcript.toLowerCase();
-            window.open(
-              `https://www.google.com/search?q=${encodeURIComponent(google)}`,
-              "_blank"
-            );
-            typeWriter(`${google.toUpperCase()}`, 50);
-          }
-        };
-        recognition.start();
-      });
-    </script>
+    </div>
+    <div id="B1">
+      <button id="experience" class="btn" onclick="f1()">My Experiences</button>
+      <button id="education" class="btn" onclick="f2()">My Education</button>
+      <button id="interest" class="btn" onclick="f3()">My Interests</button>
+    </div>
+    <div id="B2">
+      <div id="exp">
+        <div id="timeline">
+          <div class="timeline-item">
+            <div class="timeline-date">2025-PRESENT</div>
+            <div class="timeline-description">
+              <p>TCS (ASSISTANT SYSTEM ENGINEER)</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="edu">
+        <div id="timeline">
+          <div class="timeline-item">
+            <div class="timeline-date">2019</div>
+            <div class="timeline-description">
+              <p>X TH FROM LPS [CBSE]</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-date">2021</div>
+            <div class="timeline-description">
+              <p>XII TH FROM LPS (PCM) [CBSE]</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-date">2021-2025</div>
+            <div class="timeline-description">
+              <p>B.TECH FROM SRM KTR (ECE CORE)</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="int">
+        <div class="mySlides fade">
+          <img src="../IMG/calisthenics.jpg" class="x" />
+        </div>
+        <div class="mySlides fade">
+          <img src="../IMG/tennis.jpeg" class="x" />
+        </div>
+        <a class="prev" onclick="plusSlides(-1)">❮</a>
+        <a class="next" onclick="plusSlides(1)">❯</a>
+      </div>
+    </div>
+    <script src="../SCRIPT/about.js"></script>
   </body>
 </html>
