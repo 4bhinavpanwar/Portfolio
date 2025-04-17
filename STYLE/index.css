@@ -161,33 +161,94 @@ nav ul.active {
   transition: transform 1s, opacity 1s; /* Smooth fallback */
 }
 
-/* Animation Trigger Class */
+/* SUPERSONIC JET ANIMATION */
 #h1.visible,
 #h2.visible {
-  animation: smashIn 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; /* Eased for bounce effect */
+  animation: 
+    jetEntrance 1.4s cubic-bezier(0.1, 0.8, 0.2, 1) forwards,
+    jetAfterburner 2s 1.4s linear infinite;
+  transform-origin: left center;
+  perspective: 1000px;
 }
 
-/* Keyframes for Smash Effect */
-@keyframes smashIn {
+@keyframes jetEntrance {
   0% {
     opacity: 0;
-    transform: scale(5) translateY(-500px) rotate(-45deg); /* Adds dramatic entry */
+    transform: 
+      translateX(-100vw) 
+      translateZ(800px) 
+      rotateY(80deg) 
+      scale(0.3);
+    filter: 
+      blur(20px) 
+      brightness(4);
+    text-shadow: 
+      0 0 40px var(--jet-afterburner),
+      0 0 80px var(--jet-afterburner),
+      0 0 120px white;
+    clip-path: polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%);
   }
   40% {
     opacity: 1;
-    transform: scale(1.4) translateY(50px) rotate(10deg); /* Bounce with slight rotation */
-    filter: blur(3px); /* Temporary blur effect for emphasis */
+    transform: 
+      translateX(0) 
+      translateZ(0) 
+      rotateY(0deg) 
+      scale(1.1);
+    filter: 
+      blur(8px) 
+      brightness(2.5);
+    clip-path: polygon(0% 0%, 60% 0%, 60% 100%, 0% 100%);
   }
   60% {
-    transform: scale(0.9) translateY(-10px) rotate(-5deg); /* Settling into place */
-    filter: blur(1px); /* Reduced blur */
+    transform: 
+      translateX(5%) 
+      scale(1.05);
+    filter: 
+      blur(4px) 
+      brightness(1.8);
+  }
+  80% {
+    transform: 
+      translateX(-2%) 
+      scale(0.98);
+    filter: 
+      blur(2px) 
+      brightness(1.3);
   }
   100% {
     opacity: 1;
-    transform: scale(1) translateY(0) rotate(0deg); /* Final position */
-    filter: none; /* Clear blur */
-    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.4); /* Add depth with shadow */
+    transform: 
+      translateX(0) 
+      translateZ(0) 
+      rotateY(0deg) 
+      scale(1);
+    filter: 
+      blur(0) 
+      brightness(1);
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
   }
+}
+
+@keyframes jetAfterburner {
+  0%, 100% {
+    text-shadow: 
+      0 0 5px var(--jet-primary),
+      0 0 15px var(--jet-afterburner),
+      0 0 5px white;
+  }
+  50% {
+    text-shadow: 
+      0 0 15px var(--jet-primary),
+      0 0 30px var(--jet-afterburner),
+      0 0 10px white;
+  }
+}
+
+:root {
+  --jet-primary: black;       
+  --jet-afterburner: black;  
+  --jet-contrast: #ffffff;     /* White highlights */
 }
 
 @media only screen and (max-width: 767px) {
