@@ -89,7 +89,7 @@ body {
 }
 
 #sites {
-  height: 750px;
+  height: 500px;
   display: flex;
   flex-direction: column;
   color: #a5e245;
@@ -318,7 +318,7 @@ body {
     transition: transform 1s ease-in-out;
   }
   #sites {
-    height: 550px;
+    height: 400px;
     display: flex;
     flex-direction: column;
     color: #a5e245;
@@ -425,7 +425,7 @@ body {
     transition: transform 1s ease-in-out;
   }
   #sites {
-    height: 500px;
+    height: 300px;
     display: flex;
     flex-direction: column;
     color: #a5e245;
@@ -532,7 +532,7 @@ body {
     transition: transform 1s ease-in-out;
   }
   #sites {
-    height: 450px;
+    height: 300px;
     display: flex;
     flex-direction: column;
     color: #a5e245;
@@ -666,7 +666,7 @@ body {
     font-size: 34px;
   }
   #sites {
-    height: 1050px;
+    height: 700px;
     display: flex;
     flex-direction: column;
     color: #a5e245;
