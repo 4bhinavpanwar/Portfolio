@@ -1,10 +1,10 @@
 :root {
-  --primary: #0ff0fc;
-  --secondary: #ff00ff;
-  --dark: #0a0a0a;
-  --light: #f0f0f0;
-  --accent: #00ffaa;
-  --text: #e0e0e0;
+  --primary: #4caf50;
+  --secondary: #353535;
+  --dark: #121212;
+  --light: #ffffff;
+  --accent: #4caf50;
+  --text: #000000;
   --html: #e34c26;
   --css: #2965f1;
   --js: #f0db4f;
@@ -26,15 +26,14 @@ html {
 
 body {
   font-family: "Poppins", sans-serif;
-  background-color: var(--dark);
-  color: var(--text);
+  background-color: var(--primary);
+  color: var(--light);
   overflow-x: hidden;
 }
 
-/* Header Styles */
 header {
-  position: fixed;
-  background: rgba(10, 10, 10, 0.95);
+  position: absolute;
+  background-color: transparent;
   width: 100%;
   top: 0;
   left: 0;
@@ -62,34 +61,29 @@ nav a {
 #logo {
   font-family: "JetBrains Mono", monospace;
   font-weight: 700;
-  background: linear-gradient(45deg, var(--primary), var(--secondary));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--light);
   letter-spacing: 1px;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
 nav ul a {
-  color: var(--text);
-}
-
-nav ul a:hover::after {
-  width: 100%;
+  color: var(--light);
+  transition: all 0.3s ease;
 }
 
 nav ul a:hover {
-  color: var(--primary);
+  color: var(--text);
+  text-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
 }
 
 #blink {
-  color: var(--accent);
-  text-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
+  color: var(--light);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
   animation: blink 2s infinite, pulse 1.5s infinite alternate;
 }
 
 @keyframes blink {
-  0%,
-  100% {
+  0%, 100% {
     opacity: 1;
   }
   50% {
@@ -99,21 +93,21 @@ nav ul a:hover {
 
 @keyframes pulse {
   from {
-    text-shadow: 0 0 5px rgba(0, 255, 170, 0.5);
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
   }
   to {
-    text-shadow: 0 0 15px rgba(0, 255, 170, 0.8);
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
   }
 }
 
 #ham-menu {
   display: none;
-  color: var(--text);
+  color: var(--light);
   cursor: pointer;
 }
 
 #ham-menu:hover {
-  color: var(--primary);
+  color: var(--text);
 }
 
 @media only screen and (max-width: 991px) {
@@ -128,7 +122,7 @@ nav ul a:hover {
 
 @media only screen and (max-width: 767px) {
   header {
-    position: fixed;
+    position: absolute;
   }
 
   #ham-menu {
@@ -141,7 +135,7 @@ nav ul a:hover {
   }
 
   nav ul {
-    background: rgba(10, 10, 10, 0.95);
+    background: transparent;
     backdrop-filter: blur(10px);
     position: fixed;
     top: 80px;
@@ -190,7 +184,6 @@ nav ul a:hover {
   }
 }
 
-/* Main Content */
 #main-content {
   min-height: 100vh;
   padding-top: 100px;
@@ -198,7 +191,6 @@ nav ul a:hover {
   overflow: hidden;
 }
 
-/* Animated Background */
 #particles-js {
   position: absolute;
   width: 100%;
@@ -233,7 +225,7 @@ nav ul a:hover {
   height: 4px;
   bottom: -10px;
   left: 0;
-  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  background: linear-gradient(90deg, black, black);
   border-radius: 2px;
   transform: scaleX(0);
   transform-origin: left;
@@ -246,7 +238,6 @@ nav ul a:hover {
   }
 }
 
-/* Skills Grid */
 .skills-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -255,7 +246,7 @@ nav ul a:hover {
 }
 
 .skill-card {
-  background: rgba(20, 20, 20, 0.7);
+  background: var(--dark);
   border-radius: 15px;
   padding: 30px;
   text-align: center;
@@ -263,29 +254,14 @@ nav ul a:hover {
   position: relative;
   overflow: hidden;
   backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
-
-.skill-card::before {
-  content: "";
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background: linear-gradient(45deg, var(--primary), var(--secondary));
-  z-index: -1;
-  border-radius: 16px;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.skill-card:hover::before {
-  opacity: 1;
+  color: var(--light);
 }
 
 .skill-card:hover {
+  color: var(--dark);
+  background: var(--light);
   transform: translateY(-10px);
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
 }
@@ -294,22 +270,26 @@ nav ul a:hover {
   font-size: 5rem;
   margin-bottom: 20px;
   transition: all 0.3s ease;
+  color: var(--light);
 }
 
 .skill-card:hover .skill-icon {
   transform: scale(1.1);
 }
 
+.skill-card:hover .skill-description{
+  color: black;
+}
+
 .skill-name {
   font-size: 2.2rem;
   font-weight: 600;
   margin-bottom: 15px;
-  color: var(--light);
 }
 
 .skill-level {
   height: 8px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.3);
   border-radius: 4px;
   margin-bottom: 20px;
   overflow: hidden;
@@ -318,12 +298,13 @@ nav ul a:hover {
 .skill-level-bar {
   height: 100%;
   border-radius: 4px;
+  background-color: var(--light);
   transition: width 1.5s ease-in-out;
 }
 
 .skill-description {
   font-size: 1.4rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.9);
   margin-bottom: 15px;
 }
 
@@ -333,7 +314,6 @@ nav ul a:hover {
   font-style: italic;
 }
 
-/* Floating Elements */
 .floating-elements {
   position: absolute;
   width: 100%;
@@ -359,8 +339,6 @@ nav ul a:hover {
     transform: translateY(-1000px) rotate(720deg);
   }
 }
-
-/* Responsive Styles */
 
 @media only screen and (max-width: 991px) {
   .skills-grid {
@@ -388,6 +366,7 @@ nav ul a:hover {
   .section-title {
     font-size: 6rem;
   }
+
   .skill-card {
     padding: 30px;
   }
@@ -395,6 +374,7 @@ nav ul a:hover {
   .skill-name {
     font-size: 4rem;
   }
+
   .skills-grid {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   }
