@@ -6,8 +6,52 @@
     <title>Projects</title>
     <link rel="stylesheet" href="../STYLE/projects.css" />
     <link rel="icon" href="../IMG/icon.png" />
+    <style>
+      /* Splash Screen Styles */
+      #splash-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #000;
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      
+      #splash-video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      
+      .hidden {
+        display: none !important;
+      }
+      
+      /* Hide main content initially */
+      #container {
+        opacity: 0;
+        transition: opacity 0.5s ease;
+      }
+      
+      .loaded #container {
+        opacity: 1;
+      }
+    </style>
   </head>
   <body id="body">
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+      <video id="splash-video" autoplay muted>
+        <source src="../VIDEO/NFSMW.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+    
+    <!-- Main Website Content -->
     <div id="container">
       <nav id="nav">
         <h1 id="h1">PROJECTS</h1>
@@ -112,5 +156,42 @@
       </footer>
     </div>
     <script src="../SCRIPT/projects.js"></script>
+    <script>
+      // Splash Screen Functionality
+      document.addEventListener('DOMContentLoaded', function() {
+        const splashScreen = document.getElementById('splash-screen');
+        const splashVideo = document.getElementById('splash-video');
+        const container = document.getElementById('container');
+        const body = document.getElementById('body');
+        
+        // Hide body overflow during splash screen
+        body.style.overflow = 'hidden';
+        
+        // When video ends, show website
+        splashVideo.addEventListener('ended', function() {
+          splashScreen.classList.add('hidden');
+          body.style.overflow = 'auto';
+          body.classList.add('loaded');
+        });
+        
+        // For mobile devices where autoplay might be blocked
+        splashVideo.play().catch(e => {
+          console.log('Autoplay prevented:', e);
+          // If autoplay fails, proceed to website
+          splashScreen.classList.add('hidden');
+          body.style.overflow = 'auto';
+          body.classList.add('loaded');
+        });
+        
+        // Fallback in case video doesn't load
+        setTimeout(function() {
+          if (!splashVideo.ended && !splashScreen.classList.contains('hidden')) {
+            splashScreen.classList.add('hidden');
+            body.style.overflow = 'auto';
+            body.classList.add('loaded');
+          }
+        }, 10000); // 10 seconds timeout
+      });
+    </script>
   </body>
 </html>
