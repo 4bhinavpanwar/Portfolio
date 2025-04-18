@@ -66,15 +66,18 @@ container.addEventListener("keydown", (event) => {
     window.open("https://kingofcards.netlify.app/", "_blank");
   }
   if (event.key == "Enter" && currentIndeX == 4) {
-    window.open("https://abhinavpanwar.github.io/AOT_QUIZ/", "_blank");
+    window.open("https://tic-tac-toe-ursh.onrender.com/", "_blank");
   }
   if (event.key == "Enter" && currentIndeX == 5) {
-    window.open("https://mytierlist.netlify.app/", "_blank");
+    window.open("https://abhinavpanwar.github.io/AOT_QUIZ/", "_blank");
   }
   if (event.key == "Enter" && currentIndeX == 6) {
-    window.open("https://abhinavpanwar.github.io/CRUD/", "_blank");
+    window.open("https://mytierlist.netlify.app/", "_blank");
   }
   if (event.key == "Enter" && currentIndeX == 7) {
+    window.open("https://abhinavpanwar.github.io/CRUD/", "_blank");
+  }
+  if (event.key == "Enter" && currentIndeX == 8) {
     window.open("https://virtua1assistant.netlify.app/", "_blank");
   }
   if (event.key === "ArrowUp") {
