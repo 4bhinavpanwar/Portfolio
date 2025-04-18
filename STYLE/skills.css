@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap");
+
 :root {
   --primary: #4caf50;
   --secondary: #353535;
@@ -59,14 +61,12 @@ nav a {
 }
 
 #logo {
-  font-family: "JetBrains Mono", monospace;
   font-weight: 700;
   color: var(--light);
-  letter-spacing: 1px;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
 nav ul a {
+  font-weight: 600;
   color: var(--light);
   transition: all 0.3s ease;
 }
@@ -74,6 +74,7 @@ nav ul a {
 nav ul a:hover {
   color: var(--text);
   text-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+  border-bottom: 2px solid white;
 }
 
 #blink {
