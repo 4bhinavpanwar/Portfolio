@@ -52,9 +52,12 @@ window.addEventListener("load", function () {
 
   setTimeout(function () {
     var img = document.getElementById("contactmeimg");
+    var img2 = document.getElementById("joystickimg");
     img.classList.add("visible");
+    img2.classList.add("visible");
     setTimeout(function () {
       img.classList.add("hover-effect");
+      img2.classList.add("hover-effect");
     }, 0); // Delay before starting hover effect
   }, 5000); // Delay of 500ms before popping up
 
