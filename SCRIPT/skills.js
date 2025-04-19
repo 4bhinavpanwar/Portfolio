@@ -6,6 +6,10 @@ const navLinks = navBar.querySelectorAll("li");
 hamMenuIcon.addEventListener("click", () => {
   navBar.classList.toggle("active");
   hamMenuIcon.classList.toggle("fa-times");
+  document.getElementById("skills-section").style.display =
+    document.getElementById("skills-section").style.display === "none"
+      ? "block"
+      : "none";
 });
 
 navLinks.forEach((navLink) => {
