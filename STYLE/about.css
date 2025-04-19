@@ -67,6 +67,7 @@ nav a#logo {
   color: white;
   font-weight: 700;
   cursor: default;
+  z-index: 1;
 }
 nav ul a {
   color: white;
