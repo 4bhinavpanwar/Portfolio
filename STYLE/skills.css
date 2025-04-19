@@ -107,10 +107,6 @@ nav ul a:hover {
   cursor: pointer;
 }
 
-#ham-menu:hover {
-  color: var(--text);
-}
-
 @media only screen and (max-width: 991px) {
   header {
     padding: 2.2rem 5rem;
@@ -137,7 +133,6 @@ nav ul a:hover {
 
   nav ul {
     background: transparent;
-    backdrop-filter: blur(10px);
     position: fixed;
     top: 80px;
     left: -100vw;
