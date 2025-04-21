@@ -1,14 +1,14 @@
 from flask import Flask, request, jsonify, make_response, render_template
 from flask_cors import CORS
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 import threading
 import time
 import os
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 
-# Configure CORS for Netlify and local development
+# Configure CORS
 CORS(app, 
      resources={
          r"/api/*": {
@@ -19,7 +19,9 @@ CORS(app,
              ],
              "supports_credentials": True,
              "allow_headers": ["Content-Type"],
-             "methods": ["GET", "POST", "OPTIONS"]
+             "methods": ["GET", "POST", "OPTIONS", "HEAD"],
+             "expose_headers": ["Content-Type"],
+             "max_age": 600
          }
      })
 
@@ -27,22 +29,28 @@ CORS(app,
 app.config.update(
     SESSION_COOKIE_SECURE=True,
     SESSION_COOKIE_SAMESITE='None',
-    SESSION_COOKIE_HTTPONLY=True
+    SESSION_COOKIE_HTTPONLY=True,
+    PERMANENT_SESSION_LIFETIME=timedelta(minutes=30),
+    PREFERRED_URL_SCHEME='https'
 )
 
-# Active sessions tracking
+# Active sessions tracking with last activity timestamp
 active_sessions = {}
 lock = threading.Lock()
-SESSION_TIMEOUT = 30 * 60  # 30 minutes
+SESSION_TIMEOUT = 15  # 15 seconds of inactivity
+CLEANUP_INTERVAL = 5  # Cleanup every 5 seconds
 
 def cleanup_sessions():
-    """Clean up inactive sessions every minute"""
+    """Aggressive session cleanup"""
     while True:
-        time.sleep(60)
+        time.sleep(CLEANUP_INTERVAL)
         now = datetime.now()
         with lock:
-            expired = [k for k, v in active_sessions.items() 
-                      if (now - v).total_seconds() > SESSION_TIMEOUT]
+            # Remove inactive sessions
+            expired = [
+                k for k, v in active_sessions.items() 
+                if (now - v['last_active']).total_seconds() > SESSION_TIMEOUT
+            ]
             for device_id in expired:
                 del active_sessions[device_id]
 
@@ -56,9 +64,34 @@ def home():
     return render_template('index.html', 
                          server_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
+# New real-time endpoints
+@app.route('/api/active_users/ping', methods=['POST'])
+def ping():
+    """Update session activity"""
+    device_id = request.json.get('device_id')
+    if device_id:
+        with lock:
+            if device_id in active_sessions:
+                active_sessions[device_id]['last_active'] = datetime.now()
+            else:
+                active_sessions[device_id] = {
+                    'last_active': datetime.now(),
+                    'created': datetime.now()
+                }
+    return jsonify({"status": "pong"})
+
+@app.route('/api/active_users/end', methods=['POST'])
+def end_session():
+    """Immediate session termination"""
+    device_id = request.json.get('device_id')
+    with lock:
+        active_sessions.pop(device_id, None)
+    return jsonify({"status": "session_ended"})
+
+# Modified main endpoint
 @app.route('/api/active_users', methods=['GET', 'OPTIONS'])
 def active_users():
-    """Handle active users tracking"""
+    """Get active users count"""
     if request.method == 'OPTIONS':
         response = make_response()
         response.headers['Access-Control-Allow-Origin'] = request.headers.get('Origin', '*')
@@ -68,11 +101,19 @@ def active_users():
     device_id = request.cookies.get('device_id', str(uuid.uuid4()))
     
     with lock:
-        active_sessions[device_id] = datetime.now()
+        # Update or create session
+        if device_id in active_sessions:
+            active_sessions[device_id]['last_active'] = datetime.now()
+        else:
+            active_sessions[device_id] = {
+                'last_active': datetime.now(),
+                'created': datetime.now()
+            }
     
     response = make_response(jsonify({
         'active_users': len(active_sessions),
-        'your_device_id': device_id
+        'your_device_id': device_id,
+        'last_active': active_sessions[device_id]['last_active'].isoformat()
     }))
     
     if not request.cookies.get('device_id'):
@@ -86,17 +127,24 @@ def active_users():
             path='/'
         )
     
-    response.headers['Access-Control-Allow-Origin'] = request.headers.get('Origin', '*')
-    response.headers['Access-Control-Allow-Credentials'] = 'true'
     return response
 
 @app.route('/api/healthcheck')
 def healthcheck():
-    """Health check endpoint"""
+    """Enhanced health check"""
+    with lock:
+        active_count = len(active_sessions)
+        oldest_session = min(
+            [s['created'] for s in active_sessions.values()], 
+            default=datetime.now()
+        )
+    
     return jsonify({
         "status": "healthy",
-        "active_users": len(active_sessions),
-        "server_time": datetime.now().isoformat()
+        "active_users": active_count,
+        "oldest_session": oldest_session.isoformat(),
+        "server_time": datetime.now().isoformat(),
+        "version": "1.2.0"
     })
 
 if __name__ == '__main__':
