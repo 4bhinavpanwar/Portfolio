@@ -1,16 +1,49 @@
-// Play sound on click
-function playSound() {
-  document
-    .getElementById("preloadSound")
-    .play()
-    .catch((error) => {
-      console.error("Error playing sound:", error);
-    });
-}
+// Preloader and initial setup
+window.addEventListener("load", function () {
+  // Hide preloader first
+  this.document.getElementById("preloader").style.display = "none";
 
-document.getElementById("PL").addEventListener("click", playSound);
-document.getElementById("ASHOK_CHAKRA").addEventListener("click", playSound);
+  // Then hide other elements
+  this.document.getElementById("PL").style.display = "none";
+  this.document.getElementById("ASHOK_CHAKRA").style.display = "none";
 
+  // Show popup immediately after preloader
+  setTimeout(function () {
+    showPopup();
+  }, 0);
+
+  // Close popup after 4 seconds
+  setTimeout(function () {
+    closePopup();
+  }, 4000);
+
+  // Show images after popup closes
+  setTimeout(function () {
+    var img = document.getElementById("contactmeimg");
+    var img2 = document.getElementById("joystickimg");
+    var activeusers = document.getElementById("active-users-counter");
+    img.classList.add("visible");
+    img2.classList.add("visible");
+    activeusers.classList.add("visible");
+    setTimeout(function () {
+      img.classList.add("hover-effect");
+      img2.classList.add("hover-effect");
+      activeusers.classList.add("hover-effect");
+    }, 0);
+  }, 5000);
+
+  // Show headings after delay
+  const delay = 5000;
+  const elements = ["h1", "h2"]
+    .map((id) => document.getElementById(id))
+    .filter((el) => el !== null);
+
+  setTimeout(() => {
+    elements.forEach((el) => el.classList.add("visible"));
+  }, delay);
+});
+
+// Video background handling
 document.addEventListener("DOMContentLoaded", function () {
   const video = document.getElementById("video-bg");
   video.addEventListener("error", function () {
@@ -23,6 +56,20 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
+// Sound effects
+function playSound() {
+  document
+    .getElementById("preloadSound")
+    .play()
+    .catch((error) => {
+      console.error("Error playing sound:", error);
+    });
+}
+
+document.getElementById("PL").addEventListener("click", playSound);
+document.getElementById("ASHOK_CHAKRA").addEventListener("click", playSound);
+
+// Popup functions
 function showPopup() {
   TP.style.display = "none";
   if (window.innerWidth <= 767) {
@@ -49,44 +96,7 @@ function closePopup() {
   }, 500);
 }
 
-window.addEventListener("load", function () {
-  this.document.getElementById("preloader").style.display = "none";
-  this.document.getElementById("PL").style.display = "none";
-  this.document.getElementById("ASHOK_CHAKRA").style.display = "none";
-
-  setTimeout(function () {
-    showPopup();
-  }, 0);
-
-  setTimeout(function () {
-    closePopup();
-  }, 4000);
-
-  setTimeout(function () {
-    var img = document.getElementById("contactmeimg");
-    var img2 = document.getElementById("joystickimg");
-    img.classList.add("visible");
-    img2.classList.add("visible");
-    setTimeout(function () {
-      img.classList.add("hover-effect");
-      img2.classList.add("hover-effect");
-    }, 0); // Delay before starting hover effect
-  }, 5000); // Delay of 500ms before popping up
-
-  // Time delay in milliseconds (e.g., 2000ms = 2 seconds)
-  const delay = 5000;
-
-  // Select elements by their IDs
-  const elements = ["h1", "h2"]
-    .map((id) => document.getElementById(id)) // Map to DOM elements
-    .filter((el) => el !== null); // Filter out null values
-
-  // Apply 'visible' class after the delay
-  setTimeout(() => {
-    elements.forEach((el) => el.classList.add("visible"));
-  }, delay);
-});
-
+// Hamburger menu functionality
 let hamMenuIcon = document.getElementById("ham-menu");
 let navBar = document.getElementById("nav-bar");
 let navLinks = navBar.querySelectorAll("li");
@@ -107,6 +117,7 @@ hamMenuIcon.addEventListener("click", () => {
     formContainer.style.display = "none";
   }
 });
+
 navLinks.forEach((navLinks) => {
   navLinks.addEventListener("click", () => {
     navBar.classList.remove("active");
@@ -114,8 +125,7 @@ navLinks.forEach((navLinks) => {
   });
 });
 
-// contactme
-
+// Contact form functionality
 document.getElementById("contactmeimg").addEventListener("click", function () {
   var isVisible = formContainer.style.display === "block";
 
@@ -124,13 +134,13 @@ document.getElementById("contactmeimg").addEventListener("click", function () {
     setTimeout(function () {
       formContainer.style.display = "none";
       overlay.style.display = "none";
-    }, 500); // Match this with the transition duration
+    }, 500);
   } else {
     formContainer.style.display = "block";
     overlay.style.display = "block";
     setTimeout(function () {
       formContainer.style.opacity = "1";
-    }, 10); // Slight delay to ensure the display change takes effect
+    }, 10);
   }
 });
 
@@ -142,5 +152,5 @@ document.getElementById("overlay2").addEventListener("click", function () {
   setTimeout(function () {
     formContainer.style.display = "none";
     overlay.style.display = "none";
-  }, 500); // Match this with the transition duration
+  }, 500);
 });
