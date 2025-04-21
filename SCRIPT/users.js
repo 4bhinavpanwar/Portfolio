@@ -2,7 +2,7 @@
 class ActiveUsersTracker {
     static init() {
         // Configuration
-        this.API_URL = 'http://localhost:5000/api/active_users';
+        this.API_URL = 'https://portfolio-xy73.onrender.com/api/active_users';
         this.UPDATE_INTERVAL = 30000; // 30 seconds
         this.SESSION_TIMEOUT = 1800000; // 30 minutes in ms
         
