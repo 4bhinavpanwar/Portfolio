@@ -6,35 +6,39 @@ import threading
 import time
 import os
 
-app = Flask(__name__, template_folder='templates')
+app = Flask(__name__, template_folder='templates', static_folder='static')
 
-# Configure CORS with proper settings
+# Configure CORS for Netlify and local development
 CORS(app, 
      resources={
          r"/api/*": {
-             "origins": ["https://abhinavpanwar.netlify.app/"],
+             "origins": [
+                 "https://abhinavpanwar.netlify.app",
+                 "http://127.0.0.1:5500",
+                 "http://localhost:5500"
+             ],
              "supports_credentials": True,
              "allow_headers": ["Content-Type"],
              "methods": ["GET", "POST", "OPTIONS"]
          }
      })
 
-# For session security
+# Security configurations
 app.config.update(
     SESSION_COOKIE_SECURE=True,
     SESSION_COOKIE_SAMESITE='None',
     SESSION_COOKIE_HTTPONLY=True
 )
 
-# Dictionary to store active sessions {device_id: last_active_time}
+# Active sessions tracking
 active_sessions = {}
 lock = threading.Lock()
-SESSION_TIMEOUT = 30 * 60  # 30 minutes in seconds
+SESSION_TIMEOUT = 30 * 60  # 30 minutes
 
 def cleanup_sessions():
-    """Periodically remove inactive sessions"""
+    """Clean up inactive sessions every minute"""
     while True:
-        time.sleep(60)  # Run every minute
+        time.sleep(60)
         now = datetime.now()
         with lock:
             expired = [k for k, v in active_sessions.items() 
@@ -48,25 +52,20 @@ cleanup_thread.start()
 
 @app.route('/')
 def home():
-    """Serve the black background template"""
-    return render_template('index.html', server_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    """Serve the black background page"""
+    return render_template('index.html', 
+                         server_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
 @app.route('/api/active_users', methods=['GET', 'OPTIONS'])
-def handle_active_users():
+def active_users():
+    """Handle active users tracking"""
     if request.method == 'OPTIONS':
-        # Handle preflight request
         response = make_response()
         response.headers['Access-Control-Allow-Origin'] = request.headers.get('Origin', '*')
         response.headers['Access-Control-Allow-Credentials'] = 'true'
-        response.headers['Access-Control-Allow-Methods'] = 'GET'
-        response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
         return response
     
-    # Handle actual GET request
-    device_id = request.cookies.get('device_id')
-    
-    if not device_id:
-        device_id = str(uuid.uuid4())
+    device_id = request.cookies.get('device_id', str(uuid.uuid4()))
     
     with lock:
         active_sessions[device_id] = datetime.now()
@@ -87,13 +86,13 @@ def handle_active_users():
             path='/'
         )
     
-    # Set CORS headers
     response.headers['Access-Control-Allow-Origin'] = request.headers.get('Origin', '*')
     response.headers['Access-Control-Allow-Credentials'] = 'true'
     return response
 
-@app.route('/api/healthcheck', methods=['GET'])
+@app.route('/api/healthcheck')
 def healthcheck():
+    """Health check endpoint"""
     return jsonify({
         "status": "healthy",
         "active_users": len(active_sessions),
@@ -101,6 +100,5 @@ def healthcheck():
     })
 
 if __name__ == '__main__':
-    # Use environment variable for port or default to 5000
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=True)
+    app.run(host='0.0.0.0', port=port, debug=False)
