@@ -179,9 +179,9 @@ nav ul.active {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-around;
+    justify-content: center;
     transition: 1s;
-    gap: 0;
+    gap: 10rem;
   }
   nav a {
     font-size: 3rem;
