@@ -162,7 +162,7 @@ document.getElementById("overlay2").addEventListener("click", function () {
 document.addEventListener("DOMContentLoaded", async () => {
   try {
     // Fetch and display the headline
-    const response = await fetch("http://127.0.0.1:5000/api/get_h3");
+    const response = await fetch("https://portfolio-xy73.onrender.com//api/get_h3");
     const { h3_text } = await response.json();
     document.getElementById("h3").textContent = h3_text;
   } catch (error) {
