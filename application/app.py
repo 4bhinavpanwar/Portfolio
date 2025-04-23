@@ -8,7 +8,7 @@ import os
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 
-# Configure CORS
+# Configure CORS with explicit content-type support
 CORS(app, 
      resources={
          r"/api/*": {
@@ -34,19 +34,17 @@ app.config.update(
     PREFERRED_URL_SCHEME='https'
 )
 
-# Active sessions tracking with last activity timestamp
+# Active sessions tracking
 active_sessions = {}
 lock = threading.Lock()
-SESSION_TIMEOUT = 15  # 15 seconds of inactivity
-CLEANUP_INTERVAL = 5  # Cleanup every 5 seconds
+SESSION_TIMEOUT = 15
+CLEANUP_INTERVAL = 5
 
 def cleanup_sessions():
-    """Aggressive session cleanup"""
     while True:
         time.sleep(CLEANUP_INTERVAL)
         now = datetime.now()
         with lock:
-            # Remove inactive sessions
             expired = [
                 k for k, v in active_sessions.items() 
                 if (now - v['last_active']).total_seconds() > SESSION_TIMEOUT
@@ -54,20 +52,19 @@ def cleanup_sessions():
             for device_id in expired:
                 del active_sessions[device_id]
 
-# Start cleanup thread
 cleanup_thread = threading.Thread(target=cleanup_sessions, daemon=True)
 cleanup_thread.start()
 
 @app.route('/')
 def home():
-    """Serve the black background page"""
     return render_template('index.html', 
                          server_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
-# New real-time endpoints
 @app.route('/api/active_users/ping', methods=['POST'])
 def ping():
-    """Update session activity"""
+    if not request.is_json:
+        return jsonify({"error": "Content-Type must be application/json"}), 415
+        
     device_id = request.json.get('device_id')
     if device_id:
         with lock:
@@ -82,16 +79,16 @@ def ping():
 
 @app.route('/api/active_users/end', methods=['POST'])
 def end_session():
-    """Immediate session termination"""
+    if not request.is_json:
+        return jsonify({"error": "Content-Type must be application/json"}), 415
+        
     device_id = request.json.get('device_id')
     with lock:
         active_sessions.pop(device_id, None)
     return jsonify({"status": "session_ended"})
 
-# Modified main endpoint
 @app.route('/api/active_users', methods=['GET', 'OPTIONS'])
 def active_users():
-    """Get active users count"""
     if request.method == 'OPTIONS':
         response = make_response()
         response.headers['Access-Control-Allow-Origin'] = request.headers.get('Origin', '*')
@@ -101,7 +98,6 @@ def active_users():
     device_id = request.cookies.get('device_id', str(uuid.uuid4()))
     
     with lock:
-        # Update or create session
         if device_id in active_sessions:
             active_sessions[device_id]['last_active'] = datetime.now()
         else:
@@ -131,7 +127,6 @@ def active_users():
 
 @app.route('/api/healthcheck')
 def healthcheck():
-    """Enhanced health check"""
     with lock:
         active_count = len(active_sessions)
         oldest_session = min(
@@ -144,7 +139,7 @@ def healthcheck():
         "active_users": active_count,
         "oldest_session": oldest_session.isoformat(),
         "server_time": datetime.now().isoformat(),
-        "version": "1.2.0"
+        "version": "1.2.1"  # Updated version
     })
 
 if __name__ == '__main__':
