@@ -5,22 +5,24 @@ from datetime import datetime, timedelta
 import threading
 import time
 import os
+import sqlite3
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 
+# CORS Configuration
 CORS(app, 
-     resources={
-         r"/api/*": {
+     resources={ 
+         r"/api/*": { 
              "origins": [
                  "https://abhinavpanwar.netlify.app",
                  "http://127.0.0.1:5500",
                  "http://localhost:5500"
-             ],
-             "supports_credentials": True,
-             "allow_headers": ["Content-Type"],
-             "methods": ["GET", "POST", "OPTIONS", "HEAD"],
-             "expose_headers": ["Content-Type"],
-             "max_age": 600
+             ], 
+             "supports_credentials": True, 
+             "allow_headers": ["Content-Type"], 
+             "methods": ["GET", "POST", "OPTIONS", "HEAD"], 
+             "expose_headers": ["Content-Type"], 
+             "max_age": 600 
          }
      })
 
@@ -37,6 +39,23 @@ lock = threading.Lock()
 SESSION_TIMEOUT = 15
 CLEANUP_INTERVAL = 5
 
+# Database Initialization
+def init_db():
+    conn = sqlite3.connect('headline.db')
+    c = conn.cursor()
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS headline (
+            id INTEGER PRIMARY KEY,
+            text TEXT
+        )
+    ''')
+    c.execute('SELECT * FROM headline')
+    if not c.fetchone():
+        c.execute('INSERT INTO headline (text) VALUES ("")')  # Default empty text
+    conn.commit()
+    conn.close()
+
+# Cleanup expired sessions
 def cleanup_sessions():
     while True:
         time.sleep(CLEANUP_INTERVAL)
@@ -52,11 +71,13 @@ def cleanup_sessions():
 cleanup_thread = threading.Thread(target=cleanup_sessions, daemon=True)
 cleanup_thread.start()
 
+# Home Route
 @app.route('/')
 def home():
     return render_template('index.html', 
                            server_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
+# API to end session
 @app.route('/api/active_users/end', methods=['POST'])
 def end_session():
     if not request.is_json:
@@ -67,6 +88,7 @@ def end_session():
         active_sessions.pop(device_id, None)
     return jsonify({"status": "session_ended"})
 
+# API to get active users count
 @app.route('/api/active_users', methods=['GET', 'OPTIONS'])
 def active_users():
     if request.method == 'OPTIONS':
@@ -105,6 +127,7 @@ def active_users():
 
     return response
 
+# API for health check
 @app.route('/api/healthcheck')
 def healthcheck():
     with lock:
@@ -122,6 +145,30 @@ def healthcheck():
         "version": "1.2.1"
     })
 
+# API to get headline text
+@app.route('/api/get_h3', methods=['GET'])
+def get_h3():
+    conn = sqlite3.connect('headline.db')
+    c = conn.cursor()
+    c.execute('SELECT text FROM headline WHERE id = 1')
+    text = c.fetchone()[0]
+    conn.close()
+    return jsonify({'h3_text': text})
+
+# API to set headline text
+@app.route('/api/set_h3', methods=['POST'])
+def set_h3():
+    data = request.get_json()
+    new_text = data.get('new_text', '')
+    conn = sqlite3.connect('headline.db')
+    c = conn.cursor()
+    c.execute('UPDATE headline SET text = ? WHERE id = 1', (new_text,))
+    conn.commit()
+    conn.close()
+    return jsonify({'status': 'updated', 'new_text': new_text})
+
+# Run the server
 if __name__ == '__main__':
+    init_db()  # Initialize DB
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
