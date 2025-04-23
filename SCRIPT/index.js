@@ -34,7 +34,7 @@ window.addEventListener("load", function () {
 
   // Show headings after delay
   const delay = 5000;
-  const elements = ["h1", "h2"]
+  const elements = ["h1", "h2", "h3"]
     .map((id) => document.getElementById(id))
     .filter((el) => el !== null);
 
@@ -72,6 +72,7 @@ document.getElementById("ASHOK_CHAKRA").addEventListener("click", playSound);
 // Popup functions
 function showPopup() {
   TP.style.display = "none";
+  document.getElementById("Post").style.display = "none";
   if (window.innerWidth <= 767) {
     document.getElementById("ham-menu").style.display = "none";
   }
@@ -89,6 +90,7 @@ function closePopup() {
     document.getElementById("overlay").style.display = "none";
     document.getElementById("popup").style.display = "none";
     TP.style.display = "block";
+    document.getElementById("Post").style.display = "block";
     if (window.innerWidth <= 767) {
       document.getElementById("ham-menu").style.display = "block";
     }
@@ -101,6 +103,7 @@ let hamMenuIcon = document.getElementById("ham-menu");
 let navBar = document.getElementById("nav-bar");
 let navLinks = navBar.querySelectorAll("li");
 let TP = document.getElementById("TP");
+let Post = document.getElementById("Post");
 let CMI = document.getElementById("contactmeimg");
 var overlay = document.getElementById("overlay2");
 var formContainer = document.getElementById("S7");
@@ -109,6 +112,7 @@ hamMenuIcon.addEventListener("click", () => {
   navBar.classList.toggle("active");
   hamMenuIcon.classList.toggle("fa-times");
   TP.style.display = TP.style.display === "none" ? "block" : "none";
+  Post.style.display = Post.style.display === "none" ? "block" : "none";
   CMI.style.display = CMI.style.display === "none" ? "block" : "none";
   if (overlay.style.display === "block") {
     overlay.style.display = "none";
@@ -153,4 +157,16 @@ document.getElementById("overlay2").addEventListener("click", function () {
     formContainer.style.display = "none";
     overlay.style.display = "none";
   }, 500);
+});
+
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    // Fetch and display the headline
+    const response = await fetch("http://127.0.0.1:5000/api/get_h3");
+    const { h3_text } = await response.json();
+    document.getElementById("h3").textContent = h3_text;
+  } catch (error) {
+    console.error("Error loading headline:", error);
+    document.getElementById("h3").textContent = "";
+  }
 });
