@@ -7,12 +7,11 @@ document.querySelectorAll("a").forEach((link) => {
   });
 });
 
-// Real-Time Active Users Tracker (v2.1 - Fixed 415 Error)
+// Real-Time Active Users Tracker (v2.2 - Removed Ping Logic)
 class ActiveUsersTracker {
   static init() {
     this.API_URL = "https://portfolio-xy73.onrender.com/api/active_users";
     this.POLL_INTERVAL = 5000;
-    this.HEARTBEAT_INTERVAL = 15000;
     this.EXIT_DELAY = 2000;
     this.ANIMATION_DURATION = 800;
 
@@ -24,11 +23,9 @@ class ActiveUsersTracker {
     this.startSession();
     this.setupEventListeners();
     this.startPolling();
-    this.startHeartbeats();
   }
 
   static startSession() {
-    this.sendPing();
     if (!this.getCookie("device_id")) {
       document.cookie = `device_id=${this.deviceId}; max-age=${
         365 * 24 * 60 * 60
@@ -50,7 +47,6 @@ class ActiveUsersTracker {
         this.scheduleExitCheck();
       } else {
         this.cancelExitCheck();
-        this.sendPing();
       }
     });
 
@@ -61,14 +57,6 @@ class ActiveUsersTracker {
   static startPolling() {
     this.updateCounter();
     setInterval(() => this.updateCounter(), this.POLL_INTERVAL);
-  }
-
-  static startHeartbeats() {
-    setInterval(() => {
-      if (Date.now() - this.lastActive < this.HEARTBEAT_INTERVAL * 2) {
-        this.sendPing();
-      }
-    }, this.HEARTBEAT_INTERVAL);
   }
 
   static async updateCounter() {
@@ -89,22 +77,6 @@ class ActiveUsersTracker {
     }
   }
 
-  static async sendPing() {
-    try {
-      await fetch(`${this.API_URL}/ping`, {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
-        body: JSON.stringify({ device_id: this.deviceId }),
-        keepalive: true,
-      });
-    } catch (error) {
-      console.error("Ping failed:", error);
-    }
-  }
-
   static async endSession() {
     try {
       await fetch(`${this.API_URL}/end`, {
@@ -118,7 +90,6 @@ class ActiveUsersTracker {
       });
     } catch (error) {
       console.error("Session end failed:", error);
-      // Fallback to sendBeacon if fetch fails
       navigator.sendBeacon(
         `${this.API_URL}/end`,
         JSON.stringify({ device_id: this.deviceId })
