@@ -8,7 +8,6 @@ import os
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 
-# Configure CORS with explicit content-type support
 CORS(app, 
      resources={
          r"/api/*": {
@@ -25,7 +24,6 @@ CORS(app,
          }
      })
 
-# Security configurations
 app.config.update(
     SESSION_COOKIE_SECURE=True,
     SESSION_COOKIE_SAMESITE='None',
@@ -34,7 +32,6 @@ app.config.update(
     PREFERRED_URL_SCHEME='https'
 )
 
-# Active sessions tracking
 active_sessions = {}
 lock = threading.Lock()
 SESSION_TIMEOUT = 15
@@ -58,30 +55,13 @@ cleanup_thread.start()
 @app.route('/')
 def home():
     return render_template('index.html', 
-                         server_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-
-@app.route('/api/active_users/ping', methods=['POST'])
-def ping():
-    if not request.is_json:
-        return jsonify({"error": "Content-Type must be application/json"}), 415
-        
-    device_id = request.json.get('device_id')
-    if device_id:
-        with lock:
-            if device_id in active_sessions:
-                active_sessions[device_id]['last_active'] = datetime.now()
-            else:
-                active_sessions[device_id] = {
-                    'last_active': datetime.now(),
-                    'created': datetime.now()
-                }
-    return jsonify({"status": "pong"})
+                           server_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
 @app.route('/api/active_users/end', methods=['POST'])
 def end_session():
     if not request.is_json:
         return jsonify({"error": "Content-Type must be application/json"}), 415
-        
+
     device_id = request.json.get('device_id')
     with lock:
         active_sessions.pop(device_id, None)
@@ -94,9 +74,9 @@ def active_users():
         response.headers['Access-Control-Allow-Origin'] = request.headers.get('Origin', '*')
         response.headers['Access-Control-Allow-Credentials'] = 'true'
         return response
-    
+
     device_id = request.cookies.get('device_id', str(uuid.uuid4()))
-    
+
     with lock:
         if device_id in active_sessions:
             active_sessions[device_id]['last_active'] = datetime.now()
@@ -105,13 +85,13 @@ def active_users():
                 'last_active': datetime.now(),
                 'created': datetime.now()
             }
-    
+
     response = make_response(jsonify({
         'active_users': len(active_sessions),
         'your_device_id': device_id,
         'last_active': active_sessions[device_id]['last_active'].isoformat()
     }))
-    
+
     if not request.cookies.get('device_id'):
         response.set_cookie(
             'device_id',
@@ -122,7 +102,7 @@ def active_users():
             samesite='None',
             path='/'
         )
-    
+
     return response
 
 @app.route('/api/healthcheck')
@@ -133,13 +113,13 @@ def healthcheck():
             [s['created'] for s in active_sessions.values()], 
             default=datetime.now()
         )
-    
+
     return jsonify({
         "status": "healthy",
         "active_users": active_count,
         "oldest_session": oldest_session.isoformat(),
         "server_time": datetime.now().isoformat(),
-        "version": "1.2.1"  # Updated version
+        "version": "1.2.1"
     })
 
 if __name__ == '__main__':
