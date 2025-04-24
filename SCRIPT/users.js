@@ -10,7 +10,7 @@ document.querySelectorAll("a").forEach((link) => {
 // Real-Time Active Users Tracker (v2.2 - Removed Ping Logic)
 class ActiveUsersTracker {
   static init() {
-    this.API_URL = "https://portfolio-xy73.onrender.com/api/active_users";
+    this.API_URL = "https://portfolio-yyhf.onrender.com/api/active_users";
     this.POLL_INTERVAL = 5000;
     this.EXIT_DELAY = 2000;
     this.ANIMATION_DURATION = 800;
@@ -34,7 +34,13 @@ class ActiveUsersTracker {
   }
 
   static setupEventListeners() {
-    const activityEvents = ["mousemove", "scroll", "click", "keydown", "touchstart"];
+    const activityEvents = [
+      "mousemove",
+      "scroll",
+      "click",
+      "keydown",
+      "touchstart",
+    ];
     activityEvents.forEach((evt) => {
       document.addEventListener(evt, () => {
         this.lastActive = Date.now();
@@ -81,12 +87,12 @@ class ActiveUsersTracker {
     try {
       await fetch(`${this.API_URL}/end`, {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
-          "Accept": "application/json"
+          Accept: "application/json",
         },
         body: JSON.stringify({ device_id: this.deviceId }),
-        keepalive: true
+        keepalive: true,
       });
     } catch (error) {
       console.error("Session end failed:", error);
