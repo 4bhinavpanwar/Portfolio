@@ -172,3 +172,102 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("h3").textContent = "";
   }
 });
+
+// Load and display survey
+async function loadSurvey() {
+  try {
+    const response = await fetch("https://portfolio-yyhf.onrender.com/api/current_poll");
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (data.error) {
+      console.log("No active poll available");
+      return;
+    }
+
+    // Display survey question and options
+    document.getElementById("survey-question").textContent = data.question;
+    const optionsContainer = document.getElementById("survey-options");
+    optionsContainer.innerHTML = "";
+
+    data.options.forEach((option, index) => {
+      const button = document.createElement("button");
+      button.textContent = option;
+
+      button.addEventListener("click", async () => {
+        await submitResponse(index, button);
+      });
+
+      optionsContainer.appendChild(button);
+    });
+
+    // Show overlay after delay
+    setTimeout(() => {
+      if (optionsContainer.children.length > 0) {
+        document.getElementById("survey-overlay").style.display = "flex";
+      }
+    }, 10000); // 10 sec delay
+
+  } catch (error) {
+    console.error("Error loading survey:", error);
+  }
+}
+
+// Submit survey response
+async function submitResponse(index, button) {
+  const optionsContainer = document.getElementById("survey-options");
+
+  try {
+    button.disabled = true;
+    button.style.opacity = "0.7";
+
+    const response = await fetch("https://portfolio-yyhf.onrender.com/api/submit_response", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ option_index: index }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || "Failed to submit response");
+    }
+
+    // Show thank-you message (will stay until user closes manually)
+    optionsContainer.innerHTML = '<p style="text-align:center; color:#4CAF50;">Thank you for your feedback!</p>';
+
+  } catch (error) {
+    console.error("Error submitting response:", error);
+    button.disabled = false;
+    button.style.opacity = "1";
+
+    const errorElement = document.createElement("p");
+    errorElement.style.color = "#f44336";
+    errorElement.style.textAlign = "center";
+    errorElement.textContent = error.message || "Submission failed. Please try again.";
+    optionsContainer.appendChild(errorElement);
+
+    setTimeout(() => {
+      if (errorElement.parentNode) {
+        errorElement.remove();
+      }
+    }, 5000);
+  }
+}
+
+// Manual close button handler
+document.getElementById("survey-close").addEventListener("click", () => {
+  const overlay = document.getElementById("survey-overlay");
+  overlay.style.opacity = "0";
+
+  setTimeout(() => {
+    overlay.style.display = "none";
+    overlay.style.opacity = "1";
+  }, 500); // fast fade-out
+});
+
+// Load survey when DOM is ready
+window.addEventListener("DOMContentLoaded", loadSurvey);
