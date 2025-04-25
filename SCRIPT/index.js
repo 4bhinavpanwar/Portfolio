@@ -30,6 +30,12 @@ window.addEventListener("load", function () {
       img2.classList.add("hover-effect");
       activeusers.classList.add("hover-effect");
     }, 0);
+    // Show overlay after delay
+    setTimeout(() => {
+      if (document.getElementById("survey-options").children.length > 0) {
+        document.getElementById("survey-overlay").style.display = "flex";
+      }
+    }, 5000); // 5 sec delay
   }, 5000);
 
   // Show headings after delay
@@ -114,6 +120,9 @@ hamMenuIcon.addEventListener("click", () => {
   TP.style.display = TP.style.display === "none" ? "block" : "none";
   Post.style.display = Post.style.display === "none" ? "block" : "none";
   CMI.style.display = CMI.style.display === "none" ? "block" : "none";
+  if (document.getElementById("survey-overlay").style.display === "flex") {
+    document.getElementById("survey-overlay").style.display = "none";
+  }
   if (overlay.style.display === "block") {
     overlay.style.display = "none";
   }
@@ -176,7 +185,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 // Load and display survey
 async function loadSurvey() {
   try {
-    const response = await fetch("https://portfolio-yyhf.onrender.com/api/current_poll");
+    const response = await fetch(
+      "https://portfolio-yyhf.onrender.com/api/current_poll"
+    );
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -204,14 +215,6 @@ async function loadSurvey() {
 
       optionsContainer.appendChild(button);
     });
-
-    // Show overlay after delay
-    setTimeout(() => {
-      if (optionsContainer.children.length > 0) {
-        document.getElementById("survey-overlay").style.display = "flex";
-      }
-    }, 10000); // 10 sec delay
-
   } catch (error) {
     console.error("Error loading survey:", error);
   }
@@ -225,11 +228,14 @@ async function submitResponse(index, button) {
     button.disabled = true;
     button.style.opacity = "0.7";
 
-    const response = await fetch("https://portfolio-yyhf.onrender.com/api/submit_response", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ option_index: index }),
-    });
+    const response = await fetch(
+      "https://portfolio-yyhf.onrender.com/api/submit_response",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ option_index: index }),
+      }
+    );
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
@@ -237,8 +243,8 @@ async function submitResponse(index, button) {
     }
 
     // Show thank-you message (will stay until user closes manually)
-    optionsContainer.innerHTML = '<p style="text-align:center; color:#4CAF50;">Thank you for your feedback!</p>';
-
+    optionsContainer.innerHTML =
+      '<p style="text-align:center; color:#4CAF50;">Thank you for your feedback!</p>';
   } catch (error) {
     console.error("Error submitting response:", error);
     button.disabled = false;
@@ -247,7 +253,8 @@ async function submitResponse(index, button) {
     const errorElement = document.createElement("p");
     errorElement.style.color = "#f44336";
     errorElement.style.textAlign = "center";
-    errorElement.textContent = error.message || "Submission failed. Please try again.";
+    errorElement.textContent =
+      error.message || "Submission failed. Please try again.";
     optionsContainer.appendChild(errorElement);
 
     setTimeout(() => {
