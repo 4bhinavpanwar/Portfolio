@@ -244,7 +244,7 @@ async function submitResponse(index, button) {
 
     // Show thank-you message (will stay until user closes manually)
     optionsContainer.innerHTML =
-      '<p style="text-align:center; color:#4CAF50;">Thank you for your feedback!</p>';
+      '<p style="text-align:center; color:white;">Thank you for your feedback!</p>';
   } catch (error) {
     console.error("Error submitting response:", error);
     button.disabled = false;
