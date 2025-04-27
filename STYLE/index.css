@@ -162,7 +162,7 @@ nav ul.active {
     font-size: 5.8rem;
   }
   #ham-menu {
-    display: block;
+    display: none;
     color: white;
   }
   nav a#logo,
