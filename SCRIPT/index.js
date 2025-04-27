@@ -120,12 +120,12 @@ hamMenuIcon.addEventListener("click", () => {
   TP.style.display = TP.style.display === "none" ? "block" : "none";
   Post.style.display = Post.style.display === "none" ? "block" : "none";
   CMI.style.display = CMI.style.display === "none" ? "block" : "none";
-  formContainer.style.display = "none";
-  if (document.getElementById("survey-overlay").style.display === "flex") {
-    document.getElementById("survey-overlay").style.display = "none";
-  }
+  document.getElementById("survey-overlay").style.display = "none";
   if (overlay.style.display === "block") {
     overlay.style.display = "none";
+  }
+  if (formContainer.style.display === "block") {
+    formContainer.style.display = "none";
   }
 });
 
