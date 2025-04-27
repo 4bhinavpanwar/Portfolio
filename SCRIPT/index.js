@@ -34,6 +34,9 @@ window.addEventListener("load", function () {
     setTimeout(() => {
       if (document.getElementById("survey-options").children.length > 0) {
         document.getElementById("survey-overlay").style.display = "flex";
+        if (window.innerWidth <= 767) {
+          document.getElementById("ham-menu").style.display = "block";
+        }
       }
     }, 5000); // 5 sec delay
   }, 5000);
@@ -79,9 +82,6 @@ document.getElementById("ASHOK_CHAKRA").addEventListener("click", playSound);
 function showPopup() {
   TP.style.display = "none";
   document.getElementById("Post").style.display = "none";
-  if (window.innerWidth <= 767) {
-    document.getElementById("ham-menu").style.display = "none";
-  }
   document.getElementById("overlay").style.display = "block";
   document.getElementById("popup").style.display = "block";
   document.body.style.cursor = "pointer";
@@ -97,9 +97,6 @@ function closePopup() {
     document.getElementById("popup").style.display = "none";
     TP.style.display = "block";
     document.getElementById("Post").style.display = "block";
-    if (window.innerWidth <= 767) {
-      document.getElementById("ham-menu").style.display = "block";
-    }
     document.body.style.cursor = "default";
   }, 500);
 }
@@ -120,7 +117,9 @@ hamMenuIcon.addEventListener("click", () => {
   TP.style.display = TP.style.display === "none" ? "block" : "none";
   Post.style.display = Post.style.display === "none" ? "block" : "none";
   CMI.style.display = CMI.style.display === "none" ? "block" : "none";
-  document.getElementById("survey-overlay").style.display = "none";
+  if (document.getElementById("survey-overlay").style.display === "flex") {
+    document.getElementById("survey-overlay").style.display = "none";
+  }
   if (overlay.style.display === "block") {
     overlay.style.display = "none";
   }
