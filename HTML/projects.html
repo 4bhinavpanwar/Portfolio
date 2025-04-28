@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Projects</title>
     <link rel="stylesheet" href="../STYLE/projects.css" />
+    <link rel="stylesheet" href="../STYLE/NFSeditor.css" />
     <link rel="icon" href="../IMG/icon.png" />
     <style>
       /* Splash Screen Styles */
@@ -20,23 +21,23 @@
         justify-content: center;
         align-items: center;
       }
-      
+
       #splash-video {
         width: 100%;
         height: 100%;
         object-fit: cover;
       }
-      
+
       .hidden {
         display: none !important;
       }
-      
+
       /* Hide main content initially */
       #container {
         opacity: 0;
         transition: opacity 0.5s ease;
       }
-      
+
       .loaded #container {
         opacity: 1;
       }
@@ -46,22 +47,22 @@
     <!-- Splash Screen -->
     <div id="splash-screen">
       <video id="splash-video" autoplay>
-        <source src="../VIDEO/NFSMW.mp4" type="video/mp4">
+        <source src="../VIDEO/NFSMW.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
     </div>
-    
+
     <!-- Main Website Content -->
     <div id="container">
       <nav id="nav">
         <h1 id="h1">PROJECTS</h1>
       </nav>
-      <div class="animation">
-        <div class="acute-angle-lines">
-          <h5 id="h5a">NAME : &nbsp ABHINAV &nbsp PANWAR</h5>
+      <div class="save-info">
+        <div class="save-info-background grid" id="saveinfo">
+          <h5 class="h5a" id="playername">NAME : &nbsp ABHINAV &nbsp PANWAR</h5>
+          <h5 id="filehash" class="h5a">HASH : </h5>
         </div>
       </div>
-      <div class="dashed-line"></div>
       <section id="sec2">
         <h1 id="h1b">MAJOR PROJECTS :</h1>
         <h3 id="h2proj"></h3>
@@ -154,45 +155,74 @@
           </div>
         </div>
       </footer>
+    
+      <div class="save-data" id="savedata"></div>
+    
+      <input type="file" id="opensave" style="display: none;"></input>
+
+      <footer id="footer2">
+          <button class="button-icon" id="openbutton">
+            <img src="../IMG/opensaveicon.png" class="icon" />
+          </button>
+          <button class="button-icon" id="savebutton">
+            <img src="../IMG/saveicon.png" class="icon" />
+          </button>
+          <button class="button-icon" id="soundbutton">
+            <img
+              src="../IMG/soundicon.png"
+              class="icon"
+            />
+          </button>
+          <button class="button-icon" id="musicbutton">
+            <img
+              src="../IMG/musicicon.png"
+              class="icon"
+            />
+          </button>
+      </footer>
     </div>
     <script src="../SCRIPT/projects.js"></script>
     <script>
       // Splash Screen Functionality
-      document.addEventListener('DOMContentLoaded', function() {
-        const splashScreen = document.getElementById('splash-screen');
-        const splashVideo = document.getElementById('splash-video');
-        const container = document.getElementById('container');
-        const body = document.getElementById('body');
-        
+      document.addEventListener("DOMContentLoaded", function () {
+        const splashScreen = document.getElementById("splash-screen");
+        const splashVideo = document.getElementById("splash-video");
+        const container = document.getElementById("container");
+        const body = document.getElementById("body");
+
         // Hide body overflow during splash screen
-        body.style.overflow = 'hidden';
-        
+        body.style.overflow = "hidden";
+
         // When video ends, show website
-        splashVideo.addEventListener('ended', function() {
-          splashScreen.classList.add('hidden');
-          body.style.overflow = 'auto';
-          body.classList.add('loaded');
+        splashVideo.addEventListener("ended", function () {
+          splashScreen.classList.add("hidden");
+          body.style.overflow = "auto";
+          body.classList.add("loaded");
         });
-        
+
         // For mobile devices where autoplay might be blocked
-        splashVideo.play().catch(e => {
-          console.log('Autoplay prevented:', e);
+        splashVideo.play().catch((e) => {
+          console.log("Autoplay prevented:", e);
           // If autoplay fails, proceed to website
-          splashScreen.classList.add('hidden');
-          body.style.overflow = 'auto';
-          body.classList.add('loaded');
+          splashScreen.classList.add("hidden");
+          body.style.overflow = "auto";
+          body.classList.add("loaded");
         });
-        
+
         // Fallback in case video doesn't load
-        setTimeout(function() {
-          if (!splashVideo.ended && !splashScreen.classList.contains('hidden')) {
-            splashScreen.classList.add('hidden');
-            body.style.overflow = 'auto';
-            body.classList.add('loaded');
+        setTimeout(function () {
+          if (
+            !splashVideo.ended &&
+            !splashScreen.classList.contains("hidden")
+          ) {
+            splashScreen.classList.add("hidden");
+            body.style.overflow = "auto";
+            body.classList.add("loaded");
           }
         }, 10000); // 10 seconds timeout
       });
     </script>
     <script src="../SCRIPT/users.js"></script>
+    <script src="../SCRIPT/NFSeditor.js"></script>
   </body>
 </html>
