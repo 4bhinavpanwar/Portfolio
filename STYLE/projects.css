@@ -395,21 +395,20 @@ body {
 .save-data {
   display: none; /* Initially hidden */
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 80px; /* Leave space for footer2 */
-  width: 100%;
-  height: calc(100vh - 80px); /* Subtract footer height */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 90%;
+  max-height: 70vh;
   overflow-y: auto;
-  background-color: rgba(0, 0, 0, 0.95);
+  background-color: rgba(0, 0, 0, 0.9);
   border: 2px solid #444;
+  border-radius: 8px;
   padding: 20px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
   z-index: 1000;
   color: #fff;
   font-family: "Courier New", monospace;
-  /* Remove the transform and width constraints */
 }
 
 /* Data List Styles */
@@ -637,9 +636,6 @@ body {
   #footer2 {
     height: 60px;
   }
-  .save-data {
-    height: calc(100vh - 60px); /* Subtract footer height */
-  }
   .icon {
     height: 40px;
     width: 40px;
@@ -751,9 +747,6 @@ body {
   #footer2 {
     height: 50px;
   }
-  .save-data {
-    height: calc(100vh - 50px); /* Subtract footer height */
-  }
   .icon {
     height: 36px;
     width: 36px;
@@ -864,9 +857,6 @@ body {
   }
   #footer2 {
     height: 40px;
-  }
-  .save-data {
-    height: calc(100vh - 40px); /* Subtract footer height */
   }
   .icon {
     height: 26px;
