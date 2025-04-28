@@ -1914,6 +1914,13 @@ function appendData(list, data) {
 function showData() {
   saveData.innerHTML = ``;
 
+  // Create close button
+  let closeBtn = crel("div", { class: "close-btn" });
+  closeBtn.addEventListener("click", function () {
+    saveData.style.display = "none";
+    if (playSound) new Audio(CONFIRM_SOUND).play();
+  });
+
   let list = crel("ul", { class: "data-list" });
 
   for (const key in dmap) {
@@ -1922,6 +1929,7 @@ function showData() {
     appendData(list, data);
   }
 
+  crel(saveData, closeBtn); // Add close button first
   crel(saveData, list);
 }
 
@@ -2190,7 +2198,7 @@ function readSaveFile(event) {
 
   showData();
 
-  document.querySelector('.save-data').style.display = 'block';
+  document.querySelector(".save-data").style.display = "block";
 
   event.target.removeEventListener("load", readSaveFile);
 }
