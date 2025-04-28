@@ -2191,7 +2191,6 @@ function readSaveFile(event) {
   showData();
 
   document.querySelector('.save-data').style.display = 'block';
-  document.getElementById('footer2').style.position = "fixed";
 
   event.target.removeEventListener("load", readSaveFile);
 }
