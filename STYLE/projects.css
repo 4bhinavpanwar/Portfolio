@@ -411,6 +411,40 @@ body {
   font-family: "Courier New", monospace;
 }
 
+/* Close button styles */
+.save-data .close-btn {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.save-data .close-btn:hover {
+  transform: scale(1.1);
+}
+
+.save-data .close-btn::before,
+.save-data .close-btn::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 2px;
+  background-color: #fff;
+}
+
+.save-data .close-btn::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.save-data .close-btn::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
 /* Data List Styles */
 .save-data .data-list {
   list-style-type: none;
