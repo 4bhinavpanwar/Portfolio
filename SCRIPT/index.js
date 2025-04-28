@@ -187,6 +187,9 @@ async function loadSurvey() {
     );
 
     if (!response.ok) {
+      if (window.innerWidth <= 767) {
+        document.getElementById("ham-menu").style.display = "block";
+      }
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
