@@ -187,9 +187,13 @@ async function loadSurvey() {
     );
 
     if (!response.ok) {
-      if (window.innerWidth <= 767) {
-        document.getElementById("ham-menu").style.display = "block";
-      }
+      window.addEventListener("load", function () {
+        setTimeout(() => {
+          if (window.innerWidth <= 767) {
+            document.getElementById("ham-menu").style.display = "block";
+          }
+        }, 5000); // 5 sec delay
+      });
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
