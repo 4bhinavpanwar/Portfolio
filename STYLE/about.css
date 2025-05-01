@@ -147,7 +147,6 @@ nav ul.active {
 
 #S1 {
   background-image: url("../IMG/BGD.jpg");
-  background-color: #4caf50;
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -213,7 +212,7 @@ nav ul.active {
   position: absolute;
   width: 270px;
   height: 270px;
-  border: 3px solid black;
+  border: 3px solid white;
   border-radius: 270px;
   animation: spin 5s linear infinite;
   clip-path: polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%, 50% 0%, 100% 0%);
