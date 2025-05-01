@@ -39,6 +39,11 @@ window.addEventListener("load", function () {
         }
       }
     }, 5000); // 5 sec delay
+    if (document.getElementById("survey-options").children.length == 0) {
+      if (window.innerWidth <= 767) {
+        document.getElementById("ham-menu").style.display = "block";
+      }
+    }
   }, 5000);
 
   // Show headings after delay
@@ -187,13 +192,13 @@ async function loadSurvey() {
     );
 
     if (!response.ok) {
-      window.addEventListener("load", function () {
-        setTimeout(() => {
-          if (window.innerWidth <= 767) {
-            document.getElementById("ham-menu").style.display = "block";
-          }
-        }, 5000); // 5 sec delay
-      });
+      // window.addEventListener("load", function () {
+      //   setTimeout(() => {
+      //     if (window.innerWidth <= 767) {
+      //       document.getElementById("ham-menu").style.display = "block";
+      //     }
+      //   }, 5000); // 5 sec delay
+      // });
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
