@@ -276,34 +276,5 @@
     <!-- Script -->
     <script src="SCRIPT/index.js"></script>
     <script src="SCRIPT/users.js"></script>
-    <script>
-      // Preload All Pages in Background
-      const pages = [
-        "HTML/about.html",
-        "HTML/skills.html",
-        "HTML/projects.html",
-      ];
-      const cache = {};
-
-      pages.forEach((url) => {
-        fetch(url)
-          .then((res) => res.text())
-          .then((html) => {
-            cache[url] = html;
-          });
-      });
-
-      function loadCachedPage(page) {
-        if (cache[page]) {
-          document.getElementById("main-content").innerHTML = cache[page];
-        } else {
-          fetch(page)
-            .then((res) => res.text())
-            .then((html) => {
-              document.getElementById("main-content").innerHTML = html;
-            });
-        }
-      }
-    </script>
   </body>
 </html>
