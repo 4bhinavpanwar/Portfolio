@@ -66,7 +66,7 @@ container.addEventListener("keydown", (event) => {
     window.open("https://kingofcards.netlify.app/", "_blank");
   }
   if (event.key == "Enter" && currentIndeX == 4) {
-    window.open("http://top-10k-imdb.onrender.com/", "_blank");
+    window.open("https://top-10k-imdb-7ek4.onrender.com", "_blank");
   }
   if (event.key == "Enter" && currentIndeX == 5) {
     window.open("https://tic-tac-toe-x29t.onrender.com", "_blank");
