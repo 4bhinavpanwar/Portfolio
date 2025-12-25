@@ -443,6 +443,13 @@ def set_password():
     except Exception as e:
         logger.error(f"Error setting password: {str(e)}")
         return jsonify({"error": "Failed to update password"}), 500
+    
+@app.route('/clear_messages', methods=['POST'])
+def clear_messages():
+    global messages
+    messages.clear()
+    logger.info("All chat messages cleared")
+    return jsonify({"status": "success", "message": "All chat messages cleared"})
 
 if __name__ == '__main__':
     init_db()
