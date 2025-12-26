@@ -688,12 +688,12 @@
             );
 
             showChatStatus(
-              "✅ All chat messages cleared successfully!",
+              "All chat messages cleared successfully!",
               "success"
             );
           } catch (error) {
             showChatStatus(
-              `❌ Failed to clear chat: ${error.message}`,
+              `Failed to clear chat: ${error.message}`,
               "error"
             );
             console.error("Clear chat error:", error);
