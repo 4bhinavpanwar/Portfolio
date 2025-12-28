@@ -353,33 +353,6 @@
     <div id="chat-container">
       <div id="chat-header" onclick="toggleChat()">Chat</div>
       <div id="messages"></div>
-      <!-- YouTube Controls Panel (hidden by default) -->
-      <div id="youtube-controls" style="display: none">
-        <div class="youtube-controls-header">
-          <span>🎵 Now Playing</span>
-          <button onclick="closeYouTubePlayer()" class="youtube-close-btn">
-            ×
-          </button>
-        </div>
-        <div class="youtube-controls-body">
-          <div class="youtube-info" id="youtube-info">
-            <span id="youtube-title">YouTube Audio</span>
-            <small id="youtube-channel"></small>
-          </div>
-          <div class="youtube-controls-buttons">
-            <button onclick="toggleYouTubePlay()" id="play-pause-btn">
-              ⏸️
-            </button>
-            <button onclick="toggleYouTubeMute()" id="mute-btn">🔊</button>
-            <button onclick="stopYouTubeAudio()">⏹️</button>
-            <button onclick="skipYouTube(-10)">⏪ 10s</button>
-            <button onclick="skipYouTube(10)">10s ⏩</button>
-          </div>
-          <div class="youtube-progress">
-            <div class="youtube-progress-bar" id="youtube-progress-bar"></div>
-          </div>
-        </div>
-      </div>
       <div id="chat-input">
         <input type="text" id="name" placeholder="Name" readonly />
         <input type="text" id="message" placeholder="Message" />
@@ -388,12 +361,9 @@
     </div>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script>
-      let lastMessageCount = 0; // Track the last number of messages
+      let lastMessageCount = 0;
       let isAuthenticated = false;
       let username = "";
-      let youtubePlayer = null;
-      let youtubeVideoId = null;
-      let youtubeProgressInterval = null;
 
       // Meme sound mapping
       const memeSounds = {
@@ -406,6 +376,7 @@
         meme7: "../SOUND/memes/among-us.mp3",
       };
 
+      // Keep all your existing authentication functions...
       async function fetchPassword() {
         try {
           const response = await fetch(
@@ -454,7 +425,7 @@
           chatbox.style.display = "none";
         } else {
           chatbox.style.display = "flex";
-          icon.style.background = ""; // Clear red alert when chat opens
+          icon.style.background = "";
         }
       }
 
@@ -462,7 +433,7 @@
         .getElementById("message")
         .addEventListener("keypress", function (event) {
           if (event.key === "Enter") {
-            event.preventDefault(); // Prevents unintended form submission
+            event.preventDefault();
             sendMessage();
           }
         });
@@ -508,7 +479,6 @@
                 `<div class="message"><strong>${msg.sender}:</strong> ${msg.message} <span style="color: #888; font-size: 10px;">${msg.time}</span></div>`
             )
             .join("");
-          // messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
           if (data.length > lastMessageCount) {
             updateMessageIcon(data[data.length - 1].message);
@@ -519,35 +489,24 @@
           console.error("Error loading messages:", error);
         }
       }
-      // Enhanced YouTube URL detection
-      function extractYouTubeUrl(message) {
-        const patterns = [
-          /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([\w\-]{11})/,
-          /(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([\w\-]{11})/,
-          /(?:https?:\/\/)?(?:www\.)?youtube\.com\/v\/([\w\-]{11})/,
-          /(?:https?:\/\/)?(?:www\.)?youtube\.com\/shorts\/([\w\-]{11})/,
-          /(?:https?:\/\/)?youtu\.be\/([\w\-]{11})/,
-        ];
 
-        for (const pattern of patterns) {
-          const match = message.match(pattern);
-          if (match && match[1]) {
-            return match[1];
-          }
-        }
-        return null;
+      // SIMPLIFIED YouTube URL detection and playback
+      function extractYouTubeUrl(message) {
+        const youtubeRegex =
+          /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([\w\-]{11})/i;
+        const match = message.match(youtubeRegex);
+        return match ? match[1] : null;
       }
 
-      // Update the updateMessageIcon function
       function updateMessageIcon(lastMessage) {
         const icon = document.getElementById("chat-icon");
         const words = lastMessage.toLowerCase().split(" ");
         let mediaPlayed = false;
 
         // Check for YouTube URL
-        const detectedVideoId = extractYouTubeUrl(lastMessage);
-        if (detectedVideoId) {
-          playYouTubeAudio(detectedVideoId);
+        const youtubeVideoId = extractYouTubeUrl(lastMessage);
+        if (youtubeVideoId) {
+          playYouTubeAudio(youtubeVideoId);
           mediaPlayed = true;
         }
         // Check for meme sounds
@@ -567,297 +526,28 @@
         }
       }
 
-      // Main function to play YouTube audio
+      // Simple YouTube audio playback (no UI needed)
       function playYouTubeAudio(videoId) {
-        youtubeVideoId = videoId;
-
-        // Show controls panel
-        const controls = document.getElementById("youtube-controls");
-        controls.style.display = "block";
-
-        // Update title (you can enhance this to fetch actual video title)
-        document.getElementById(
-          "youtube-title"
-        ).textContent = `YouTube Audio - ${videoId}`;
-
-        // Load YouTube API if needed
-        if (!window.YT) {
-          loadYouTubeAPI();
-        } else if (window.YT.Player) {
-          initializeYouTubePlayer();
-        }
-
-        // Auto-close any previous player
-        if (youtubePlayer) {
-          youtubePlayer.destroy();
-          youtubePlayer = null;
-        }
-      }
-
-      function loadYouTubeAPI() {
-        const tag = document.createElement("script");
-        tag.src = "https://www.youtube.com/iframe_api";
-        const firstScriptTag = document.getElementsByTagName("script")[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-        window.onYouTubeIframeAPIReady = initializeYouTubePlayer;
-      }
-
-      function initializeYouTubePlayer() {
-        // Create a hidden div for the player if it doesn't exist
-        let playerDiv = document.getElementById("youtube-player-div");
-        if (!playerDiv) {
-          playerDiv = document.createElement("div");
-          playerDiv.id = "youtube-player-div";
-          playerDiv.style.display = "none";
-          document.body.appendChild(playerDiv);
-        }
-
-        // Initialize the player
-        youtubePlayer = new YT.Player("youtube-player-div", {
-          height: "0",
-          width: "0",
-          videoId: youtubeVideoId,
-          playerVars: {
-            autoplay: 1,
-            controls: 0,
-            disablekb: 1,
-            fs: 0,
-            modestbranding: 1,
-            rel: 0,
-            showinfo: 0,
-            playsinline: 1,
-          },
-          events: {
-            onReady: function (event) {
-              event.target.playVideo();
-              // Start muted for autoplay policies
-              event.target.mute();
-              updateMuteButton(true);
-              startProgressTracking();
-            },
-            onStateChange: function (event) {
-              updatePlayPauseButton(event.data);
-              if (event.data === YT.PlayerState.ENDED) {
-                closeYouTubePlayer();
-              }
-            },
-            onError: function (event) {
-              console.error("YouTube Player Error:", event.data);
-              document.getElementById("youtube-title").textContent =
-                "Error loading video";
-            },
-          },
-        });
-      }
-
-      // Control functions
-      function toggleYouTubePlay() {
-        if (!youtubePlayer) return;
-
-        const state = youtubePlayer.getPlayerState();
-        if (state === YT.PlayerState.PLAYING) {
-          youtubePlayer.pauseVideo();
-        } else {
-          youtubePlayer.playVideo();
-        }
-      }
-
-      function toggleYouTubeMute() {
-        if (!youtubePlayer) return;
-
-        if (youtubePlayer.isMuted()) {
-          youtubePlayer.unMute();
-          updateMuteButton(false);
-        } else {
-          youtubePlayer.mute();
-          updateMuteButton(true);
-        }
-      }
-
-      function stopYouTubeAudio() {
-        if (youtubePlayer) {
-          youtubePlayer.stopVideo();
-          youtubePlayer.destroy();
-          youtubePlayer = null;
-        }
-        closeYouTubePlayer();
-      }
-
-      function skipYouTube(seconds) {
-        if (!youtubePlayer) return;
-
-        const currentTime = youtubePlayer.getCurrentTime();
-        youtubePlayer.seekTo(currentTime + seconds, true);
-      }
-
-      function closeYouTubePlayer() {
-        stopYouTubeAudio();
-        clearInterval(youtubeProgressInterval);
-
-        const controls = document.getElementById("youtube-controls");
-        controls.style.display = "none";
-
-        const progressBar = document.getElementById("youtube-progress-bar");
-        progressBar.style.width = "0%";
-      }
-
-      // UI update functions
-      function updatePlayPauseButton(state) {
-        const button = document.getElementById("play-pause-btn");
-        if (state === YT.PlayerState.PLAYING) {
-          button.innerHTML = "⏸️";
-          button.title = "Pause";
-        } else {
-          button.innerHTML = "▶️";
-          button.title = "Play";
-        }
-      }
-
-      function updateMuteButton(isMuted) {
-        const button = document.getElementById("mute-btn");
-        if (isMuted) {
-          button.innerHTML = "🔇";
-          button.title = "Unmute";
-        } else {
-          button.innerHTML = "🔊";
-          button.title = "Mute";
-        }
-      }
-
-      // Progress tracking
-      function startProgressTracking() {
-        clearInterval(youtubeProgressInterval);
-
-        youtubeProgressInterval = setInterval(() => {
-          if (youtubePlayer && youtubePlayer.getDuration) {
-            const currentTime = youtubePlayer.getCurrentTime();
-            const duration = youtubePlayer.getDuration();
-
-            if (duration > 0) {
-              const progress = (currentTime / duration) * 100;
-              const progressBar = document.getElementById(
-                "youtube-progress-bar"
-              );
-              progressBar.style.width = `${progress}%`;
-            }
-          }
-        }, 1000);
-      }
-
-      // Auto-close when chat is closed
-      function toggleChat() {
-        if (!isAuthenticated) {
-          authenticateUser();
-          return;
-        }
-        const chatbox = document.getElementById("chat-container");
-        const icon = document.getElementById("chat-icon");
-        if (chatbox.style.display === "flex") {
-          chatbox.style.display = "none";
-          // Also close YouTube player when chat closes
-          closeYouTubePlayer();
-        } else {
-          chatbox.style.display = "flex";
-          icon.style.background = "";
-        }
-      }
-
-      // Function to extract YouTube URL from message
-      function extractYouTubeUrl(message) {
-        // Regex for various YouTube URL formats
-        const youtubeRegex =
-          /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([\w\-]{11})(?:[?&]\S*)?/i;
-        const match = message.match(youtubeRegex);
-        return match ? match[1] : null; // Returns video ID or null
-      }
-
-      // Function to play YouTube audio
-      function playYouTubeAudio(videoId) {
-        // Create a hidden iframe for YouTube player
-        let playerContainer = document.getElementById(
-          "youtube-player-container"
-        );
-
-        if (!playerContainer) {
-          playerContainer = document.createElement("div");
-          playerContainer.id = "youtube-player-container";
-          playerContainer.style.display = "none";
-          document.body.appendChild(playerContainer);
-        }
-
-        // Clear previous content
-        playerContainer.innerHTML = "";
-
-        // Create new iframe
+        // Create hidden iframe for background playback
         const iframe = document.createElement("iframe");
-        iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=0&showinfo=0&rel=0&modestbranding=1&enablejsapi=1`;
+        iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&controls=0&showinfo=0&rel=0`;
         iframe.width = "0";
         iframe.height = "0";
-        iframe.style.border = "none";
+        iframe.style.display = "none";
         iframe.allow = "autoplay";
-        iframe.allowFullscreen = false;
 
-        playerContainer.appendChild(iframe);
+        // Remove any existing YouTube iframe
+        const oldIframe = document.querySelector('iframe[src*="youtube.com"]');
+        if (oldIframe) oldIframe.remove();
 
-        // Alternative: Try using YouTube IFrame API for better control
-        playYouTubeWithAPI(videoId);
-      }
+        document.body.appendChild(iframe);
 
-      // Alternative method using YouTube IFrame API
-      function playYouTubeWithAPI(videoId) {
-        // Load YouTube IFrame API if not already loaded
-        if (!window.YT) {
-          const tag = document.createElement("script");
-          tag.src = "https://www.youtube.com/iframe_api";
-          const firstScriptTag = document.getElementsByTagName("script")[0];
-          firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-        }
-
-        // Wait for API to load
-        window.onYouTubeIframeAPIReady = function () {
-          if (!youtubePlayer) {
-            youtubePlayer = new YT.Player("youtube-player", {
-              height: "0",
-              width: "0",
-              videoId: videoId,
-              playerVars: {
-                autoplay: 1,
-                controls: 0,
-                showinfo: 0,
-                rel: 0,
-                modestbranding: 1,
-                playsinline: 1,
-              },
-              events: {
-                onReady: function (event) {
-                  event.target.playVideo();
-                  // Mute if needed (autoplay policies)
-                  event.target.mute();
-                },
-                onStateChange: function (event) {
-                  // Handle player state changes
-                  if (event.data === YT.PlayerState.ENDED) {
-                    // Clean up when video ends
-                    if (youtubePlayer) {
-                      youtubePlayer.destroy();
-                      youtubePlayer = null;
-                    }
-                  }
-                },
-              },
-            });
-          } else {
-            youtubePlayer.loadVideoById(videoId);
-            youtubePlayer.playVideo();
-            youtubePlayer.mute(); // Mute to comply with autoplay policies
+        // Auto-remove after 5 minutes to prevent too many iframes
+        setTimeout(() => {
+          if (iframe && iframe.parentNode) {
+            iframe.remove();
           }
-        };
-
-        // If API is already loaded
-        if (window.YT && YT.Player) {
-          onYouTubeIframeAPIReady();
-        }
+        }, 300000); // 5 minutes
       }
 
       function playMemeSound(soundFile) {
@@ -875,6 +565,7 @@
         icon.style.background = "#4caf50";
       }
 
+      // Initialize
       setInterval(loadMessages, 2000);
       loadMessages();
 
