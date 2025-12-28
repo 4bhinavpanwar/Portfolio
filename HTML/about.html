@@ -353,32 +353,9 @@
     <div id="chat-container">
       <div id="chat-header" onclick="toggleChat()">Chat</div>
       <div id="messages"></div>
-      <!-- YouTube Controls Panel (hidden by default) -->
+      <!-- YouTube Controls Panel -->
       <div id="youtube-controls" style="display: none">
-        <div class="youtube-controls-header">
-          <span>🎵 Now Playing</span>
-          <button onclick="closeYouTubePlayer()" class="youtube-close-btn">
-            ×
-          </button>
-        </div>
-        <div class="youtube-controls-body">
-          <div class="youtube-info" id="youtube-info">
-            <span id="youtube-title">YouTube Audio</span>
-            <small id="youtube-channel"></small>
-          </div>
-          <div class="youtube-controls-buttons">
-            <button onclick="toggleYouTubePlay()" id="play-pause-btn">
-              ⏸️
-            </button>
-            <button onclick="toggleYouTubeMute()" id="mute-btn">🔊</button>
-            <button onclick="stopYouTubeAudio()">⏹️</button>
-            <button onclick="skipYouTube(-10)">⏪ 10s</button>
-            <button onclick="skipYouTube(10)">10s ⏩</button>
-          </div>
-          <div class="youtube-progress">
-            <div class="youtube-progress-bar" id="youtube-progress-bar"></div>
-          </div>
-        </div>
+        <!-- Content will be dynamically added by JavaScript -->
       </div>
       <div id="chat-input">
         <input type="text" id="name" placeholder="Name" readonly />
@@ -901,4 +878,3 @@
     <script src="../SCRIPT/users.js"></script>
   </body>
 </html>
-S
