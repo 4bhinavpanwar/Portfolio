@@ -1039,3 +1039,137 @@ nav ul.active {
     font-size: 14px;
   }
 }
+
+/* YouTube Controls Panel */
+#youtube-controls {
+  background: linear-gradient(135deg, #ff0000, #cc0000);
+  border-radius: 10px;
+  margin: 10px;
+  padding: 0;
+  color: white;
+  box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: slideUp 0.3s ease;
+}
+
+.youtube-controls-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background: rgba(0, 0, 0, 0.2);
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.youtube-close-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 5px;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.youtube-close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.youtube-controls-body {
+  padding: 15px;
+}
+
+.youtube-info {
+  margin-bottom: 15px;
+}
+
+.youtube-info #youtube-title {
+  display: block;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.youtube-info small {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.youtube-controls-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.youtube-controls-buttons button {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: white;
+  padding: 8px 5px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+
+.youtube-controls-buttons button:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+.youtube-controls-buttons button:active {
+  transform: translateY(0);
+}
+
+.youtube-progress {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.youtube-progress-bar {
+  height: 100%;
+  background: white;
+  width: 0%;
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive adjustments for chat */
+@media (max-width: 500px) {
+  .youtube-controls-buttons {
+    flex-wrap: wrap;
+  }
+
+  .youtube-controls-buttons button {
+    flex: 1 0 40%;
+    margin-bottom: 5px;
+    font-size: 11px;
+    padding: 6px 3px;
+  }
+}
