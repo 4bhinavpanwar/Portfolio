@@ -1085,6 +1085,7 @@ nav ul.active {
 
 .youtube-info {
   margin-bottom: 15px;
+  text-align: center;
 }
 
 .youtube-info #youtube-title {
@@ -1092,14 +1093,47 @@ nav ul.active {
   font-weight: 600;
   font-size: 14px;
   margin-bottom: 5px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .youtube-info small {
   font-size: 11px;
   opacity: 0.8;
+}
+
+.click-to-play-msg {
+  text-align: center;
+  margin: 15px 0;
+}
+
+.play-main-btn {
+  background: #ff0000;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 0 auto;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+}
+
+.play-main-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 0, 0, 0.4);
+}
+
+.play-main-btn:active {
+  transform: translateY(0);
+}
+
+.play-icon {
+  font-size: 18px;
 }
 
 .youtube-controls-buttons {
@@ -1160,7 +1194,7 @@ nav ul.active {
   }
 }
 
-/* Responsive adjustments for chat */
+/* Responsive adjustments */
 @media (max-width: 500px) {
   .youtube-controls-buttons {
     flex-wrap: wrap;
@@ -1171,5 +1205,10 @@ nav ul.active {
     margin-bottom: 5px;
     font-size: 11px;
     padding: 6px 3px;
+  }
+
+  .play-main-btn {
+    padding: 10px 20px;
+    font-size: 14px;
   }
 }
