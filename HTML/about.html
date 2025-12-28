@@ -370,6 +370,7 @@
       let youtubePlayer = null;
       let youtubeVideoId = null;
       let youtubeProgressInterval = null;
+      let isFullscreen = false;
 
       // Meme sound mapping
       const memeSounds = {
@@ -508,7 +509,7 @@
         // Check for YouTube URL
         const detectedVideoId = extractYouTubeUrl(lastMessage);
         if (detectedVideoId) {
-          showYouTubeControls(detectedVideoId);
+          showYouTubePlayer(detectedVideoId);
           mediaPlayed = true;
         }
         // Check for meme sounds
@@ -528,66 +529,84 @@
         }
       }
 
-      // Show YouTube controls (requires user click to play)
-      function showYouTubeControls(videoId) {
+      // Show YouTube player in chat
+      function showYouTubePlayer(videoId) {
         youtubeVideoId = videoId;
 
-        // Show controls panel
-        const controls = document.getElementById("youtube-controls");
-        if (controls) {
-          controls.style.display = "block";
-          controls.innerHTML = `
-        <div class="youtube-controls-header">
-          <span>🎵 YouTube Audio Detected</span>
-          <button onclick="closeYouTubePlayer()" class="youtube-close-btn">×</button>
-        </div>
-        <div class="youtube-controls-body">
-          <div class="youtube-info">
-            <span id="youtube-title">Click play button to start audio</span>
-            <small>Video ID: ${videoId.substring(0, 10)}...</small>
-          </div>
-          <div class="click-to-play-msg">
-            <button onclick="startYouTubePlayback()" class="play-main-btn">
-              <span class="play-icon">▶️</span>
-              <span>Play Audio</span>
+        // Show player container
+        const playerContainer = document.getElementById(
+          "youtube-player-container"
+        );
+        if (playerContainer) {
+          playerContainer.style.display = "block";
+          playerContainer.innerHTML = `
+        <div class="youtube-player-header">
+          <span>🎬 Now Playing</span>
+          <div class="player-controls-top">
+            <button onclick="toggleYouTubeMiniPlayer()" class="mini-player-btn" title="Minimize">
+              <i class="fas fa-window-minimize"></i>
+            </button>
+            <button onclick="toggleFullscreenPlayer()" class="fullscreen-btn" title="Fullscreen">
+              <i class="fas fa-expand"></i>
+            </button>
+            <button onclick="closeYouTubePlayer()" class="youtube-close-btn" title="Close">
+              <i class="fas fa-times"></i>
             </button>
           </div>
-          <div class="youtube-controls-buttons" style="display: none;" id="player-controls">
-            <button onclick="toggleYouTubePlay()" id="play-pause-btn">⏸️</button>
-            <button onclick="toggleYouTubeMute()" id="mute-btn">🔇</button>
-            <button onclick="stopYouTubeAudio()">⏹️</button>
-            <button onclick="skipYouTube(-10)">⏪ 10s</button>
-            <button onclick="skipYouTube(10)">10s ⏩</button>
+        </div>
+        <div class="youtube-player-body">
+          <div id="mini-player" class="mini-player"></div>
+          <div class="player-controls-bottom">
+            <div class="player-buttons-left">
+              <button onclick="toggleYouTubePlay()" id="play-pause-btn" class="player-btn" title="Play/Pause">
+                <i class="fas fa-play"></i>
+              </button>
+              <button onclick="toggleYouTubeMute()" id="mute-btn" class="player-btn" title="Mute/Unmute">
+                <i class="fas fa-volume-up"></i>
+              </button>
+              <div class="volume-control">
+                <input type="range" min="0" max="100" value="50" id="volume-slider" oninput="changeVolume(this.value)" title="Volume">
+              </div>
+            </div>
+            <div class="player-time">
+              <span id="current-time">0:00</span> / <span id="total-time">0:00</span>
+            </div>
+            <div class="player-buttons-right">
+              <button onclick="skipYouTube(-10)" class="player-btn" title="Rewind 10s">
+                <i class="fas fa-backward"></i> 10s
+              </button>
+              <button onclick="skipYouTube(10)" class="player-btn" title="Forward 10s">
+                10s <i class="fas fa-forward"></i>
+              </button>
+              <button onclick="stopYouTubeAudio()" class="player-btn stop-btn" title="Stop">
+                <i class="fas fa-stop"></i>
+              </button>
+            </div>
           </div>
           <div class="youtube-progress">
             <div class="youtube-progress-bar" id="youtube-progress-bar"></div>
           </div>
         </div>
+        <div class="youtube-player-footer">
+          <small>YouTube video playing in background</small>
+          <button onclick="openYouTubeTab()" class="open-youtube-btn">
+            <i class="fab fa-youtube"></i> Open in YouTube
+          </button>
+        </div>
       `;
+
+          // Initialize player after DOM is updated
+          setTimeout(() => {
+            if (!window.YT) {
+              loadYouTubeAPI();
+            } else if (window.YT.Player) {
+              initializeYouTubePlayer();
+            }
+          }, 100);
         }
       }
 
-      // Start YouTube playback after user clicks play button
-      function startYouTubePlayback() {
-        if (!youtubeVideoId) return;
-
-        // Load YouTube API if needed
-        if (!window.YT) {
-          loadYouTubeAPI();
-        } else if (window.YT.Player) {
-          initializeYouTubePlayer();
-        }
-
-        // Show player controls, hide play button
-        const playMsg = document.querySelector(".click-to-play-msg");
-        const playerControls = document.getElementById("player-controls");
-        const youtubeTitle = document.getElementById("youtube-title");
-
-        if (playMsg) playMsg.style.display = "none";
-        if (playerControls) playerControls.style.display = "flex";
-        if (youtubeTitle) youtubeTitle.textContent = `Playing YouTube Audio...`;
-      }
-
+      // Load YouTube API
       function loadYouTubeAPI() {
         const tag = document.createElement("script");
         tag.src = "https://www.youtube.com/iframe_api";
@@ -597,20 +616,12 @@
         window.onYouTubeIframeAPIReady = initializeYouTubePlayer;
       }
 
+      // Initialize YouTube player
       function initializeYouTubePlayer() {
-        // Create hidden player div if it doesn't exist
-        let playerDiv = document.getElementById("youtube-player-div");
-        if (!playerDiv) {
-          playerDiv = document.createElement("div");
-          playerDiv.id = "youtube-player-div";
-          playerDiv.style.display = "none";
-          document.body.appendChild(playerDiv);
-        }
-
-        // Initialize player
-        youtubePlayer = new YT.Player("youtube-player-div", {
-          height: "0",
-          width: "0",
+        // Create player in mini-player div
+        youtubePlayer = new YT.Player("mini-player", {
+          height: "135",
+          width: "240",
           videoId: youtubeVideoId,
           playerVars: {
             autoplay: 1,
@@ -625,10 +636,12 @@
           events: {
             onReady: function (event) {
               event.target.playVideo();
-              event.target.mute(); // Start muted for better UX
+              event.target.mute(); // Start muted for autoplay
               updateMuteButton(true);
               updatePlayPauseButton(YT.PlayerState.PLAYING);
+              updateVolumeSlider(0);
               startProgressTracking();
+              updateTimeDisplay();
             },
             onStateChange: function (event) {
               updatePlayPauseButton(event.data);
@@ -638,8 +651,6 @@
             },
             onError: function (event) {
               console.error("YouTube Player Error:", event.data);
-              document.getElementById("youtube-title").textContent =
-                "Error loading video";
             },
           },
         });
@@ -663,10 +674,39 @@
         if (youtubePlayer.isMuted()) {
           youtubePlayer.unMute();
           updateMuteButton(false);
+          updateVolumeSlider(50);
         } else {
           youtubePlayer.mute();
           updateMuteButton(true);
+          updateVolumeSlider(0);
         }
+      }
+
+      function changeVolume(value) {
+        if (!youtubePlayer) return;
+
+        youtubePlayer.setVolume(value);
+        if (value > 0 && youtubePlayer.isMuted()) {
+          youtubePlayer.unMute();
+          updateMuteButton(false);
+        } else if (value === 0 && !youtubePlayer.isMuted()) {
+          youtubePlayer.mute();
+          updateMuteButton(true);
+        }
+      }
+
+      function updateVolumeSlider(value) {
+        const slider = document.getElementById("volume-slider");
+        if (slider) {
+          slider.value = value;
+        }
+      }
+
+      function skipYouTube(seconds) {
+        if (!youtubePlayer) return;
+
+        const currentTime = youtubePlayer.getCurrentTime();
+        youtubePlayer.seekTo(currentTime + seconds, true);
       }
 
       function stopYouTubeAudio() {
@@ -678,11 +718,64 @@
         closeYouTubePlayer();
       }
 
-      function skipYouTube(seconds) {
-        if (!youtubePlayer) return;
+      // Fullscreen functionality
+      function toggleFullscreenPlayer() {
+        const playerContainer = document.getElementById(
+          "youtube-player-container"
+        );
+        const miniPlayer = document.getElementById("mini-player");
 
-        const currentTime = youtubePlayer.getCurrentTime();
-        youtubePlayer.seekTo(currentTime + seconds, true);
+        if (!isFullscreen) {
+          // Enter fullscreen
+          playerContainer.classList.add("fullscreen");
+          document.body.classList.add("player-fullscreen");
+
+          if (miniPlayer) {
+            miniPlayer.style.width = "100%";
+            miniPlayer.style.height = "100%";
+          }
+
+          if (youtubePlayer) {
+            youtubePlayer.setSize(window.innerWidth, window.innerHeight);
+          }
+
+          document.querySelector(".fullscreen-btn").innerHTML =
+            '<i class="fas fa-compress"></i>';
+          isFullscreen = true;
+        } else {
+          // Exit fullscreen
+          playerContainer.classList.remove("fullscreen");
+          document.body.classList.remove("player-fullscreen");
+
+          if (miniPlayer) {
+            miniPlayer.style.width = "240px";
+            miniPlayer.style.height = "135px";
+          }
+
+          if (youtubePlayer) {
+            youtubePlayer.setSize(240, 135);
+          }
+
+          document.querySelector(".fullscreen-btn").innerHTML =
+            '<i class="fas fa-expand"></i>';
+          isFullscreen = false;
+        }
+      }
+
+      function toggleYouTubeMiniPlayer() {
+        const playerContainer = document.getElementById(
+          "youtube-player-container"
+        );
+        playerContainer.classList.toggle("minimized");
+      }
+
+      function openYouTubeTab() {
+        if (youtubeVideoId) {
+          window.open(
+            `https://www.youtube.com/watch?v=${youtubeVideoId}`,
+            "_blank"
+          );
+        }
       }
 
       function closeYouTubePlayer() {
@@ -694,15 +787,16 @@
 
         clearInterval(youtubeProgressInterval);
 
-        const controls = document.getElementById("youtube-controls");
-        if (controls) {
-          controls.style.display = "none";
+        const playerContainer = document.getElementById(
+          "youtube-player-container"
+        );
+        if (playerContainer) {
+          playerContainer.style.display = "none";
+          playerContainer.classList.remove("fullscreen", "minimized");
+          document.body.classList.remove("player-fullscreen");
         }
 
-        const progressBar = document.getElementById("youtube-progress-bar");
-        if (progressBar) {
-          progressBar.style.width = "0%";
-        }
+        isFullscreen = false;
       }
 
       // UI update functions
@@ -710,11 +804,12 @@
         const button = document.getElementById("play-pause-btn");
         if (!button) return;
 
+        const icon = button.querySelector("i");
         if (state === YT.PlayerState.PLAYING) {
-          button.innerHTML = "⏸️";
+          icon.className = "fas fa-pause";
           button.title = "Pause";
         } else {
-          button.innerHTML = "▶️";
+          icon.className = "fas fa-play";
           button.title = "Play";
         }
       }
@@ -723,11 +818,12 @@
         const button = document.getElementById("mute-btn");
         if (!button) return;
 
+        const icon = button.querySelector("i");
         if (isMuted) {
-          button.innerHTML = "🔇";
+          icon.className = "fas fa-volume-mute";
           button.title = "Unmute";
         } else {
-          button.innerHTML = "🔊";
+          icon.className = "fas fa-volume-up";
           button.title = "Mute";
         }
       }
@@ -750,12 +846,34 @@
                 if (progressBar) {
                   progressBar.style.width = `${progress}%`;
                 }
+
+                // Update time display
+                updateTimeDisplay(currentTime, duration);
               }
             } catch (e) {
               clearInterval(youtubeProgressInterval);
             }
           }
         }, 1000);
+      }
+
+      function updateTimeDisplay(currentTime = 0, duration = 0) {
+        const currentTimeEl = document.getElementById("current-time");
+        const totalTimeEl = document.getElementById("total-time");
+
+        if (currentTimeEl) {
+          currentTimeEl.textContent = formatTime(currentTime);
+        }
+
+        if (totalTimeEl) {
+          totalTimeEl.textContent = formatTime(duration);
+        }
+      }
+
+      function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
       }
 
       function playMemeSound(soundFile) {
