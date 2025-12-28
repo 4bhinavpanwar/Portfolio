@@ -353,9 +353,32 @@
     <div id="chat-container">
       <div id="chat-header" onclick="toggleChat()">Chat</div>
       <div id="messages"></div>
-      <!-- YouTube Controls Panel -->
+      <!-- YouTube Controls Panel (hidden by default) -->
       <div id="youtube-controls" style="display: none">
-        <!-- Content will be dynamically added by JavaScript -->
+        <div class="youtube-controls-header">
+          <span>🎵 Now Playing</span>
+          <button onclick="closeYouTubePlayer()" class="youtube-close-btn">
+            ×
+          </button>
+        </div>
+        <div class="youtube-controls-body">
+          <div class="youtube-info" id="youtube-info">
+            <span id="youtube-title">YouTube Audio</span>
+            <small id="youtube-channel"></small>
+          </div>
+          <div class="youtube-controls-buttons">
+            <button onclick="toggleYouTubePlay()" id="play-pause-btn">
+              ⏸️
+            </button>
+            <button onclick="toggleYouTubeMute()" id="mute-btn">🔊</button>
+            <button onclick="stopYouTubeAudio()">⏹️</button>
+            <button onclick="skipYouTube(-10)">⏪ 10s</button>
+            <button onclick="skipYouTube(10)">10s ⏩</button>
+          </div>
+          <div class="youtube-progress">
+            <div class="youtube-progress-bar" id="youtube-progress-bar"></div>
+          </div>
+        </div>
       </div>
       <div id="chat-input">
         <input type="text" id="name" placeholder="Name" readonly />
@@ -363,14 +386,14 @@
         <button onclick="sendMessage()">Send</button>
       </div>
     </div>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script>
-      let lastMessageCount = 0;
+      let lastMessageCount = 0; // Track the last number of messages
       let isAuthenticated = false;
       let username = "";
       let youtubePlayer = null;
       let youtubeVideoId = null;
       let youtubeProgressInterval = null;
-      let isFullscreen = false;
 
       // Meme sound mapping
       const memeSounds = {
@@ -420,11 +443,26 @@
         });
       }
 
+      function toggleChat() {
+        if (!isAuthenticated) {
+          authenticateUser();
+          return;
+        }
+        const chatbox = document.getElementById("chat-container");
+        const icon = document.getElementById("chat-icon");
+        if (chatbox.style.display === "flex") {
+          chatbox.style.display = "none";
+        } else {
+          chatbox.style.display = "flex";
+          icon.style.background = ""; // Clear red alert when chat opens
+        }
+      }
+
       document
         .getElementById("message")
         .addEventListener("keypress", function (event) {
           if (event.key === "Enter") {
-            event.preventDefault();
+            event.preventDefault(); // Prevents unintended form submission
             sendMessage();
           }
         });
@@ -470,6 +508,7 @@
                 `<div class="message"><strong>${msg.sender}:</strong> ${msg.message} <span style="color: #888; font-size: 10px;">${msg.time}</span></div>`
             )
             .join("");
+          // messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
           if (data.length > lastMessageCount) {
             updateMessageIcon(data[data.length - 1].message);
@@ -480,8 +519,7 @@
           console.error("Error loading messages:", error);
         }
       }
-
-      // YouTube URL detection
+      // Enhanced YouTube URL detection
       function extractYouTubeUrl(message) {
         const patterns = [
           /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([\w\-]{11})/,
@@ -500,7 +538,7 @@
         return null;
       }
 
-      // Updated updateMessageIcon function
+      // Update the updateMessageIcon function
       function updateMessageIcon(lastMessage) {
         const icon = document.getElementById("chat-icon");
         const words = lastMessage.toLowerCase().split(" ");
@@ -509,7 +547,7 @@
         // Check for YouTube URL
         const detectedVideoId = extractYouTubeUrl(lastMessage);
         if (detectedVideoId) {
-          showYouTubePlayer(detectedVideoId);
+          playYouTubeAudio(detectedVideoId);
           mediaPlayed = true;
         }
         // Check for meme sounds
@@ -529,84 +567,33 @@
         }
       }
 
-      // Show YouTube player in chat
-      function showYouTubePlayer(videoId) {
+      // Main function to play YouTube audio
+      function playYouTubeAudio(videoId) {
         youtubeVideoId = videoId;
 
-        // Show player container
-        const playerContainer = document.getElementById(
-          "youtube-player-container"
-        );
-        if (playerContainer) {
-          playerContainer.style.display = "block";
-          playerContainer.innerHTML = `
-        <div class="youtube-player-header">
-          <span>🎬 Now Playing</span>
-          <div class="player-controls-top">
-            <button onclick="toggleYouTubeMiniPlayer()" class="mini-player-btn" title="Minimize">
-              <i class="fas fa-window-minimize"></i>
-            </button>
-            <button onclick="toggleFullscreenPlayer()" class="fullscreen-btn" title="Fullscreen">
-              <i class="fas fa-expand"></i>
-            </button>
-            <button onclick="closeYouTubePlayer()" class="youtube-close-btn" title="Close">
-              <i class="fas fa-times"></i>
-            </button>
-          </div>
-        </div>
-        <div class="youtube-player-body">
-          <div id="mini-player" class="mini-player"></div>
-          <div class="player-controls-bottom">
-            <div class="player-buttons-left">
-              <button onclick="toggleYouTubePlay()" id="play-pause-btn" class="player-btn" title="Play/Pause">
-                <i class="fas fa-play"></i>
-              </button>
-              <button onclick="toggleYouTubeMute()" id="mute-btn" class="player-btn" title="Mute/Unmute">
-                <i class="fas fa-volume-up"></i>
-              </button>
-              <div class="volume-control">
-                <input type="range" min="0" max="100" value="50" id="volume-slider" oninput="changeVolume(this.value)" title="Volume">
-              </div>
-            </div>
-            <div class="player-time">
-              <span id="current-time">0:00</span> / <span id="total-time">0:00</span>
-            </div>
-            <div class="player-buttons-right">
-              <button onclick="skipYouTube(-10)" class="player-btn" title="Rewind 10s">
-                <i class="fas fa-backward"></i> 10s
-              </button>
-              <button onclick="skipYouTube(10)" class="player-btn" title="Forward 10s">
-                10s <i class="fas fa-forward"></i>
-              </button>
-              <button onclick="stopYouTubeAudio()" class="player-btn stop-btn" title="Stop">
-                <i class="fas fa-stop"></i>
-              </button>
-            </div>
-          </div>
-          <div class="youtube-progress">
-            <div class="youtube-progress-bar" id="youtube-progress-bar"></div>
-          </div>
-        </div>
-        <div class="youtube-player-footer">
-          <small>YouTube video playing in background</small>
-          <button onclick="openYouTubeTab()" class="open-youtube-btn">
-            <i class="fab fa-youtube"></i> Open in YouTube
-          </button>
-        </div>
-      `;
+        // Show controls panel
+        const controls = document.getElementById("youtube-controls");
+        controls.style.display = "block";
 
-          // Initialize player after DOM is updated
-          setTimeout(() => {
-            if (!window.YT) {
-              loadYouTubeAPI();
-            } else if (window.YT.Player) {
-              initializeYouTubePlayer();
-            }
-          }, 100);
+        // Update title (you can enhance this to fetch actual video title)
+        document.getElementById(
+          "youtube-title"
+        ).textContent = `YouTube Audio - ${videoId}`;
+
+        // Load YouTube API if needed
+        if (!window.YT) {
+          loadYouTubeAPI();
+        } else if (window.YT.Player) {
+          initializeYouTubePlayer();
+        }
+
+        // Auto-close any previous player
+        if (youtubePlayer) {
+          youtubePlayer.destroy();
+          youtubePlayer = null;
         }
       }
 
-      // Load YouTube API
       function loadYouTubeAPI() {
         const tag = document.createElement("script");
         tag.src = "https://www.youtube.com/iframe_api";
@@ -616,12 +603,20 @@
         window.onYouTubeIframeAPIReady = initializeYouTubePlayer;
       }
 
-      // Initialize YouTube player
       function initializeYouTubePlayer() {
-        // Create player in mini-player div
-        youtubePlayer = new YT.Player("mini-player", {
-          height: "135",
-          width: "240",
+        // Create a hidden div for the player if it doesn't exist
+        let playerDiv = document.getElementById("youtube-player-div");
+        if (!playerDiv) {
+          playerDiv = document.createElement("div");
+          playerDiv.id = "youtube-player-div";
+          playerDiv.style.display = "none";
+          document.body.appendChild(playerDiv);
+        }
+
+        // Initialize the player
+        youtubePlayer = new YT.Player("youtube-player-div", {
+          height: "0",
+          width: "0",
           videoId: youtubeVideoId,
           playerVars: {
             autoplay: 1,
@@ -636,12 +631,10 @@
           events: {
             onReady: function (event) {
               event.target.playVideo();
-              event.target.mute(); // Start muted for autoplay
+              // Start muted for autoplay policies
+              event.target.mute();
               updateMuteButton(true);
-              updatePlayPauseButton(YT.PlayerState.PLAYING);
-              updateVolumeSlider(0);
               startProgressTracking();
-              updateTimeDisplay();
             },
             onStateChange: function (event) {
               updatePlayPauseButton(event.data);
@@ -651,6 +644,8 @@
             },
             onError: function (event) {
               console.error("YouTube Player Error:", event.data);
+              document.getElementById("youtube-title").textContent =
+                "Error loading video";
             },
           },
         });
@@ -674,39 +669,10 @@
         if (youtubePlayer.isMuted()) {
           youtubePlayer.unMute();
           updateMuteButton(false);
-          updateVolumeSlider(50);
         } else {
           youtubePlayer.mute();
           updateMuteButton(true);
-          updateVolumeSlider(0);
         }
-      }
-
-      function changeVolume(value) {
-        if (!youtubePlayer) return;
-
-        youtubePlayer.setVolume(value);
-        if (value > 0 && youtubePlayer.isMuted()) {
-          youtubePlayer.unMute();
-          updateMuteButton(false);
-        } else if (value === 0 && !youtubePlayer.isMuted()) {
-          youtubePlayer.mute();
-          updateMuteButton(true);
-        }
-      }
-
-      function updateVolumeSlider(value) {
-        const slider = document.getElementById("volume-slider");
-        if (slider) {
-          slider.value = value;
-        }
-      }
-
-      function skipYouTube(seconds) {
-        if (!youtubePlayer) return;
-
-        const currentTime = youtubePlayer.getCurrentTime();
-        youtubePlayer.seekTo(currentTime + seconds, true);
       }
 
       function stopYouTubeAudio() {
@@ -718,112 +684,43 @@
         closeYouTubePlayer();
       }
 
-      // Fullscreen functionality
-      function toggleFullscreenPlayer() {
-        const playerContainer = document.getElementById(
-          "youtube-player-container"
-        );
-        const miniPlayer = document.getElementById("mini-player");
+      function skipYouTube(seconds) {
+        if (!youtubePlayer) return;
 
-        if (!isFullscreen) {
-          // Enter fullscreen
-          playerContainer.classList.add("fullscreen");
-          document.body.classList.add("player-fullscreen");
-
-          if (miniPlayer) {
-            miniPlayer.style.width = "100%";
-            miniPlayer.style.height = "100%";
-          }
-
-          if (youtubePlayer) {
-            youtubePlayer.setSize(window.innerWidth, window.innerHeight);
-          }
-
-          document.querySelector(".fullscreen-btn").innerHTML =
-            '<i class="fas fa-compress"></i>';
-          isFullscreen = true;
-        } else {
-          // Exit fullscreen
-          playerContainer.classList.remove("fullscreen");
-          document.body.classList.remove("player-fullscreen");
-
-          if (miniPlayer) {
-            miniPlayer.style.width = "240px";
-            miniPlayer.style.height = "135px";
-          }
-
-          if (youtubePlayer) {
-            youtubePlayer.setSize(240, 135);
-          }
-
-          document.querySelector(".fullscreen-btn").innerHTML =
-            '<i class="fas fa-expand"></i>';
-          isFullscreen = false;
-        }
-      }
-
-      function toggleYouTubeMiniPlayer() {
-        const playerContainer = document.getElementById(
-          "youtube-player-container"
-        );
-        playerContainer.classList.toggle("minimized");
-      }
-
-      function openYouTubeTab() {
-        if (youtubeVideoId) {
-          window.open(
-            `https://www.youtube.com/watch?v=${youtubeVideoId}`,
-            "_blank"
-          );
-        }
+        const currentTime = youtubePlayer.getCurrentTime();
+        youtubePlayer.seekTo(currentTime + seconds, true);
       }
 
       function closeYouTubePlayer() {
-        if (youtubePlayer) {
-          youtubePlayer.stopVideo();
-          youtubePlayer.destroy();
-          youtubePlayer = null;
-        }
-
+        stopYouTubeAudio();
         clearInterval(youtubeProgressInterval);
 
-        const playerContainer = document.getElementById(
-          "youtube-player-container"
-        );
-        if (playerContainer) {
-          playerContainer.style.display = "none";
-          playerContainer.classList.remove("fullscreen", "minimized");
-          document.body.classList.remove("player-fullscreen");
-        }
+        const controls = document.getElementById("youtube-controls");
+        controls.style.display = "none";
 
-        isFullscreen = false;
+        const progressBar = document.getElementById("youtube-progress-bar");
+        progressBar.style.width = "0%";
       }
 
       // UI update functions
       function updatePlayPauseButton(state) {
         const button = document.getElementById("play-pause-btn");
-        if (!button) return;
-
-        const icon = button.querySelector("i");
         if (state === YT.PlayerState.PLAYING) {
-          icon.className = "fas fa-pause";
+          button.innerHTML = "⏸️";
           button.title = "Pause";
         } else {
-          icon.className = "fas fa-play";
+          button.innerHTML = "▶️";
           button.title = "Play";
         }
       }
 
       function updateMuteButton(isMuted) {
         const button = document.getElementById("mute-btn");
-        if (!button) return;
-
-        const icon = button.querySelector("i");
         if (isMuted) {
-          icon.className = "fas fa-volume-mute";
+          button.innerHTML = "🔇";
           button.title = "Unmute";
         } else {
-          icon.className = "fas fa-volume-up";
+          button.innerHTML = "🔊";
           button.title = "Mute";
         }
       }
@@ -834,46 +731,133 @@
 
         youtubeProgressInterval = setInterval(() => {
           if (youtubePlayer && youtubePlayer.getDuration) {
-            try {
-              const currentTime = youtubePlayer.getCurrentTime();
-              const duration = youtubePlayer.getDuration();
+            const currentTime = youtubePlayer.getCurrentTime();
+            const duration = youtubePlayer.getDuration();
 
-              if (duration > 0) {
-                const progress = (currentTime / duration) * 100;
-                const progressBar = document.getElementById(
-                  "youtube-progress-bar"
-                );
-                if (progressBar) {
-                  progressBar.style.width = `${progress}%`;
-                }
-
-                // Update time display
-                updateTimeDisplay(currentTime, duration);
-              }
-            } catch (e) {
-              clearInterval(youtubeProgressInterval);
+            if (duration > 0) {
+              const progress = (currentTime / duration) * 100;
+              const progressBar = document.getElementById(
+                "youtube-progress-bar"
+              );
+              progressBar.style.width = `${progress}%`;
             }
           }
         }, 1000);
       }
 
-      function updateTimeDisplay(currentTime = 0, duration = 0) {
-        const currentTimeEl = document.getElementById("current-time");
-        const totalTimeEl = document.getElementById("total-time");
-
-        if (currentTimeEl) {
-          currentTimeEl.textContent = formatTime(currentTime);
+      // Auto-close when chat is closed
+      function toggleChat() {
+        if (!isAuthenticated) {
+          authenticateUser();
+          return;
         }
-
-        if (totalTimeEl) {
-          totalTimeEl.textContent = formatTime(duration);
+        const chatbox = document.getElementById("chat-container");
+        const icon = document.getElementById("chat-icon");
+        if (chatbox.style.display === "flex") {
+          chatbox.style.display = "none";
+          // Also close YouTube player when chat closes
+          closeYouTubePlayer();
+        } else {
+          chatbox.style.display = "flex";
+          icon.style.background = "";
         }
       }
 
-      function formatTime(seconds) {
-        const mins = Math.floor(seconds / 60);
-        const secs = Math.floor(seconds % 60);
-        return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+      // Function to extract YouTube URL from message
+      function extractYouTubeUrl(message) {
+        // Regex for various YouTube URL formats
+        const youtubeRegex =
+          /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([\w\-]{11})(?:[?&]\S*)?/i;
+        const match = message.match(youtubeRegex);
+        return match ? match[1] : null; // Returns video ID or null
+      }
+
+      // Function to play YouTube audio
+      function playYouTubeAudio(videoId) {
+        // Create a hidden iframe for YouTube player
+        let playerContainer = document.getElementById(
+          "youtube-player-container"
+        );
+
+        if (!playerContainer) {
+          playerContainer = document.createElement("div");
+          playerContainer.id = "youtube-player-container";
+          playerContainer.style.display = "none";
+          document.body.appendChild(playerContainer);
+        }
+
+        // Clear previous content
+        playerContainer.innerHTML = "";
+
+        // Create new iframe
+        const iframe = document.createElement("iframe");
+        iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=0&showinfo=0&rel=0&modestbranding=1&enablejsapi=1`;
+        iframe.width = "0";
+        iframe.height = "0";
+        iframe.style.border = "none";
+        iframe.allow = "autoplay";
+        iframe.allowFullscreen = false;
+
+        playerContainer.appendChild(iframe);
+
+        // Alternative: Try using YouTube IFrame API for better control
+        playYouTubeWithAPI(videoId);
+      }
+
+      // Alternative method using YouTube IFrame API
+      function playYouTubeWithAPI(videoId) {
+        // Load YouTube IFrame API if not already loaded
+        if (!window.YT) {
+          const tag = document.createElement("script");
+          tag.src = "https://www.youtube.com/iframe_api";
+          const firstScriptTag = document.getElementsByTagName("script")[0];
+          firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        }
+
+        // Wait for API to load
+        window.onYouTubeIframeAPIReady = function () {
+          if (!youtubePlayer) {
+            youtubePlayer = new YT.Player("youtube-player", {
+              height: "0",
+              width: "0",
+              videoId: videoId,
+              playerVars: {
+                autoplay: 1,
+                controls: 0,
+                showinfo: 0,
+                rel: 0,
+                modestbranding: 1,
+                playsinline: 1,
+              },
+              events: {
+                onReady: function (event) {
+                  event.target.playVideo();
+                  // Mute if needed (autoplay policies)
+                  event.target.mute();
+                },
+                onStateChange: function (event) {
+                  // Handle player state changes
+                  if (event.data === YT.PlayerState.ENDED) {
+                    // Clean up when video ends
+                    if (youtubePlayer) {
+                      youtubePlayer.destroy();
+                      youtubePlayer = null;
+                    }
+                  }
+                },
+              },
+            });
+          } else {
+            youtubePlayer.loadVideoById(videoId);
+            youtubePlayer.playVideo();
+            youtubePlayer.mute(); // Mute to comply with autoplay policies
+          }
+        };
+
+        // If API is already loaded
+        if (window.YT && YT.Player) {
+          onYouTubeIframeAPIReady();
+        }
       }
 
       function playMemeSound(soundFile) {
@@ -891,23 +875,6 @@
         icon.style.background = "#4caf50";
       }
 
-      function toggleChat() {
-        if (!isAuthenticated) {
-          authenticateUser();
-          return;
-        }
-        const chatbox = document.getElementById("chat-container");
-        const icon = document.getElementById("chat-icon");
-        if (chatbox.style.display === "flex") {
-          chatbox.style.display = "none";
-          closeYouTubePlayer(); // Close YouTube when chat closes
-        } else {
-          chatbox.style.display = "flex";
-          icon.style.background = "";
-        }
-      }
-
-      // Initialize
       setInterval(loadMessages, 2000);
       loadMessages();
 
@@ -991,7 +958,6 @@
   `;
       document.head.appendChild(style);
     </script>
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="../SCRIPT/about.js"></script>
     <script src="../SCRIPT/users.js"></script>
   </body>
