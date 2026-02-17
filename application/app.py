@@ -16,7 +16,6 @@ import socket
 
 app = Flask(__name__)
 
-
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -49,18 +48,20 @@ def get_client_ip():
         logger.error(f"Error getting client IP: {str(e)}")
         return '0.0.0.0'
 
-# MongoDB Configuration
-MONGO_URI = os.environ.get('MONGO_URI', 'mongodb+srv://abhinavpanwar:<Abhinav1234>@cluster0.vihawrj.mongodb.net/?appName=Cluster0')
+# MongoDB Configuration - FIXED connection string
+MONGO_URI = os.environ.get('MONGO_URI', 'mongodb+srv://abhinavpanwar:Abhinav1234@cluster0.vihawrj.mongodb.net/portfolio_analytics?retryWrites=true&w=majority&appName=Cluster0')
 MONGO_DB_NAME = os.environ.get('MONGO_DB_NAME', 'portfolio_analytics')
 
 # Initialize MongoDB connection
 try:
     mongo_client = MongoClient(MONGO_URI)
+    # Test the connection
+    mongo_client.admin.command('ping')
     db = mongo_client[MONGO_DB_NAME]
     visitors_collection = db['visitors']
-    logger.info("MongoDB connected successfully")
-except ConnectionFailure as e:
-    logger.error(f"MongoDB connection failed: {str(e)}")
+    logger.info("✅ MongoDB connected successfully!")
+except Exception as e:
+    logger.error(f"❌ MongoDB connection failed: {str(e)}")
     mongo_client = None
     visitors_collection = None
 
@@ -322,7 +323,7 @@ def healthcheck():
         "status": "healthy",
         "active_users": active_count,
         "server_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "version": "1.3.1"  # Updated version number
+        "version": "1.3.1"
     })
 
 # Get Headline API
@@ -378,7 +379,7 @@ def create_poll():
 
         conn = get_db_connection('polls.db')
         with conn:
-            conn.execute('DELETE FROM polls')  # Clear existing poll before creating a new one
+            conn.execute('DELETE FROM polls')
             conn.execute('INSERT INTO polls (question, options) VALUES (?, ?)', 
                         (question, json.dumps(options)))
             poll = conn.execute('SELECT id, question FROM polls ORDER BY id DESC LIMIT 1').fetchone()
@@ -502,7 +503,7 @@ def get_poll_results():
         if 'conn' in locals():
             conn.close()
 
-# Add this endpoint to your Flask app
+# End Poll API
 @app.route('/api/end_poll', methods=['POST'])
 def end_poll():
     if not request.is_json:
@@ -511,9 +512,7 @@ def end_poll():
     try:
         conn = get_db_connection('polls.db')
         with conn:
-            # Delete all responses first (due to foreign key constraint)
             conn.execute('DELETE FROM responses')
-            # Then delete the poll
             conn.execute('DELETE FROM polls')
             logger.info("Ended current poll and cleared all responses")
         return jsonify({"status": "poll_ended"})
@@ -524,8 +523,8 @@ def end_poll():
         if 'conn' in locals():
             conn.close()
 
-messages = []  # Define the messages list globally
-PASSWORD = "password"  # Default password
+messages = []
+PASSWORD = "password"
 
 @app.route('/send_message', methods=['POST'])
 def send_message():
@@ -575,6 +574,8 @@ def clear_messages():
     logger.info("All chat messages cleared")
     return jsonify({"status": "success", "message": "All chat messages cleared"})
 
+# ============ VISITOR TRACKING ENDPOINTS ============
+
 @app.route('/api/track_netlify_visitor', methods=['POST', 'OPTIONS'])
 def track_netlify_visitor():
     """Endpoint for Netlify site to send tracking data"""
@@ -606,6 +607,11 @@ def track_netlify_visitor():
         
         current_time = datetime.now(pytz.timezone('Asia/Kolkata'))
         
+        # Check if MongoDB is available
+        if not visitors_collection:
+            logger.error("MongoDB not available")
+            return jsonify({"error": "Database not available"}), 500
+        
         # Update or create visitor
         existing_visitor = visitors_collection.find_one({
             '$or': [
@@ -628,6 +634,7 @@ def track_netlify_visitor():
                     '$addToSet': {'pages_visited': page_url}
                 }
             )
+            logger.info(f"Updated visitor: {ip_address}")
         else:
             visitor_data = {
                 'ip_address': ip_address,
@@ -643,6 +650,7 @@ def track_netlify_visitor():
                 'source': 'Netlify'
             }
             visitors_collection.insert_one(visitor_data)
+            logger.info(f"New visitor tracked: {ip_address}")
         
         # Set device_id cookie if not exists
         response = jsonify({"status": "tracked"})
@@ -661,6 +669,97 @@ def track_netlify_visitor():
     except Exception as e:
         logger.error(f"Error in track_netlify_visitor: {str(e)}")
         return jsonify({"error": str(e)}), 500
+
+@app.route('/api/visitors/stats', methods=['GET'])
+def get_visitor_stats():
+    """Get visitor statistics for dashboard"""
+    if not visitors_collection:
+        return jsonify({"error": "MongoDB not connected"}), 500
+    
+    try:
+        # Total unique visitors
+        total_visitors = visitors_collection.count_documents({})
+        
+        # Today's visitors
+        today_start = datetime.now(pytz.timezone('Asia/Kolkata')).replace(hour=0, minute=0, second=0, microsecond=0)
+        today_visitors = visitors_collection.count_documents({
+            'first_seen': {'$gte': today_start}
+        })
+        
+        # Active visitors in last 30 minutes
+        thirty_min_ago = datetime.now(pytz.timezone('Asia/Kolkata')) - timedelta(minutes=30)
+        active_now = visitors_collection.count_documents({
+            'last_seen': {'$gte': thirty_min_ago}
+        })
+        
+        # Device breakdown
+        device_stats = list(visitors_collection.aggregate([
+            {'$group': {'_id': '$device_type', 'count': {'$sum': 1}}}
+        ]))
+        
+        return jsonify({
+            'total_visitors': total_visitors,
+            'today_visitors': today_visitors,
+            'active_now': active_now,
+            'device_stats': device_stats
+        })
+    except Exception as e:
+        logger.error(f"Error getting visitor stats: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/visitors/list', methods=['GET'])
+def get_visitors_list():
+    """Get list of recent visitors"""
+    if not visitors_collection:
+        return jsonify({"error": "MongoDB not connected"}), 500
+    
+    try:
+        limit = int(request.args.get('limit', 10))
+        
+        visitors = list(visitors_collection.find(
+            {},
+            {'_id': 0}  # Exclude MongoDB _id
+        ).sort('last_seen', -1).limit(limit))
+        
+        # Convert datetime objects to string
+        for visitor in visitors:
+            if 'first_seen' in visitor:
+                visitor['first_seen'] = visitor['first_seen'].strftime('%Y-%m-%d %H:%M:%S')
+            if 'last_seen' in visitor:
+                visitor['last_seen'] = visitor['last_seen'].strftime('%Y-%m-%d %H:%M:%S')
+            if 'created_at' in visitor:
+                visitor['created_at'] = visitor['created_at'].strftime('%Y-%m-%d %H:%M:%S')
+        
+        return jsonify({
+            'visitors': visitors,
+            'total': len(visitors)
+        })
+    except Exception as e:
+        logger.error(f"Error getting visitors list: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+# Test endpoint for MongoDB connection
+@app.route('/api/test_db')
+def test_db():
+    """Test MongoDB connection"""
+    if visitors_collection:
+        try:
+            count = visitors_collection.count_documents({})
+            return jsonify({
+                "status": "connected",
+                "visitor_count": count,
+                "message": "✅ MongoDB is working!"
+            })
+        except Exception as e:
+            return jsonify({
+                "status": "error",
+                "message": f"❌ MongoDB error: {str(e)}"
+            }), 500
+    else:
+        return jsonify({
+            "status": "error",
+            "message": "❌ MongoDB not connected"
+        }), 500
 
 if __name__ == '__main__':
     init_db()
