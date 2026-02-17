@@ -150,12 +150,6 @@ CORS(app,
                  "http://127.0.0.1:5501",
                  "http://localhost:5501"
              ],
-                 r"/api/track_netlify_visitor": {
-        "origins": ["https://abhinavpanwar.netlify.app"],
-        "supports_credentials": True,
-        "allow_headers": ["Content-Type"],
-        "methods": ["POST", "OPTIONS"]
-    },
              "supports_credentials": True,
              "allow_headers": ["Content-Type"],
              "methods": ["GET", "POST", "OPTIONS", "HEAD"],
