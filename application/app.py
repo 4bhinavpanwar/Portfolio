@@ -10,12 +10,136 @@ import json
 import logging
 from datetime import datetime
 import pytz
+from pymongo import MongoClient
+from pymongo.errors import ConnectionFailure
+import socket
 
 app = Flask(__name__)
+
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+
+# Helper function to get client IP
+def get_client_ip():
+    """Get the client's real IP address considering proxies"""
+    try:
+        # Check for X-Forwarded-For header (when behind proxy like Render, Nginx, etc.)
+        if request.headers.getlist("X-Forwarded-For"):
+            # Get the first IP in the list (client's real IP)
+            client_ip = request.headers.getlist("X-Forwarded-For")[0].split(',')[0].strip()
+        # Check for X-Real-IP header (alternative proxy header)
+        elif request.headers.get("X-Real-IP"):
+            client_ip = request.headers.get("X-Real-IP")
+        # Check for Cloudflare
+        elif request.headers.get("CF-Connecting-IP"):
+            client_ip = request.headers.get("CF-Connecting-IP")
+        # Fall back to remote_addr
+        else:
+            client_ip = request.remote_addr
+            
+        # Handle localhost/IPv6 cases
+        if client_ip == '::1' or client_ip == '127.0.0.1':
+            client_ip = '127.0.0.1'
+            
+        return client_ip or '0.0.0.0'
+        
+    except Exception as e:
+        logger.error(f"Error getting client IP: {str(e)}")
+        return '0.0.0.0'
+
+# MongoDB Configuration
+MONGO_URI = os.environ.get('MONGO_URI', 'mongodb+srv://abhinavpanwar:<Abhinav1234>@cluster0.vihawrj.mongodb.net/?appName=Cluster0')
+MONGO_DB_NAME = os.environ.get('MONGO_DB_NAME', 'portfolio_analytics')
+
+# Initialize MongoDB connection
+try:
+    mongo_client = MongoClient(MONGO_URI)
+    db = mongo_client[MONGO_DB_NAME]
+    visitors_collection = db['visitors']
+    logger.info("MongoDB connected successfully")
+except ConnectionFailure as e:
+    logger.error(f"MongoDB connection failed: {str(e)}")
+    mongo_client = None
+    visitors_collection = None
+
+# Track visitor function - Only for Netlify site
+def track_visitor():
+    """Track visitor information from Netlify site in MongoDB"""
+    if not visitors_collection:
+        logger.warning("MongoDB not available, skipping visitor tracking")
+        return
+    
+    try:
+        # Check if request is from Netlify
+        origin = request.headers.get('Origin', '')
+        referer = request.headers.get('Referer', '')
+        
+        # Only track if coming from Netlify site
+        if 'abhinavpanwar.netlify.app' not in origin and 'abhinavpanwar.netlify.app' not in referer:
+            logger.debug(f"Skipping tracking - not from Netlify: {origin}")
+            return
+        
+        ip_address = get_client_ip()
+        device_id = request.cookies.get('device_id', str(uuid.uuid4()))
+        user_agent = request.headers.get('User-Agent', 'Unknown')
+        page_url = request.headers.get('Referer', 'Unknown')
+        
+        # Parse user agent for device type
+        device_type = 'Desktop'
+        ua_lower = user_agent.lower()
+        if 'mobile' in ua_lower or 'android' in ua_lower or 'iphone' in ua_lower:
+            device_type = 'Mobile'
+        elif 'tablet' in ua_lower or 'ipad' in ua_lower:
+            device_type = 'Tablet'
+        
+        current_time = datetime.now(pytz.timezone('Asia/Kolkata'))
+        
+        # Check if visitor exists
+        existing_visitor = visitors_collection.find_one({
+            '$or': [
+                {'ip_address': ip_address},
+                {'device_id': device_id}
+            ]
+        })
+        
+        if existing_visitor:
+            # Update existing visitor
+            visitors_collection.update_one(
+                {'_id': existing_visitor['_id']},
+                {
+                    '$set': {
+                        'last_seen': current_time,
+                        'user_agent': user_agent,
+                        'last_page': page_url,
+                        'device_type': device_type
+                    },
+                    '$inc': {'visit_count': 1},
+                    '$addToSet': {'pages_visited': page_url}
+                }
+            )
+            logger.debug(f"Updated Netlify visitor: {ip_address}")
+        else:
+            # Create new visitor record
+            visitor_data = {
+                'ip_address': ip_address,
+                'device_id': device_id,
+                'first_seen': current_time,
+                'last_seen': current_time,
+                'user_agent': user_agent,
+                'device_type': device_type,
+                'last_page': page_url,
+                'pages_visited': [page_url],
+                'visit_count': 1,
+                'created_at': current_time,
+                'source': 'Netlify'
+            }
+            visitors_collection.insert_one(visitor_data)
+            logger.info(f"New Netlify visitor tracked: {ip_address}")
+            
+    except Exception as e:
+        logger.error(f"Error tracking Netlify visitor: {str(e)}")
 
 # CORS Configuration
 CORS(app,
@@ -26,6 +150,12 @@ CORS(app,
                  "http://127.0.0.1:5501",
                  "http://localhost:5501"
              ],
+                 r"/api/track_netlify_visitor": {
+        "origins": ["https://abhinavpanwar.netlify.app"],
+        "supports_credentials": True,
+        "allow_headers": ["Content-Type"],
+        "methods": ["POST", "OPTIONS"]
+    },
              "supports_credentials": True,
              "allow_headers": ["Content-Type"],
              "methods": ["GET", "POST", "OPTIONS", "HEAD"],
@@ -450,6 +580,93 @@ def clear_messages():
     messages.clear()
     logger.info("All chat messages cleared")
     return jsonify({"status": "success", "message": "All chat messages cleared"})
+
+@app.route('/api/track_netlify_visitor', methods=['POST', 'OPTIONS'])
+def track_netlify_visitor():
+    """Endpoint for Netlify site to send tracking data"""
+    if request.method == 'OPTIONS':
+        response = make_response()
+        response.headers['Access-Control-Allow-Origin'] = 'https://abhinavpanwar.netlify.app'
+        response.headers['Access-Control-Allow-Credentials'] = 'true'
+        response.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+        return response
+    
+    if not request.is_json:
+        return jsonify({"error": "Content-Type must be application/json"}), 415
+    
+    try:
+        data = request.json
+        ip_address = get_client_ip()
+        device_id = request.cookies.get('device_id', str(uuid.uuid4()))
+        user_agent = request.headers.get('User-Agent', 'Unknown')
+        page_url = data.get('page_url', 'Unknown')
+        
+        # Parse device type
+        device_type = 'Desktop'
+        ua_lower = user_agent.lower()
+        if 'mobile' in ua_lower or 'android' in ua_lower or 'iphone' in ua_lower:
+            device_type = 'Mobile'
+        elif 'tablet' in ua_lower or 'ipad' in ua_lower:
+            device_type = 'Tablet'
+        
+        current_time = datetime.now(pytz.timezone('Asia/Kolkata'))
+        
+        # Update or create visitor
+        existing_visitor = visitors_collection.find_one({
+            '$or': [
+                {'ip_address': ip_address},
+                {'device_id': device_id}
+            ]
+        })
+        
+        if existing_visitor:
+            visitors_collection.update_one(
+                {'_id': existing_visitor['_id']},
+                {
+                    '$set': {
+                        'last_seen': current_time,
+                        'user_agent': user_agent,
+                        'last_page': page_url,
+                        'device_type': device_type
+                    },
+                    '$inc': {'visit_count': 1},
+                    '$addToSet': {'pages_visited': page_url}
+                }
+            )
+        else:
+            visitor_data = {
+                'ip_address': ip_address,
+                'device_id': device_id,
+                'first_seen': current_time,
+                'last_seen': current_time,
+                'user_agent': user_agent,
+                'device_type': device_type,
+                'last_page': page_url,
+                'pages_visited': [page_url],
+                'visit_count': 1,
+                'created_at': current_time,
+                'source': 'Netlify'
+            }
+            visitors_collection.insert_one(visitor_data)
+        
+        # Set device_id cookie if not exists
+        response = jsonify({"status": "tracked"})
+        if not request.cookies.get('device_id'):
+            response.set_cookie(
+                'device_id',
+                value=device_id,
+                max_age=365 * 24 * 60 * 60,
+                secure=True,
+                httponly=True,
+                samesite='None',
+                path='/'
+            )
+        return response
+        
+    except Exception as e:
+        logger.error(f"Error in track_netlify_visitor: {str(e)}")
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     init_db()
