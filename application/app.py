@@ -68,7 +68,7 @@ except Exception as e:
 # Track visitor function - Only for Netlify site
 def track_visitor():
     """Track visitor information from Netlify site in MongoDB"""
-    if not visitors_collection:
+    if visitors_collection is None:
         logger.warning("MongoDB not available, skipping visitor tracking")
         return
     
@@ -608,7 +608,7 @@ def track_netlify_visitor():
         current_time = datetime.now(pytz.timezone('Asia/Kolkata'))
         
         # Check if MongoDB is available
-        if not visitors_collection:
+        if visitors_collection is None:
             logger.error("MongoDB not available")
             return jsonify({"error": "Database not available"}), 500
         
@@ -673,7 +673,7 @@ def track_netlify_visitor():
 @app.route('/api/visitors/stats', methods=['GET'])
 def get_visitor_stats():
     """Get visitor statistics for dashboard"""
-    if not visitors_collection:
+    if visitors_collection is None:
         return jsonify({"error": "MongoDB not connected"}), 500
     
     try:
@@ -710,7 +710,7 @@ def get_visitor_stats():
 @app.route('/api/visitors/list', methods=['GET'])
 def get_visitors_list():
     """Get list of recent visitors"""
-    if not visitors_collection:
+    if visitors_collection is None:
         return jsonify({"error": "MongoDB not connected"}), 500
     
     try:
@@ -742,7 +742,7 @@ def get_visitors_list():
 @app.route('/api/test_db')
 def test_db():
     """Test MongoDB connection"""
-    if visitors_collection:
+    if visitors_collection is not None:
         try:
             count = visitors_collection.count_documents({})
             return jsonify({
