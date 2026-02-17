@@ -290,18 +290,181 @@
           ></div>
         </div>
         <div id="password-status" class="status-message hidden"></div>
-        /* Visitor Tracking Styles */ #visitors-list::-webkit-scrollbar { width:
-        6px; } #visitors-list::-webkit-scrollbar-track { background: #1a1a1a;
-        border-radius: 3px; } #visitors-list::-webkit-scrollbar-thumb {
-        background: #444; border-radius: 3px; }
-        #visitors-list::-webkit-scrollbar-thumb:hover { background: #555; }
-        #toggle-visitors { transition: all 0.3s ease; } #toggle-visitors:hover {
-        opacity: 0.9; transform: translateY(-1px); } .visitor-badge { display:
-        inline-block; padding: 2px 6px; border-radius: 3px; font-size: 0.7rem;
-        margin-left: 6px; } .badge-desktop { background-color: #2196f3; color:
-        white; } .badge-mobile { background-color: #4caf50; color: white; }
-        .badge-tablet { background-color: #ff9800; color: white; }
+        <!-- Add this after the Chat Management div, before the password-status div -->
+        <div
+          style="
+            margin-top: 20px;
+            border-top: 1px solid #444;
+            padding-top: 15px;
+          "
+        >
+          <h3
+            style="
+              color: var(--accent-color);
+              margin-bottom: 10px;
+              font-size: 1.1rem;
+            "
+          >
+            Visitor Tracking (Netlify Site)
+          </h3>
+
+          <!-- Quick Stats -->
+          <div
+            style="
+              display: grid;
+              grid-template-columns: repeat(3, 1fr);
+              gap: 8px;
+              margin-bottom: 15px;
+            "
+          >
+            <div
+              style="
+                background: #2a2a2a;
+                padding: 10px;
+                border-radius: 6px;
+                text-align: center;
+              "
+            >
+              <div style="font-size: 0.7rem; color: #888">Total</div>
+              <div
+                id="visitor-total"
+                style="
+                  font-size: 1.2rem;
+                  font-weight: bold;
+                  color: var(--accent-color);
+                "
+              >
+                0
+              </div>
+            </div>
+            <div
+              style="
+                background: #2a2a2a;
+                padding: 10px;
+                border-radius: 6px;
+                text-align: center;
+              "
+            >
+              <div style="font-size: 0.7rem; color: #888">Today</div>
+              <div
+                id="visitor-today"
+                style="
+                  font-size: 1.2rem;
+                  font-weight: bold;
+                  color: var(--secondary-color);
+                "
+              >
+                0
+              </div>
+            </div>
+            <div
+              style="
+                background: #2a2a2a;
+                padding: 10px;
+                border-radius: 6px;
+                text-align: center;
+              "
+            >
+              <div style="font-size: 0.7rem; color: #888">Active (30m)</div>
+              <div
+                id="visitor-active"
+                style="font-size: 1.2rem; font-weight: bold; color: #ff9800"
+              >
+                0
+              </div>
+            </div>
+          </div>
+
+          <!-- Toggle Button -->
+          <button
+            id="toggle-visitors"
+            class="secondary"
+            style="width: 100%; margin-bottom: 10px; font-size: 0.9rem"
+          >
+            Show Recent Visitors ▼
+          </button>
+
+          <!-- Visitors List (Hidden by default) -->
+          <div
+            id="visitors-list"
+            style="
+              display: none;
+              max-height: 300px;
+              overflow-y: auto;
+              background: #2a2a2a;
+              border-radius: 6px;
+              padding: 10px;
+            "
+          >
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 8px;
+                font-size: 0.8rem;
+                color: #888;
+                padding: 0 5px;
+              "
+            >
+              <span>IP Address / Device</span>
+              <span>Last Seen</span>
+            </div>
+            <div id="visitors-container">Loading...</div>
+          </div>
+        </div>
       </div>
+      <style>
+        /* Visitor Tracking Styles */
+        #visitors-list::-webkit-scrollbar {
+          width: 6px;
+        }
+
+        #visitors-list::-webkit-scrollbar-track {
+          background: #1a1a1a;
+          border-radius: 3px;
+        }
+
+        #visitors-list::-webkit-scrollbar-thumb {
+          background: #444;
+          border-radius: 3px;
+        }
+
+        #visitors-list::-webkit-scrollbar-thumb:hover {
+          background: #555;
+        }
+
+        #toggle-visitors {
+          transition: all 0.3s ease;
+        }
+
+        #toggle-visitors:hover {
+          opacity: 0.9;
+          transform: translateY(-1px);
+        }
+
+        .visitor-badge {
+          display: inline-block;
+          padding: 2px 6px;
+          border-radius: 3px;
+          font-size: 0.7rem;
+          margin-left: 6px;
+        }
+
+        .badge-desktop {
+          background-color: #2196f3;
+          color: white;
+        }
+
+        .badge-mobile {
+          background-color: #4caf50;
+          color: white;
+        }
+
+        .badge-tablet {
+          background-color: #ff9800;
+          color: white;
+        }
+      </style>
     </div>
     <script>
       // Visitor Tracking Functions
