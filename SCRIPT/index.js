@@ -30,15 +30,6 @@ window.addEventListener("load", function () {
       img2.classList.add("hover-effect");
       activeusers.classList.add("hover-effect");
     }, 0);
-    // Show overlay after delay
-    setTimeout(() => {
-      if (document.getElementById("survey-options").children.length > 0) {
-        document.getElementById("survey-overlay").style.display = "flex";
-        if (window.innerWidth <= 767) {
-          document.getElementById("ham-menu").style.display = "block";
-        }
-      }
-    }, 5000); // 5 sec delay
     if (document.getElementById("survey-options").children.length == 0) {
       if (window.innerWidth <= 767) {
         document.getElementById("ham-menu").style.display = "block";
