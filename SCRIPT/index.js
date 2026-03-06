@@ -90,7 +90,7 @@ function hackingTextTransition(element, targetText, duration = 2000) {
   });
 }
 
-// ============== HYBRID IP DETECTION (NO EXTERNAL API) ==============
+// ============== HYBRID IP DETECTION WITH GEOLOCATION ==============
 
 // Main function to apply IP transition with geolocation
 async function applyHackingTransition() {
@@ -117,12 +117,22 @@ async function applyHackingTransition() {
   // Phase 4: Fetch and display location details one by one in h2
   await displayLocationDetails(userIP, h2Element, h1Element);
 
-  // After all transitions, show survey
+  // After all transitions, show survey (with error handling)
   setTimeout(() => {
-    if (document.getElementById("survey-options")?.children.length > 0) {
-      document.getElementById("survey-overlay").style.display = "flex";
-      if (window.innerWidth <= 767) {
-        document.getElementById("ham-menu").style.display = "block";
+    const surveyOptions = document.getElementById("survey-options");
+    const surveyOverlay = document.getElementById("survey-overlay");
+    const hamMenu = document.getElementById("ham-menu");
+    
+    if (surveyOptions && surveyOptions.children.length > 0 && surveyOverlay) {
+      surveyOverlay.style.display = "flex";
+      if (window.innerWidth <= 767 && hamMenu) {
+        hamMenu.style.display = "block";
+      }
+    } else {
+      console.log("Survey not available - skipping display");
+      // Still show hamburger menu on mobile if needed
+      if (window.innerWidth <= 767 && hamMenu) {
+        hamMenu.style.display = "block";
       }
     }
   }, 1000);
@@ -133,17 +143,37 @@ async function displayLocationDetails(ip, element, h1Element) {
   if (!element) return;
 
   try {
-    // Use a CORS proxy to bypass the restriction
-    const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-    const targetUrl = `https://api.ip2location.io/?key=FA2D60AFBFFDB386CEE07CC7FE0D5544&ip=${ip}&format=json`;
+    // Try multiple CORS proxies in case one fails
+    const proxies = [
+      'https://cors-anywhere.herokuapp.com/',
+      'https://api.allorigins.win/raw?url=',
+      'https://crossorigin.me/'
+    ];
     
-    const response = await fetch(proxyUrl + targetUrl);
+    let locationData = null;
+    let success = false;
     
-    if (!response.ok) {
-      throw new Error('Location fetch failed');
+    // Try each proxy until one works
+    for (const proxy of proxies) {
+      try {
+        const targetUrl = `https://api.ip2location.io/?key=FA2D60AFBFFDB386CEE07CC7FE0D5544&ip=${ip}&format=json`;
+        const response = await fetch(proxy + encodeURIComponent(targetUrl));
+        
+        if (response.ok) {
+          locationData = await response.json();
+          success = true;
+          console.log("Location fetched via proxy:", proxy);
+          break;
+        }
+      } catch (e) {
+        console.log(`Proxy ${proxy} failed, trying next...`);
+      }
+    }
+    
+    if (!success) {
+      throw new Error('All proxies failed');
     }
 
-    const locationData = await response.json();
     console.log("Location data:", locationData);
 
     // Array of detail strings to display in sequence in h2
@@ -158,32 +188,54 @@ async function displayLocationDetails(ip, element, h1Element) {
     // Show each detail one by one in h2 with pause between
     for (const detail of details) {
       await hackingTextTransition(element, detail, 2000);
-      await new Promise((resolve) => setTimeout(resolve, 800)); // Pause between transitions
+      await new Promise((resolve) => setTimeout(resolve, 800));
     }
 
-    // Optional: Final message
+    // Final message
     await new Promise((resolve) => setTimeout(resolve, 1000));
     await hackingTextTransition(h1Element, "TARGET LOCKED", 1500);
     await hackingTextTransition(element, "ACQUIRED", 1500);
+    
   } catch (error) {
     console.error("Error fetching location:", error);
-    // Use fallback data from the sample you provided
-    await useFallbackLocationData(ip, element, h1Element);
+    // Use enhanced fallback with better data
+    await useEnhancedFallbackLocation(ip, element, h1Element);
   }
 }
 
-// Fallback function using hardcoded data structure
-async function useFallbackLocationData(ip, element, h1Element) {
-  console.log("Using fallback location data");
+// Enhanced fallback function with IP-based realistic data
+async function useEnhancedFallbackLocation(ip, element, h1Element) {
+  console.log("Using enhanced fallback location data");
+  
+  // Extract first octet of IP to seed "realistic" data
+  const firstOctet = parseInt(ip.split('.')[0]) || 100;
   
   // Create realistic fallback data based on IP pattern
+  const countries = [
+    { country: "United States", cities: ["New York", "Los Angeles", "Chicago", "Houston", "Phoenix"], isps: ["Comcast", "AT&T", "Verizon", "T-Mobile"] },
+    { country: "United Kingdom", cities: ["London", "Manchester", "Birmingham", "Liverpool", "Leeds"], isps: ["BT", "Virgin Media", "Sky", "TalkTalk"] },
+    { country: "Canada", cities: ["Toronto", "Vancouver", "Montreal", "Calgary", "Ottawa"], isps: ["Rogers", "Bell", "Telus", "Shaw"] },
+    { country: "Australia", cities: ["Sydney", "Melbourne", "Brisbane", "Perth", "Adelaide"], isps: ["Telstra", "Optus", "TPG", "Vocus"] },
+    { country: "Germany", cities: ["Berlin", "Munich", "Hamburg", "Frankfurt", "Cologne"], isps: ["Deutsche Telekom", "Vodafone", "Unitymedia", "O2"] },
+    { country: "Japan", cities: ["Tokyo", "Osaka", "Nagoya", "Sapporo", "Fukuoka"], isps: ["NTT", "KDDI", "SoftBank", "Rakuten"] }
+  ];
+  
+  // Select based on IP to make it feel consistent per user
+  const countryIndex = firstOctet % countries.length;
+  const selected = countries[countryIndex];
+  const cityIndex = (firstOctet * 2) % selected.cities.length;
+  const ispIndex = (firstOctet * 3) % selected.isps.length;
+  
+  const timezones = ["UTC-8", "UTC-5", "UTC+0", "UTC+1", "UTC+8", "UTC+10"];
+  const timezoneIndex = firstOctet % timezones.length;
+  
   const fallbackData = {
-    "country_name": ["United States", "United Kingdom", "Canada", "Australia", "Germany", "Japan"][Math.floor(Math.random() * 6)],
-    "city_name": ["New York", "London", "Toronto", "Sydney", "Berlin", "Tokyo"][Math.floor(Math.random() * 6)],
-    "latitude": (Math.random() * 180 - 90).toFixed(2),
-    "longitude": (Math.random() * 360 - 180).toFixed(2),
-    "time_zone": "UTC" + (Math.random() > 0.5 ? "+" : "-") + Math.floor(Math.random() * 12),
-    "as": ["Google LLC", "Amazon AWS", "Cloudflare", "Microsoft", "Facebook", "Apple"][Math.floor(Math.random() * 6)]
+    "country_name": selected.country,
+    "city_name": selected.cities[cityIndex],
+    "latitude": (Math.random() * 180 - 90).toFixed(4),
+    "longitude": (Math.random() * 360 - 180).toFixed(4),
+    "time_zone": timezones[timezoneIndex],
+    "as": selected.isps[ispIndex]
   };
   
   const details = [
@@ -204,7 +256,7 @@ async function useFallbackLocationData(ip, element, h1Element) {
   await hackingTextTransition(element, "ACQUIRED", 1500);
 }
 
-// Main hybrid IP detection function
+// Main hybrid IP detection function (YOUR EXISTING CODE - unchanged)
 async function getBrowserIP() {
   // Try WebRTC first (most accurate for local network)
   const webrtcIP = await getWebRTCIP();
@@ -277,7 +329,7 @@ function getWebRTCIP() {
     const noop = () => {};
 
     try {
-      conn.createDataChannel(""); // Create a dummy data channel
+      conn.createDataChannel("");
 
       conn
         .createOffer()
@@ -297,7 +349,6 @@ function getWebRTCIP() {
         }
       };
 
-      // Timeout after 2 seconds
       setTimeout(() => {
         conn.close();
         resolve(null);
@@ -311,7 +362,6 @@ function getWebRTCIP() {
 
 // Method 2: Get IP from connection/network info
 function getConnectionIP() {
-  // Try to get from performance API resource timing
   try {
     if (performance && performance.getEntries) {
       const entries = performance.getEntries();
@@ -320,7 +370,6 @@ function getConnectionIP() {
           const match = entry.name.match(/\/\/([^:\/]+)/);
           if (match && match[1]) {
             const hostname = match[1];
-            // Check if it's an IP address
             if (hostname.match(/^\d+\.\d+\.\d+\.\d+$/)) {
               return hostname;
             }
@@ -328,11 +377,8 @@ function getConnectionIP() {
         }
       }
     }
-  } catch (e) {
-    // Ignore errors
-  }
+  } catch (e) {}
 
-  // Try to get from current location
   if (
     window.location.hostname &&
     window.location.hostname.match(/^\d+\.\d+\.\d+\.\d+$/)
@@ -345,17 +391,14 @@ function getConnectionIP() {
 
 // Method 3: Get IP from various browser APIs
 function getIPFromBrowserAPI() {
-  // Try from connection object (if available)
   if (window.connection && window.connection.remoteAddress) {
     return window.connection.remoteAddress;
   }
 
-  // Try from network information API
   if (navigator.connection && navigator.connection.remoteAddress) {
     return navigator.connection.remoteAddress;
   }
 
-  // Try from client hints
   if (navigator.userAgentData && navigator.userAgentData.ipAddress) {
     return navigator.userAgentData.ipAddress;
   }
@@ -365,37 +408,14 @@ function getIPFromBrowserAPI() {
 
 // Method 4: Simulate realistic IP for fallback
 function simulateRealisticIP() {
-  // Generate IPs that look realistic (not in private ranges)
-  const firstOctet = Math.floor(Math.random() * 100) + 100; // 100-199 (public range)
+  const firstOctet = Math.floor(Math.random() * 100) + 100;
   const secondOctet = Math.floor(Math.random() * 255);
   const thirdOctet = Math.floor(Math.random() * 255);
   const fourthOctet = Math.floor(Math.random() * 255);
-
   return `${firstOctet}.${secondOctet}.${thirdOctet}.${fourthOctet}`;
 }
 
-// Alternative: Get IP with geolocation-style (if you want location instead)
-async function getBrowserLocation() {
-  return new Promise((resolve) => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          // This gives coordinates, not IP
-          const { latitude, longitude } = position.coords;
-          resolve(`${latitude.toFixed(2)}, ${longitude.toFixed(2)}`);
-        },
-        (error) => {
-          console.log("Geolocation error:", error);
-          resolve(getBrowserIP()); // Fallback to IP
-        },
-      );
-    } else {
-      resolve(getBrowserIP());
-    }
-  });
-}
-
-// ============== END OF HYBRID IP DETECTION ==============
+// ============== END OF IP DETECTION ==============
 
 // Video background handling
 document.addEventListener("DOMContentLoaded", function () {
@@ -405,7 +425,6 @@ document.addEventListener("DOMContentLoaded", function () {
       document.body.classList.add("no-video");
     });
 
-    // For mobile devices where autoplay might be blocked
     if (video.paused) {
       document.body.classList.add("no-video");
     }
@@ -549,7 +568,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const h3Element = document.getElementById("h3");
     if (!h3Element) return;
 
-    // Fetch and display the headline
     const response = await fetch(
       "https://abhinavpanwar.onrender.com/api/get_h3",
     );
@@ -558,49 +576,65 @@ document.addEventListener("DOMContentLoaded", async () => {
   } catch (error) {
     console.error("Error loading headline:", error);
     const h3Element = document.getElementById("h3");
-    if (h3Element) h3Element.textContent = "";
+    if (h3Element) h3Element.textContent = "SYSTEM STATUS: ONLINE";
   }
 });
 
-// Load and display survey
+// Load and display survey (FIXED VERSION)
 async function loadSurvey() {
   try {
+    const surveyOverlay = document.getElementById("survey-overlay");
+    const surveyOptions = document.getElementById("survey-options");
+    const surveyQuestion = document.getElementById("survey-question");
+    
+    if (!surveyOverlay || !surveyOptions || !surveyQuestion) {
+      console.log("Survey elements not found");
+      return;
+    }
+    
     const response = await fetch(
       "https://abhinavpanwar.onrender.com/api/current_poll",
     );
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      // Don't throw error, just handle gracefully
+      console.log("Survey API returned:", response.status);
+      // Hide survey container if API fails
+      surveyOverlay.style.display = "none";
+      return;
     }
 
     const data = await response.json();
 
-    if (data.error) {
+    if (data.error || !data.question || !data.options) {
       console.log("No active poll available");
+      surveyOverlay.style.display = "none";
       return;
     }
 
     // Display survey question and options
-    const questionElement = document.getElementById("survey-question");
-    const optionsContainer = document.getElementById("survey-options");
+    surveyQuestion.textContent = data.question;
+    surveyOptions.innerHTML = "";
 
-    if (questionElement) questionElement.textContent = data.question;
-    if (optionsContainer) {
-      optionsContainer.innerHTML = "";
+    data.options.forEach((option, index) => {
+      const button = document.createElement("button");
+      button.textContent = option;
 
-      data.options.forEach((option, index) => {
-        const button = document.createElement("button");
-        button.textContent = option;
-
-        button.addEventListener("click", async () => {
-          await submitResponse(index, button);
-        });
-
-        optionsContainer.appendChild(button);
+      button.addEventListener("click", async () => {
+        await submitResponse(index, button);
       });
-    }
+
+      surveyOptions.appendChild(button);
+    });
+    
+    // Don't auto-show survey - it will be shown after IP transition
+    console.log("Survey loaded successfully");
+    
   } catch (error) {
-    console.error("Error loading survey:", error);
+    console.log("Survey not available:", error.message);
+    // Hide survey elements if they exist
+    const surveyOverlay = document.getElementById("survey-overlay");
+    if (surveyOverlay) surveyOverlay.style.display = "none";
   }
 }
 
@@ -626,7 +660,6 @@ async function submitResponse(index, button) {
       throw new Error(errorData.error || "Failed to submit response");
     }
 
-    // Show thank-you message (will stay until user closes manually)
     if (optionsContainer) {
       optionsContainer.innerHTML =
         '<p style="text-align:center; color:#4caf50;">Thank you for your feedback!</p>';
@@ -666,11 +699,16 @@ document.addEventListener("DOMContentLoaded", function () {
         setTimeout(() => {
           overlay.style.display = "none";
           overlay.style.opacity = "1";
-        }, 500); // fast fade-out
+        }, 500);
       }
     });
   }
 });
 
-// Load survey when DOM is ready
-window.addEventListener("DOMContentLoaded", loadSurvey);
+// Load survey when DOM is ready (with error handling)
+window.addEventListener("DOMContentLoaded", function() {
+  // Load survey but don't let it break the page
+  loadSurvey().catch(err => {
+    console.log("Survey initialization failed:", err);
+  });
+});
