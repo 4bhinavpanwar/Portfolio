@@ -54,8 +54,87 @@ window.addEventListener("load", function () {
 
   setTimeout(() => {
     elements.forEach((el) => el.classList.add("visible"));
+
+    // 2 seconds after headings become visible, start the IP transition
+    setTimeout(() => {
+      applyHackingTransition();
+    }, 2000);
   }, delay);
 });
+
+// Function to fetch user's IP address
+async function fetchUserIP() {
+  try {
+    const response = await fetch("https://api.ipify.org?format=json");
+    const data = await response.json();
+    return data.ip;
+  } catch (error) {
+    console.error("Error fetching IP:", error);
+    return "127.0.0.1"; // Fallback IP
+  }
+}
+
+// Hacking-style text transition effect
+function hackingTextTransition(element, targetText, duration = 2000) {
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+  const steps = 20;
+  const stepDuration = duration / steps;
+  let currentStep = 0;
+
+  function getRandomChar() {
+    return chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+
+  return new Promise((resolve) => {
+    const interval = setInterval(() => {
+      currentStep++;
+      const progress = currentStep / steps;
+
+      let result = "";
+      for (let i = 0; i < targetText.length; i++) {
+        if (Math.random() < progress) {
+          result += targetText[i];
+        } else {
+          result += getRandomChar();
+        }
+      }
+
+      element.textContent = result;
+
+      if (currentStep >= steps) {
+        clearInterval(interval);
+        element.textContent = targetText;
+        resolve();
+      }
+    }, stepDuration);
+  });
+}
+
+// Main function to apply IP transition
+async function applyHackingTransition() {
+  const h1Element = document.getElementById("h1");
+  const h2Element = document.getElementById("h2");
+
+  if (!h1Element || !h2Element) return;
+
+  const userIP = await fetchUserIP();
+
+  // Start the transition immediately
+  await hackingTextTransition(h1Element, "UR IP", 1500);
+  await new Promise((resolve) => setTimeout(resolve, 300));
+  await hackingTextTransition(h2Element, userIP, 2000);
+
+  // After IP transition is complete, show survey
+  setTimeout(() => {
+    if (document.getElementById("survey-options").children.length > 0) {
+      document.getElementById("survey-overlay").style.display = "flex";
+      if (window.innerWidth <= 767) {
+        document.getElementById("ham-menu").style.display = "block";
+      }
+    }
+  }, 1000);
+}
 
 // Video background handling
 document.addEventListener("DOMContentLoaded", function () {
@@ -174,7 +253,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   try {
     // Fetch and display the headline
     const response = await fetch(
-      "https://abhinavpanwar.onrender.com/api/get_h3"
+      "https://abhinavpanwar.onrender.com/api/get_h3",
     );
     const { h3_text } = await response.json();
     document.getElementById("h3").textContent = h3_text;
@@ -188,7 +267,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 async function loadSurvey() {
   try {
     const response = await fetch(
-      "https://abhinavpanwar.onrender.com/api/current_poll"
+      "https://abhinavpanwar.onrender.com/api/current_poll",
     );
 
     if (!response.ok) {
@@ -243,7 +322,7 @@ async function submitResponse(index, button) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ option_index: index }),
-      }
+      },
     );
 
     if (!response.ok) {
