@@ -539,6 +539,53 @@ def send_message():
     
     return jsonify({'status': 'error', 'message': 'Invalid data'}), 400
 
+# Add these endpoints to your Flask server code
+
+@app.route('/send_file', methods=['POST'])
+def send_file():
+    """Endpoint to receive and store file messages"""
+    try:
+        data = request.json
+        sender = data.get('sender')
+        file_name = data.get('name')
+        file_data = data.get('data')  # base64 encoded
+        file_type = data.get('type')
+        file_size = data.get('size')
+        current_time = datetime.now(pytz.timezone('Asia/Kolkata')).strftime("%d-%m-%Y %I:%M %p")
+        
+        if sender and file_data:
+            # Store file message with download link
+            file_message = {
+                'sender': sender,
+                'fileName': file_name,
+                'fileData': file_data,
+                'fileType': file_type,
+                'fileSize': file_size,
+                'time': current_time,
+                'isFile': True
+            }
+            messages.append(file_message)
+            
+            # Optional: Limit stored messages to last 200 to save memory
+            if len(messages) > 200:
+                messages.pop(0)
+                
+            logger.info(f"File received from {sender}: {file_name}")
+            return jsonify({'status': 'File received', 'file': file_name})
+        
+        return jsonify({'status': 'error', 'message': 'Invalid file data'}), 400
+    except Exception as e:
+        logger.error(f"Error sending file: {str(e)}")
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+# Also update the clear_messages endpoint to handle file messages properly
+@app.route('/clear_messages', methods=['POST'])
+def clear_messages():
+    global messages
+    messages = []  # Clear all messages including files
+    logger.info("All chat messages and files cleared")
+    return jsonify({"status": "success", "message": "All messages cleared"})
+
 @app.route('/get_messages', methods=['GET'])
 def get_messages():
     return jsonify(messages)
