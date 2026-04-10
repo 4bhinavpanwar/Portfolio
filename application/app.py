@@ -142,39 +142,48 @@ def track_visitor():
     except Exception as e:
         logger.error(f"Error tracking Netlify visitor: {str(e)}")
 
-# CORS Configuration
-CORS(app,
-     resources={ 
-         r"/api/*": {
-             "origins": [
-                 "https://abhinavpanwar.netlify.app",
-                 "http://127.0.0.1:5501",
-                 "http://localhost:5501"
-             ],
-             "supports_credentials": True,
-             "allow_headers": ["Content-Type"],
-             "methods": ["GET", "POST", "OPTIONS", "HEAD"],
-             "expose_headers": ["Content-Type"],
-             "max_age": 600
-         }
-     })
-
+# CORS Configuration - UPDATED to include send_file endpoint
 CORS(app, resources={
-    r"/get_messages": {"origins": [
-                 "https://abhinavpanwar.netlify.app",
-                 "http://127.0.0.1:5501",
-                 "http://localhost:5501"
-             ]},
-    r"/send_message": {"origins": [
-                 "https://abhinavpanwar.netlify.app",
-                 "http://127.0.0.1:5501",
-                 "http://localhost:5501"
-             ]},
-    r"/get_password": {"origins": [
-                 "https://abhinavpanwar.netlify.app",
-                 "http://127.0.0.1:5501",
-                 "http://localhost:5501"
-             ]}
+    r"/api/*": {
+        "origins": [
+            "https://abhinavpanwar.netlify.app",
+            "http://127.0.0.1:5501",
+            "http://localhost:5501"
+        ],
+        "supports_credentials": True,
+        "allow_headers": ["Content-Type"],
+        "methods": ["GET", "POST", "OPTIONS", "HEAD"],
+        "expose_headers": ["Content-Type"],
+        "max_age": 600
+    },
+    r"/send_message": {
+        "origins": [
+            "https://abhinavpanwar.netlify.app",
+            "http://127.0.0.1:5501",
+            "http://localhost:5501"
+        ]
+    },
+    r"/send_file": {  # ADD THIS
+        "origins": [
+            "https://abhinavpanwar.netlify.app",
+            "http://127.0.0.1:5501",
+            "http://localhost:5501"
+        ]
+    },
+    r"/get_messages": {
+        "origins": [
+            "https://abhinavpanwar.netlify.app",
+            "http://127.0.0.1:5501",
+            "http://localhost:5501"
+        ]
+    },
+    r"/get_password": {
+        "origins": [
+            "https://abhinavpanwar.netlify.app",
+            "http://127.0.0.1:5501",
+            "http://localhost:5501"
+        ]
+    }
 })
 
 app.config.update(
