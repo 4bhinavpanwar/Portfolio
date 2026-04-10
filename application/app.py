@@ -578,14 +578,6 @@ def send_file():
         logger.error(f"Error sending file: {str(e)}")
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
-# Also update the clear_messages endpoint to handle file messages properly
-@app.route('/clear_messages', methods=['POST'])
-def clear_messages():
-    global messages
-    messages = []  # Clear all messages including files
-    logger.info("All chat messages and files cleared")
-    return jsonify({"status": "success", "message": "All messages cleared"})
-
 @app.route('/get_messages', methods=['GET'])
 def get_messages():
     return jsonify(messages)
