@@ -590,6 +590,48 @@
         }
       }
 
+      function viewImage(imageData, fileName) {
+        // Create a modal for better image viewing
+        const modal = document.createElement("div");
+        modal.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.9);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  `;
+
+        const img = document.createElement("img");
+        img.src = imageData;
+        img.style.cssText = `
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    border-radius: 8px;
+  `;
+
+        modal.appendChild(img);
+        document.body.appendChild(modal);
+
+        // Close modal on click
+        modal.onclick = function () {
+          modal.remove();
+        };
+
+        // Close with Escape key
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && document.body.contains(modal)) {
+            modal.remove();
+          }
+        });
+      }
+
       // ============ SEND TEXT MESSAGE ============
       async function sendMessage() {
         if (!isAuthenticated) {
@@ -646,15 +688,15 @@
                 // For images, show preview
                 if (fileType.startsWith("image/")) {
                   return `<div class="message file-message" style="background: #e8f5e9; padding: 8px 12px; border-radius: 10px; margin: 5px 0;">
-                  <strong>${escapeHtml(msg.sender)}:</strong>
-                  <div>
-                    <a href="${fileData}" download="${fileName}" target="_blank">${fileIcon} ${escapeHtml(fileName)}</a>
-                    <div style="margin-top: 5px;">
-                      <img src="${fileData}" alt="${escapeHtml(fileName)}" style="max-width: 150px; max-height: 120px; border-radius: 8px; cursor: pointer;" onclick="window.open('${fileData}', '_blank')">
-                    </div>
-                  </div>
-                  <span style="color: #888; font-size: 10px;">${msg.time || ""}</span>
-                </div>`;
+  <strong>${escapeHtml(msg.sender)}:</strong>
+  <div>
+    <a href="${fileData}" download="${fileName}" target="_blank">${fileIcon} ${escapeHtml(fileName)}</a>
+    <div style="margin-top: 5px;">
+      <img src="${fileData}" alt="${escapeHtml(fileName)}" style="max-width: 150px; max-height: 120px; border-radius: 8px; cursor: pointer;" onclick="viewImage('${fileData}', '${escapeHtml(fileName)}')">
+    </div>
+  </div>
+  <span style="color: #888; font-size: 10px;">${msg.time || ""}</span>
+</div>`;
                 }
 
                 // For other files
