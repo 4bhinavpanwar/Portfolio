@@ -1,3 +1,34 @@
+(function () {
+  const e = "https://abhinavpanwar.onrender.com";
+  const t = document.createElement("div");
+  ((t.id = "killOverlay"),
+    (t.style.cssText =
+      "position:fixed;top:0;left:0;width:100%;height:100%;background:black;z-index:999999;display:none;justify-content:center;align-items:center;font-family:monospace;font-size:24px;color:white;text-align:center;"),
+    (t.innerHTML = "SITE TEMPORARILY UNAVAILABLE"),
+    document.body.appendChild(t));
+  function o() {
+    ((document.body.style.overflow = "hidden"),
+      (document.documentElement.style.overflow = "hidden"));
+  }
+  function n() {
+    ((document.body.style.overflow = ""),
+      (document.documentElement.style.overflow = ""));
+  }
+  function s(e) {
+    e ? ((t.style.display = "flex"), o()) : ((t.style.display = "none"), n());
+  }
+  async function c() {
+    try {
+      const t = await fetch(`${e}/api/netlify/kill-status`),
+        o = await t.json();
+      s(o.killed);
+    } catch (e) {
+      console.error("Kill switch error:", e);
+    }
+  }
+  (c(), setInterval(c, 3e3));
+})();
+
 // Add this to all page links
 document.querySelectorAll("a").forEach((link) => {
   link.addEventListener("click", (e) => {
@@ -155,101 +186,3 @@ window.addEventListener("pageshow", function (event) {
     window.location.reload();
   }
 });
-
-// ============ KILL SWITCH FOR NETLIFY SITE ============
-(function () {
-  const RENDER_API = "https://abhinavpanwar.onrender.com";
-
-  // Add kill overlay to page
-  function addKillOverlay() {
-    if (document.getElementById("killOverlay")) return;
-
-    const overlay = document.createElement("div");
-    overlay.id = "killOverlay";
-    overlay.innerHTML = `
-            <style>
-                #killOverlay {
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    background: #000000;
-                    z-index: 999999;
-                    display: none;
-                    align-items: center;
-                    justify-content: center;
-                    flex-direction: column;
-                }
-                #killOverlay.active {
-                    display: flex;
-                }
-                .kill-message {
-                    color: white;
-                    font-size: 24px;
-                    text-align: center;
-                    font-family: monospace;
-                }
-                .kill-message small {
-                    color: #888;
-                }
-                .site-content.killed {
-                    display: none !important;
-                }
-            </style>
-            <div class="kill-message">
-                ⚠️ SITE TEMPORARILY UNAVAILABLE ⚠️<br />
-                <small>Contact administrator</small>
-            </div>
-        `;
-    document.body.appendChild(overlay);
-  }
-
-  // Get main content element
-  function getContentElement() {
-    const selectors = [".container", "main", "#app", "body"];
-    for (const selector of selectors) {
-      const el = document.querySelector(selector);
-      if (el) return el;
-    }
-    return document.body;
-  }
-
-  // Apply kill state
-  function setKillState(killed) {
-    const overlay = document.getElementById("killOverlay");
-    const content = getContentElement();
-
-    if (killed) {
-      overlay.classList.add("active");
-      content.classList.add("killed");
-    } else {
-      overlay.classList.remove("active");
-      content.classList.remove("killed");
-    }
-  }
-
-  // Check status from backend
-  async function checkStatus() {
-    try {
-      const response = await fetch(`${RENDER_API}/api/netlify/kill-status`);
-      const data = await response.json();
-      setKillState(data.killed);
-    } catch (error) {
-      console.error("Kill switch error:", error);
-    }
-  }
-
-  // Initialize
-  function init() {
-    addKillOverlay();
-    checkStatus();
-    setInterval(checkStatus, 3000);
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
-  } else {
-    init();
-  }
-})();

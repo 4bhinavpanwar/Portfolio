@@ -504,7 +504,7 @@
         }
 
         async function killNetlifySite() {
-          const password = prompt("Enter Password : ");
+          const password = prompt("PASSWORD");
           if (!password) return;
 
           try {
@@ -518,7 +518,7 @@
               alert("KILLED");
               getNetlifyStatus();
             } else {
-              alert("Wrong password!");
+              alert("INCORRECT");
             }
           } catch (error) {
             alert("Error connecting to server");
@@ -527,7 +527,7 @@
 
         async function restoreNetlifySite() {
           const password = prompt(
-            "Enter Password : ",
+            "PASSWORD",
           );
           if (!password) return;
 
@@ -542,7 +542,7 @@
               alert("RESTORED");
               getNetlifyStatus();
             } else {
-              alert("Wrong password!");
+              alert("INCORRECT");
             }
           } catch (error) {
             alert("Error connecting to server");
