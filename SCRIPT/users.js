@@ -4,7 +4,7 @@
   ((t.id = "killOverlay"),
     (t.style.cssText =
       "position:fixed;top:0;left:0;width:100%;height:100%;background:black;z-index:999999;display:none;justify-content:center;align-items:center;font-family:monospace;font-size:24px;color:white;text-align:center;"),
-    (t.innerHTML = "SITE TEMPORARILY UNAVAILABLE"),
+    (t.innerHTML = "404"),
     document.body.appendChild(t));
   function o() {
     ((document.body.style.overflow = "hidden"),
