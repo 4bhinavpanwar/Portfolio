@@ -465,7 +465,104 @@
           color: white;
         }
       </style>
+      <!-- Add this to your Render server's HTML page -->
+      <div class="card">
+        <h2>Site Control</h2>
+        <div id="netlifyStatus" class="current-value">Checking status...</div>
+        <div style="display: flex; gap: 10px; margin-top: 10px">
+          <button id="killNetlifyBtn" class="danger">
+            KILL
+          </button>
+          <button id="restoreNetlifyBtn" class="secondary">
+            RESTORE
+          </button>
+        </div>
+      </div>
+
+      <script>
+        // Control buttons for Netlify site (on your Render page)
+        const RENDER_API = window.location.origin;
+
+        async function getNetlifyStatus() {
+          try {
+            const response = await fetch(
+              `${RENDER_API}/api/netlify/kill-status`,
+            );
+            const data = await response.json();
+            const statusDiv = document.getElementById("netlifyStatus");
+            if (statusDiv) {
+              statusDiv.innerHTML = data.killed
+                ? "KILLED"
+                : "ACTIVE";
+              statusDiv.style.color = data.killed
+                ? "var(--error-color)"
+                : "var(--accent-color)";
+            }
+          } catch (error) {
+            console.error("Error:", error);
+          }
+        }
+
+        async function killNetlifySite() {
+          const password = prompt("Enter Password : ");
+          if (!password) return;
+
+          try {
+            const response = await fetch(`${RENDER_API}/api/netlify/kill`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ password: password }),
+            });
+
+            if (response.ok) {
+              alert("KILLED");
+              getNetlifyStatus();
+            } else {
+              alert("Wrong password!");
+            }
+          } catch (error) {
+            alert("Error connecting to server");
+          }
+        }
+
+        async function restoreNetlifySite() {
+          const password = prompt(
+            "Enter Password : ",
+          );
+          if (!password) return;
+
+          try {
+            const response = await fetch(`${RENDER_API}/api/netlify/restore`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ password: password }),
+            });
+
+            if (response.ok) {
+              alert("RESTORED");
+              getNetlifyStatus();
+            } else {
+              alert("Wrong password!");
+            }
+          } catch (error) {
+            alert("Error connecting to server");
+          }
+        }
+
+        // Add event listeners
+        document
+          .getElementById("killNetlifyBtn")
+          ?.addEventListener("click", killNetlifySite);
+        document
+          .getElementById("restoreNetlifyBtn")
+          ?.addEventListener("click", restoreNetlifySite);
+
+        // Poll status every 5 seconds
+        getNetlifyStatus();
+        setInterval(getNetlifyStatus, 5000);
+      </script>
     </div>
+
     <script>
       document.addEventListener("DOMContentLoaded", async () => {
         // DOM Elements

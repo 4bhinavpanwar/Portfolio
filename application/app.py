@@ -809,6 +809,78 @@ def test_db():
             "message": "❌ MongoDB not connected"
         }), 500
 
+# ============ KILL SWITCH FOR NETLIFY SITE ============
+netlify_kill_switch = False
+netlify_kill_updated_at = None
+
+@app.route('/api/netlify/kill-status', methods=['GET', 'OPTIONS'])
+def netlify_kill_status():
+    """Netlify site checks this to know if it should be blank"""
+    if request.method == 'OPTIONS':
+        response = make_response()
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        return response
+    
+    global netlify_kill_switch, netlify_kill_updated_at
+    return jsonify({
+        'killed': netlify_kill_switch,
+        'updated_at': netlify_kill_updated_at
+    })
+
+@app.route('/api/netlify/kill', methods=['POST', 'OPTIONS'])
+def netlify_kill():
+    """Activate kill switch - Netlify site will go blank"""
+    if request.method == 'OPTIONS':
+        response = make_response()
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        return response
+    
+    # Optional: Add authentication
+    data = request.get_json() or {}
+    password = data.get('password', '')
+    
+    # Use your existing PASSWORD variable
+    if password != PASSWORD:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    global netlify_kill_switch, netlify_kill_updated_at
+    netlify_kill_switch = True
+    netlify_kill_updated_at = datetime.now(pytz.timezone('Asia/Kolkata')).isoformat()
+    
+    logger.info(f"🚨 NETLIFY KILL SWITCH ACTIVATED by {get_client_ip()}")
+    
+    return jsonify({
+        'success': True,
+        'message': 'Netlify site will now appear blank',
+        'activated_at': netlify_kill_updated_at
+    })
+
+@app.route('/api/netlify/restore', methods=['POST', 'OPTIONS'])
+def netlify_restore():
+    """Deactivate kill switch - Netlify site will come back"""
+    if request.method == 'OPTIONS':
+        response = make_response()
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        return response
+    
+    data = request.get_json() or {}
+    password = data.get('password', '')
+    
+    if password != PASSWORD:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    global netlify_kill_switch, netlify_kill_updated_at
+    netlify_kill_switch = False
+    netlify_kill_updated_at = datetime.now(pytz.timezone('Asia/Kolkata')).isoformat()
+    
+    logger.info(f"🔓 NETLIFY KILL SWITCH DEACTIVATED by {get_client_ip()}")
+    
+    return jsonify({
+        'success': True,
+        'message': 'Netlify site restored',
+        'deactivated_at': netlify_kill_updated_at
+    })
+
 if __name__ == '__main__':
     init_db()
     port = int(os.environ.get('PORT', 5000))
