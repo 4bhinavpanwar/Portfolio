@@ -533,7 +533,7 @@ def end_poll():
             conn.close()
 
 messages = []
-PASSWORD = "password"
+PASSWORD = "!password"
 
 @app.route('/send_message', methods=['POST'])
 def send_message():
