@@ -232,7 +232,7 @@ def create_poll():
 @app.route('/api/current_poll', methods=['GET'])
 def current_poll():
     if polls_col is None:
-        return jsonify({'error': 'DB unavailable'}), 500
+        return jsonify({'error': 'No active poll'}), 404
     poll = polls_col.find_one({})
     if not poll:
         return jsonify({'error': 'No active poll'}), 404
@@ -377,8 +377,12 @@ def receive_file():
 def get_messages():
     if messages_col is None:
         return jsonify([])
-    docs = list(messages_col.find({}, {'_id': 0, 'created_at': 0}).sort('created_at', 1))
-    return jsonify(docs)
+    try:
+        docs = list(messages_col.find({}, {'_id': 0, 'created_at': 0}).sort('created_at', 1))
+        return jsonify(docs)
+    except Exception as e:
+        logger.error(f"get_messages error: {e}")
+        return jsonify([])
 
 @app.route('/clear_messages', methods=['POST'])
 def clear_messages():
@@ -439,7 +443,7 @@ def track_netlify_visitor():
 @app.route('/api/visitors/stats', methods=['GET'])
 def get_visitor_stats():
     if visitors_col is None:
-        return jsonify({'error': 'DB unavailable'}), 500
+        return jsonify({'total_visitors': 0, 'today_visitors': 0, 'active_now': 0, 'device_stats': []})
     today_start    = now_ist().replace(hour=0, minute=0, second=0, microsecond=0)
     thirty_min_ago = now_ist() - timedelta(minutes=30)
     device_stats   = list(visitors_col.aggregate([{'$group': {'_id': '$device_type', 'count': {'$sum': 1}}}]))
@@ -571,11 +575,13 @@ def netlify_kill_status():
         r.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
         r.headers['Access-Control-Allow-Headers'] = 'Content-Type'
         return r
-    doc = config_col.find_one({'_id': 'kill_switch'}) if config_col else None
-    r = make_response(jsonify({
-        'killed':     doc['killed'] if doc else False,
-        'updated_at': doc['updated_at'] if doc else None
-    }))
+    try:
+        doc = config_col.find_one({'_id': 'kill_switch'}) if config_col else None
+        killed     = doc['killed'] if doc else False
+        updated_at = doc['updated_at'] if doc else None
+    except Exception:
+        killed, updated_at = False, None
+    r = make_response(jsonify({'killed': killed, 'updated_at': updated_at}))
     r.headers['Access-Control-Allow-Origin'] = '*'
     r.headers['Cache-Control'] = 'no-store'
     return r
