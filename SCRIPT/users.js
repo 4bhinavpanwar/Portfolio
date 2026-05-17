@@ -19,14 +19,15 @@
   }
   async function c() {
     try {
-      const t = await fetch(`${e}/api/netlify/kill-status`),
+      const t = await fetch(`${e}/api/netlify/kill-status`, { cache: 'no-store' }),
         o = await t.json();
       s(o.killed);
-    } catch (e) {
-      console.error("Kill switch error:", e);
+    } catch (err) {
+      console.error("Kill switch error:", err);
+      // Do not change overlay state on network error
     }
   }
-  (c(), setInterval(c, 3e3));
+  (c(), setInterval(c, 5e3));
 })();
 
 // Add this to all page links

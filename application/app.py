@@ -568,12 +568,17 @@ def netlify_kill_status():
     if request.method == 'OPTIONS':
         r = make_response()
         r.headers['Access-Control-Allow-Origin'] = '*'
+        r.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+        r.headers['Access-Control-Allow-Headers'] = 'Content-Type'
         return r
     doc = config_col.find_one({'_id': 'kill_switch'}) if config_col else None
-    return jsonify({
+    r = make_response(jsonify({
         'killed':     doc['killed'] if doc else False,
         'updated_at': doc['updated_at'] if doc else None
-    })
+    }))
+    r.headers['Access-Control-Allow-Origin'] = '*'
+    r.headers['Cache-Control'] = 'no-store'
+    return r
 
 @app.route('/api/netlify/kill', methods=['POST', 'OPTIONS'])
 def netlify_kill():
