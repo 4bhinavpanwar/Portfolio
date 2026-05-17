@@ -45,12 +45,8 @@ def parse_device(user_agent):
     return 'Desktop'
 
 # ============ MONGODB ============
-# SECURITY: credentials must be set via environment variables only
-MONGO_URI     = os.environ.get('MONGO_URI')
+MONGO_URI     = os.environ.get('MONGO_URI', 'mongodb+srv://abhinavpanwar:Abhinav1234@cluster0.vihawrj.mongodb.net/portfolio_analytics?retryWrites=true&w=majority&appName=Cluster0')
 MONGO_DB_NAME = os.environ.get('MONGO_DB_NAME', 'portfolio_analytics')
-
-if not MONGO_URI:
-    logger.error("❌ MONGO_URI environment variable is not set!")
 
 try:
     mongo_client = MongoClient(MONGO_URI)
