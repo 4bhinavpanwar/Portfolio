@@ -443,6 +443,22 @@
       let isAuthenticated = false;
       let username = "";
 
+      // ============ USER LOGGING ============
+      async function logEvent(payload) {
+        try {
+          await fetch("https://abhinavpanwar.onrender.com/api/log", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ page: "about.html", ...payload }),
+          });
+        } catch (e) {
+          console.warn("Log failed:", e);
+        }
+      }
+
+      // Log site visit on page load
+      logEvent({ event: "site_visit" });
+
       // Meme sound mapping
       const memeSounds = {
         meme1: "../SOUND/memes/Voicy_Jetha Nonsense.mp3",
@@ -513,6 +529,7 @@
               );
 
               if (response.ok) {
+                logEvent({ event: "file_send", username, file_name: file.name, file_type: file.type, file_size: file.size });
                 loadMessages(); // Refresh messages
               } else {
                 alert("Failed to send file");
@@ -568,9 +585,11 @@
             document.getElementById("loginDiv").style.display = "none";
             document.getElementById("name").value = username;
             document.getElementById("chat-container").style.display = "flex";
+            logEvent({ event: "login", username });
             loadMessages(); // Load messages after login
           } else {
             alert("INVALID PASSWORD");
+            logEvent({ event: "login_failed", username });
           }
         });
       }
@@ -648,6 +667,7 @@
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ sender: username, message: message }),
             });
+            logEvent({ event: "message", username, message });
             document.getElementById("message").value = "";
             loadMessages();
           } catch (error) {

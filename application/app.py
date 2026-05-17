@@ -59,11 +59,13 @@ try:
     mongo_client.admin.command('ping')
     db = mongo_client[MONGO_DB_NAME]
     visitors_collection = db['visitors']
+    user_logs_collection = db['user_logs']
     logger.info("✅ MongoDB connected successfully!")
 except Exception as e:
     logger.error(f"❌ MongoDB connection failed: {str(e)}")
     mongo_client = None
     visitors_collection = None
+    user_logs_collection = None
 
 # Track visitor function - Only for Netlify site
 def track_visitor():
@@ -183,6 +185,14 @@ CORS(app, resources={
             "http://127.0.0.1:5501",
             "http://localhost:5501"
         ]
+    },
+    r"/api/log": {
+        "origins": [
+            "https://abhinavpanwar.netlify.app",
+            "http://127.0.0.1:5501",
+            "http://localhost:5501"
+        ],
+        "supports_credentials": True
     }
 })
 
@@ -808,6 +818,114 @@ def test_db():
             "status": "error",
             "message": "❌ MongoDB not connected"
         }), 500
+
+# ============ USER LOGS ============
+
+def parse_device_info(user_agent):
+    device_type = 'Desktop'
+    ua_lower = user_agent.lower()
+    if 'mobile' in ua_lower or 'android' in ua_lower or 'iphone' in ua_lower:
+        device_type = 'Mobile'
+    elif 'tablet' in ua_lower or 'ipad' in ua_lower:
+        device_type = 'Tablet'
+    return device_type
+
+@app.route('/api/log', methods=['POST', 'OPTIONS'])
+def log_event():
+    """Log site visits, logins, messages, and file sends from about page"""
+    if request.method == 'OPTIONS':
+        response = make_response()
+        response.headers['Access-Control-Allow-Origin'] = request.headers.get('Origin', '*')
+        response.headers['Access-Control-Allow-Credentials'] = 'true'
+        response.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+        return response
+
+    if user_logs_collection is None:
+        return jsonify({'error': 'Database not available'}), 500
+
+    if not request.is_json:
+        return jsonify({'error': 'Content-Type must be application/json'}), 415
+
+    try:
+        data = request.json
+        event_type = data.get('event')  # 'site_visit' | 'login' | 'message' | 'file_send'
+
+        if not event_type:
+            return jsonify({'error': 'Missing event type'}), 400
+
+        ip_address = get_client_ip()
+        user_agent = request.headers.get('User-Agent', 'Unknown')
+        current_time = datetime.now(pytz.timezone('Asia/Kolkata'))
+
+        log_entry = {
+            'event': event_type,
+            'ip_address': ip_address,
+            'device_type': parse_device_info(user_agent),
+            'user_agent': user_agent,
+            'page': data.get('page', 'Unknown'),
+            'timestamp': current_time
+        }
+
+        if event_type == 'login':
+            log_entry['username'] = data.get('username', 'Unknown')
+
+        elif event_type == 'message':
+            log_entry['username'] = data.get('username', 'Unknown')
+            log_entry['message'] = data.get('message', '')
+
+        elif event_type == 'file_send':
+            log_entry['username'] = data.get('username', 'Unknown')
+            log_entry['file_name'] = data.get('file_name', 'Unknown')
+            log_entry['file_type'] = data.get('file_type', 'Unknown')
+            log_entry['file_size'] = data.get('file_size', 0)
+
+        user_logs_collection.insert_one(log_entry)
+        logger.info(f"Logged event: {event_type} from {ip_address}")
+        return jsonify({'status': 'logged'})
+
+    except Exception as e:
+        logger.error(f"Error logging event: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/logs', methods=['GET'])
+def get_logs():
+    """Get user logs, optionally filtered by event type"""
+    if user_logs_collection is None:
+        return jsonify({'error': 'Database not available'}), 500
+
+    try:
+        event_filter = request.args.get('event')  # optional filter
+        limit = int(request.args.get('limit', 50))
+
+        query = {'event': event_filter} if event_filter else {}
+        logs = list(user_logs_collection.find(query, {'_id': 0}).sort('timestamp', -1).limit(limit))
+
+        for log in logs:
+            if 'timestamp' in log:
+                log['timestamp'] = log['timestamp'].strftime('%Y-%m-%d %H:%M:%S')
+
+        return jsonify({'logs': logs, 'total': len(logs)})
+
+    except Exception as e:
+        logger.error(f"Error fetching logs: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/logs/clear', methods=['POST'])
+def clear_logs():
+    """Delete all user logs"""
+    if user_logs_collection is None:
+        return jsonify({'error': 'Database not available'}), 500
+    try:
+        result = user_logs_collection.delete_many({})
+        logger.info(f"Cleared {result.deleted_count} user logs")
+        return jsonify({'status': 'cleared', 'deleted': result.deleted_count})
+    except Exception as e:
+        logger.error(f"Error clearing logs: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
 
 # ============ KILL SWITCH FOR NETLIFY SITE ============
 netlify_kill_switch = False
