@@ -554,8 +554,13 @@
 
           async function clearLogs() {
             if (!confirm('Delete ALL user logs? This cannot be undone.')) return;
+            const pwd = document.getElementById('current-password').textContent.trim();
             try {
-              await fetch(`${API}/api/logs/clear`, { method: 'POST' });
+              await fetch(`${API}/api/logs/clear`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: pwd })
+              });
               loadLogs();
             } catch (e) {
               alert('Failed to clear logs');
@@ -844,14 +849,13 @@
           }
 
           try {
+            const pwd = document.getElementById("current-password").textContent.trim();
             const response = await fetchWithErrorHandling(
               `${API_BASE}/api/end_poll`,
               {
                 method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({}), // No need for poll_id since we're clearing all
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ password: pwd }),
               },
             );
 
@@ -902,13 +906,12 @@
             return;
           }
 
+          const pwd = document.getElementById("current-password").textContent.trim();
           try {
             await fetchWithErrorHandling(`${API_BASE}/api/set_h3`, {
               method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ new_text: newHeadline }),
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ new_text: newHeadline, password: pwd }),
             });
 
             currentHeadline.textContent = newHeadline;
@@ -944,18 +947,14 @@
             return;
           }
 
+          const pwd = document.getElementById("current-password").textContent.trim();
           try {
             const response = await fetchWithErrorHandling(
               `${API_BASE}/api/poll`,
               {
                 method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  question: question,
-                  options: options,
-                }),
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ question, options, password: pwd }),
               },
             );
 
@@ -989,15 +988,14 @@
             return;
           }
 
+          const currentPwd = document.getElementById("current-password").textContent.trim();
           try {
             const response = await fetchWithErrorHandling(
               `${API_BASE}/set_password`,
               {
                 method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ new_password: newPassword }),
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ new_password: newPassword, password: currentPwd }),
               },
             );
 
@@ -1047,14 +1045,14 @@
             return;
           }
 
+          const pwd = document.getElementById("current-password").textContent.trim();
           try {
             const response = await fetchWithErrorHandling(
               `${API_BASE}/clear_messages`,
               {
                 method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ password: pwd }),
               },
             );
 
