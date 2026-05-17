@@ -614,21 +614,22 @@
         }
 
         async function killNetlifySite() {
-          const password = prompt("PASSWORD");
-          if (!password) return;
-
+          const password = document.getElementById('current-password').textContent.trim();
+          if (!password || password === 'Loading current password...') {
+            alert('Password not loaded yet, try again.');
+            return;
+          }
           try {
             const response = await fetch(`${RENDER_API}/api/netlify/kill`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ password: password }),
+              body: JSON.stringify({ password }),
             });
-
             if (response.ok) {
-              alert("KILLED");
               getNetlifyStatus();
             } else {
-              alert("INCORRECT");
+              const d = await response.json();
+              alert('Failed: ' + (d.error || response.status));
             }
           } catch (error) {
             alert("Error connecting to server");
@@ -636,23 +637,22 @@
         }
 
         async function restoreNetlifySite() {
-          const password = prompt(
-            "PASSWORD",
-          );
-          if (!password) return;
-
+          const password = document.getElementById('current-password').textContent.trim();
+          if (!password || password === 'Loading current password...') {
+            alert('Password not loaded yet, try again.');
+            return;
+          }
           try {
             const response = await fetch(`${RENDER_API}/api/netlify/restore`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ password: password }),
+              body: JSON.stringify({ password }),
             });
-
             if (response.ok) {
-              alert("RESTORED");
               getNetlifyStatus();
             } else {
-              alert("INCORRECT");
+              const d = await response.json();
+              alert('Failed: ' + (d.error || response.status));
             }
           } catch (error) {
             alert("Error connecting to server");
@@ -780,44 +780,34 @@
         // Load current poll and results
         async function loadPoll() {
           try {
-            // Get current poll
-            const pollResponse = await fetchWithErrorHandling(
-              `${API_BASE}/api/current_poll`,
-            );
-
-            if (pollResponse.error || !pollResponse.question) {
+            const pollRes = await fetch(`${API_BASE}/api/current_poll`);
+            if (pollRes.status === 404) {
               pollStatus.textContent = "No active poll";
               pollOptions.classList.add("hidden");
               pollActions.classList.add("hidden");
               currentPollId = null;
               return;
             }
-
-            currentPollId = pollResponse.id;
+            const pollResponse = await pollRes.json();
+            if (!pollResponse.question) {
+              pollStatus.textContent = "No active poll";
+              pollOptions.classList.add("hidden");
+              pollActions.classList.add("hidden");
+              currentPollId = null;
+              return;
+            }
+            currentPollId = pollResponse.poll_id;
             pollStatus.textContent = pollResponse.question;
-
-            // Get poll results
-            const resultsResponse = await fetchWithErrorHandling(
-              `${API_BASE}/api/poll_results`,
-            );
-
-            // Display poll with results
+            const resultsResponse = await fetchWithErrorHandling(`${API_BASE}/api/poll_results`);
             pollOptions.innerHTML = pollResponse.options
               .map((option, index) => {
                 const voteCount = resultsResponse.results?.[index] || 0;
-                return `
-                        <div class="option-item">
-                            <span>${option}</span>
-                            <span class="vote-count">${voteCount} votes</span>
-                        </div>
-                    `;
-              })
-              .join("");
-
+                return `<div class="option-item"><span>${option}</span><span class="vote-count">${voteCount} votes</span></div>`;
+              }).join("");
             pollOptions.classList.remove("hidden");
             pollActions.classList.remove("hidden");
           } catch (error) {
-            pollStatus.textContent = "Error loading poll";
+            pollStatus.textContent = "No active poll";
             pollOptions.classList.add("hidden");
             pollActions.classList.add("hidden");
             console.error("Poll load error:", error);

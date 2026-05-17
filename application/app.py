@@ -576,11 +576,15 @@ def netlify_kill_status():
         r.headers['Access-Control-Allow-Headers'] = 'Content-Type'
         return r
     try:
-        doc = config_col.find_one({'_id': 'kill_switch'}) if config_col else None
-        killed     = doc['killed'] if doc else False
-        updated_at = doc['updated_at'] if doc else None
-    except Exception:
         killed, updated_at = False, None
+        if config_col is not None:
+            doc = config_col.find_one({'_id': 'kill_switch'})
+            logger.debug(f"kill-status doc: {doc}")
+            if doc:
+                killed     = doc.get('killed', False)
+                updated_at = doc.get('updated_at')
+    except Exception as e:
+        logger.error(f"kill-status error: {e}")
     r = make_response(jsonify({'killed': killed, 'updated_at': updated_at}))
     r.headers['Access-Control-Allow-Origin'] = '*'
     r.headers['Cache-Control'] = 'no-store'
@@ -592,11 +596,18 @@ def netlify_kill():
         r = make_response()
         r.headers['Access-Control-Allow-Origin'] = '*'
         return r
+    if config_col is None:
+        return jsonify({'error': 'DB unavailable'}), 500
     data = request.get_json() or {}
     if not require_password(data):
         return jsonify({'error': 'Unauthorized'}), 401
     updated_at = now_ist().isoformat()
-    config_col.update_one({'_id': 'kill_switch'}, {'$set': {'killed': True, 'updated_at': updated_at}}, upsert=True)
+    result = config_col.update_one(
+        {'_id': 'kill_switch'},
+        {'$set': {'killed': True, 'updated_at': updated_at}},
+        upsert=True
+    )
+    logger.info(f"kill update result: matched={result.matched_count} modified={result.modified_count} upserted={result.upserted_id}")
     _api_log('kill_switch_on')
     return jsonify({'success': True, 'activated_at': updated_at})
 
@@ -606,11 +617,18 @@ def netlify_restore():
         r = make_response()
         r.headers['Access-Control-Allow-Origin'] = '*'
         return r
+    if config_col is None:
+        return jsonify({'error': 'DB unavailable'}), 500
     data = request.get_json() or {}
     if not require_password(data):
         return jsonify({'error': 'Unauthorized'}), 401
     updated_at = now_ist().isoformat()
-    config_col.update_one({'_id': 'kill_switch'}, {'$set': {'killed': False, 'updated_at': updated_at}}, upsert=True)
+    result = config_col.update_one(
+        {'_id': 'kill_switch'},
+        {'$set': {'killed': False, 'updated_at': updated_at}},
+        upsert=True
+    )
+    logger.info(f"restore update result: matched={result.matched_count} modified={result.modified_count} upserted={result.upserted_id}")
     _api_log('kill_switch_off')
     return jsonify({'success': True, 'deactivated_at': updated_at})
 
