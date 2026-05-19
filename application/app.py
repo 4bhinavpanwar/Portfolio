@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, make_response, render_template
+from flask import Flask, request, jsonify, make_response, render_template, session, redirect, url_for
 from flask_cors import CORS
 import uuid
 from datetime import datetime, timedelta
@@ -7,9 +7,23 @@ import time
 import os
 import logging
 import pytz
+import hashlib
 from pymongo import MongoClient
 
 app = Flask(__name__)
+app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-prod')
+
+ADMIN_USERNAME = 'Abhinav'
+ADMIN_PASSWORD_HASH = hashlib.sha256('1289#ijFK'.encode()).hexdigest()
+
+def login_required(f):
+    from functools import wraps
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not session.get('logged_in'):
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -109,9 +123,9 @@ CORS(app, resources={r"/*": {
 
 app.config.update(
     SESSION_COOKIE_SECURE=True,
-    SESSION_COOKIE_SAMESITE='None',
+    SESSION_COOKIE_SAMESITE='Lax',
     SESSION_COOKIE_HTTPONLY=True,
-    PERMANENT_SESSION_LIFETIME=timedelta(minutes=30),
+    PERMANENT_SESSION_LIFETIME=timedelta(hours=8),
     PREFERRED_URL_SCHEME='https'
 )
 
@@ -135,7 +149,27 @@ threading.Thread(target=cleanup_sessions, daemon=True).start()
 
 # ============ ROUTES ============
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = None
+    if request.method == 'POST':
+        username = request.form.get('username', '')
+        password = request.form.get('password', '')
+        if (username == ADMIN_USERNAME and
+                hashlib.sha256(password.encode()).hexdigest() == ADMIN_PASSWORD_HASH):
+            session.permanent = True
+            session['logged_in'] = True
+            return redirect(url_for('home'))
+        error = 'Invalid credentials'
+    return render_template('login.html', error=error)
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
+
 @app.route('/')
+@login_required
 def home():
     return render_template('index.html', server_time=now_ist().strftime("%Y-%m-%d %H:%M:%S"))
 
