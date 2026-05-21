@@ -522,7 +522,7 @@
             container.innerHTML = '<div style="text-align:center;color:#888;padding:20px;">Loading...</div>';
 
             try {
-              const res  = await fetch(url);
+              const res  = await fetch(url, { headers: { 'X-Admin-Token': window._adminToken || '' } });
               const data = await res.json();
               const logs = data.logs || [];
 
@@ -573,6 +573,101 @@
           document.getElementById('log-filter').addEventListener('change', loadLogs);
 
           loadLogs();
+        })();
+      </script>
+
+      <!-- Song Management -->
+      <div class="card">
+        <h2>Music Vote</h2>
+        <div id="songs-list" style="margin-bottom:14px;"></div>
+        <form id="songForm">
+          <div class="form-group">
+            <label for="song_title">Song Title</label>
+            <input type="text" id="song_title" placeholder="e.g. Blinding Lights" required />
+          </div>
+          <div class="form-group">
+            <label for="song_artist">Artist</label>
+            <input type="text" id="song_artist" placeholder="e.g. The Weeknd" />
+          </div>
+          <div class="form-group">
+            <label for="song_yt">YouTube URL or Video ID</label>
+            <input type="text" id="song_yt" placeholder="https://youtube.com/watch?v=... or video ID" required />
+          </div>
+          <button type="submit" class="secondary">Add Song</button>
+        </form>
+        <div id="song-status" class="status-message hidden"></div>
+      </div>
+
+      <script>
+        (function () {
+          const API = window.location.origin;
+
+          function extractYtId(val) {
+            const m = val.match(/(?:v=|youtu\.be\/|embed\/)([\w\-]{11})/);
+            return m ? m[1] : val.trim();
+          }
+
+          async function loadSongs() {
+            const res  = await fetch(`${API}/api/songs`);
+            const data = await res.json();
+            const songs = data.songs || [];
+            const container = document.getElementById('songs-list');
+            if (!songs.length) {
+              container.innerHTML = '<div style="color:#555;font-size:0.85rem;">No songs added yet</div>';
+              return;
+            }
+            container.innerHTML = songs.map(s => `
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#2a2a2a;border-radius:6px;margin-bottom:6px;">
+                <div>
+                  <div style="font-size:0.9rem;font-weight:600;color:#fff;">${s.title}</div>
+                  <div style="font-size:0.75rem;color:#888;">${s.artist || ''} &nbsp;·&nbsp; <span style="color:#4caf50;">▲ ${s.votes}</span></div>
+                </div>
+                <button class="danger" style="padding:4px 10px;font-size:0.8rem;" onclick="deleteSong('${s.id}')">Remove</button>
+              </div>`).join('');
+          }
+
+          window.deleteSong = async function (id) {
+            const pwd = document.getElementById('current-password').textContent.trim();
+            await fetch(`${API}/api/songs/delete`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id, password: pwd })
+            });
+            loadSongs();
+          };
+
+          document.getElementById('songForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const pwd    = document.getElementById('current-password').textContent.trim();
+            const title  = document.getElementById('song_title').value.trim();
+            const artist = document.getElementById('song_artist').value.trim();
+            const ytRaw  = document.getElementById('song_yt').value.trim();
+            const ytId   = extractYtId(ytRaw);
+            const status = document.getElementById('song-status');
+            try {
+              const res = await fetch(`${API}/api/songs/add`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, artist, youtube_id: ytId, password: pwd })
+              });
+              if (!res.ok) throw new Error();
+              document.getElementById('song_title').value  = '';
+              document.getElementById('song_artist').value = '';
+              document.getElementById('song_yt').value     = '';
+              status.textContent = 'Song added!';
+              status.className = 'success status-message';
+              status.classList.remove('hidden');
+              setTimeout(() => status.classList.add('hidden'), 3000);
+              loadSongs();
+            } catch {
+              status.textContent = 'Failed to add song';
+              status.className = 'error status-message';
+              status.classList.remove('hidden');
+              setTimeout(() => status.classList.add('hidden'), 3000);
+            }
+          });
+
+          loadSongs();
         })();
       </script>
 
@@ -674,6 +769,7 @@
       </script>
     </div>
 
+    <script>window._adminToken = {{ config['SECRET_KEY']|tojson }};</script>
     <script>
       document.addEventListener("DOMContentLoaded", async () => {
         // DOM Elements

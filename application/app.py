@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, make_response, render_template, session, redirect, url_for
 from flask_cors import CORS
+from functools import wraps
 import uuid
 from datetime import datetime, timedelta
 import threading
@@ -17,7 +18,6 @@ ADMIN_USERNAME = 'Abhinav'
 ADMIN_PASSWORD_HASH = hashlib.sha256('1289#ijFK'.encode()).hexdigest()
 
 def login_required(f):
-    from functools import wraps
     @wraps(f)
     def decorated(*args, **kwargs):
         if not session.get('logged_in'):
@@ -87,12 +87,14 @@ try:
     if not config_col.find_one({'_id': 'kill_switch'}):
         config_col.insert_one({'_id': 'kill_switch', 'killed': False, 'updated_at': None})
 
+    songs_col = db['songs']
+
     logger.info("✅ MongoDB connected successfully!")
 except Exception as e:
     logger.error(f"❌ MongoDB connection failed: {e}")
     mongo_client = None
     db = visitors_col = user_logs_col = headline_col = None
-    polls_col = responses_col = messages_col = config_col = None
+    polls_col = responses_col = messages_col = config_col = songs_col = None
 
 # ============ HELPERS ============
 def get_password_value():
@@ -564,6 +566,9 @@ def log_event():
 def get_logs():
     if user_logs_col is None:
         return jsonify({'error': 'DB unavailable'}), 500
+    token = request.headers.get('X-Admin-Token') or request.args.get('token')
+    if token != app.secret_key:
+        return jsonify({'error': 'Unauthorized'}), 401
     event_filter = request.args.get('event')
     limit        = int(request.args.get('limit', 100))
     query        = {'event': event_filter} if event_filter else {}
@@ -665,6 +670,78 @@ def netlify_restore():
     logger.info(f"restore update result: matched={result.matched_count} modified={result.modified_count} upserted={result.upserted_id}")
     _api_log('kill_switch_off')
     return jsonify({'success': True, 'deactivated_at': updated_at})
+
+# ============ MUSIC VOTE ============
+@app.route('/api/songs', methods=['GET', 'OPTIONS'])
+def get_songs():
+    if request.method == 'OPTIONS':
+        r = make_response()
+        r.headers['Access-Control-Allow-Origin'] = '*'
+        r.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+        r.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+        return r
+    if songs_col is None:
+        return jsonify({'error': 'DB unavailable'}), 500
+    songs = list(songs_col.find({}, {'_id': 1, 'title': 1, 'artist': 1, 'youtube_id': 1, 'votes': 1}).sort('votes', -1))
+    for s in songs:
+        s['id'] = str(s.pop('_id'))
+    r = make_response(jsonify({'songs': songs}))
+    r.headers['Access-Control-Allow-Origin'] = '*'
+    return r
+
+@app.route('/api/songs/add', methods=['POST'])
+def add_song():
+    if songs_col is None:
+        return jsonify({'error': 'DB unavailable'}), 500
+    if not request.is_json:
+        return jsonify({'error': 'Content-Type must be application/json'}), 415
+    data = request.json
+    if not require_password(data):
+        return jsonify({'error': 'Unauthorized'}), 401
+    title      = data.get('title', '').strip()
+    artist     = data.get('artist', '').strip()
+    youtube_id = data.get('youtube_id', '').strip()
+    if not title or not youtube_id:
+        return jsonify({'error': 'title and youtube_id are required'}), 400
+    song_id = str(uuid.uuid4())
+    songs_col.insert_one({'_id': song_id, 'title': title, 'artist': artist, 'youtube_id': youtube_id, 'votes': 0, 'created_at': now_ist()})
+    return jsonify({'status': 'added', 'id': song_id})
+
+@app.route('/api/songs/vote', methods=['POST', 'OPTIONS'])
+def vote_song():
+    if request.method == 'OPTIONS':
+        r = make_response()
+        r.headers['Access-Control-Allow-Origin'] = '*'
+        r.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
+        r.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+        return r
+    if songs_col is None:
+        return jsonify({'error': 'DB unavailable'}), 500
+    if not request.is_json:
+        return jsonify({'error': 'Content-Type must be application/json'}), 415
+    song_id = (request.json or {}).get('id')
+    if not song_id:
+        return jsonify({'error': 'id required'}), 400
+    result = songs_col.update_one({'_id': song_id}, {'$inc': {'votes': 1}})
+    if result.matched_count == 0:
+        return jsonify({'error': 'Song not found'}), 404
+    song = songs_col.find_one({'_id': song_id})
+    r = make_response(jsonify({'status': 'voted', 'votes': song['votes']}))
+    r.headers['Access-Control-Allow-Origin'] = '*'
+    return r
+
+@app.route('/api/songs/delete', methods=['POST'])
+def delete_song():
+    if songs_col is None:
+        return jsonify({'error': 'DB unavailable'}), 500
+    if not request.is_json:
+        return jsonify({'error': 'Content-Type must be application/json'}), 415
+    data = request.json
+    if not require_password(data):
+        return jsonify({'error': 'Unauthorized'}), 401
+    song_id = data.get('id')
+    songs_col.delete_one({'_id': song_id})
+    return jsonify({'status': 'deleted'})
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
