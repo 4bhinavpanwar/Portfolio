@@ -1001,6 +1001,15 @@ nav ul.active {
     font-size: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   }
+  #music-btn {
+    bottom: 20px;
+    left: 20px;
+  }
+  #music-panel {
+    bottom: 80px;
+    left: 10px;
+    width: calc(100vw - 20px);
+  }
   #chat-container {
     bottom: 10vh;
     width: 90vw;
