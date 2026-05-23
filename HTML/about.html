@@ -408,6 +408,10 @@
         background: white;
         border-radius: 2px;
         animation: bounce 1s ease-in-out infinite;
+        animation-play-state: paused;
+      }
+      #music-btn.playing-active .bar {
+        animation-play-state: running;
       }
       .b1 { height: 10px; animation-delay: 0s; }
       .b2 { height: 18px; animation-delay: 0.15s; }
@@ -580,11 +584,13 @@
       (function () {
         const API = 'https://abhinavpanwar.onrender.com';
         let songs = [];
-        let currentIdx = 0;
+        let currentIdx = -1;   // -1 = nothing playing
+        let isPlaying = false;
         let panelOpen = false;
         let votedIds = JSON.parse(localStorage.getItem('mv_voted') || '[]');
         let playerIframe = null;
 
+        // ── panel toggle ──────────────────────────────────────────
         function toggleMusicPanel() {
           panelOpen = !panelOpen;
           const panel = document.getElementById('music-panel');
@@ -597,18 +603,26 @@
           document.getElementById('music-panel').style.display = 'none';
         };
 
+        // ── load songs from API ───────────────────────────────────
         async function loadSongs() {
           try {
             const res = await fetch(`${API}/api/songs`, { cache: 'no-store' });
             const data = await res.json();
+            // preserve currentIdx by song id after re-sort
+            const playingId = songs[currentIdx]?.id;
             songs = data.songs || [];
+            if (playingId) {
+              const newIdx = songs.findIndex(s => s.id === playingId);
+              currentIdx = newIdx !== -1 ? newIdx : currentIdx;
+            }
             renderList();
-            if (songs.length > 0) updateNowPlaying(songs[0]);
+            if (!isPlaying && songs.length) updateNowPlaying(songs[0]);
           } catch (e) {
             document.getElementById('music-list').innerHTML = '<div class="music-empty">Could not load songs</div>';
           }
         }
 
+        // ── render song list ──────────────────────────────────────
         function renderList() {
           const list = document.getElementById('music-list');
           if (!songs.length) {
@@ -616,11 +630,12 @@
             return;
           }
           list.innerHTML = songs.map((s, i) => {
-            const voted = votedIds.includes(s.id);
-            const isPlaying = i === currentIdx;
+            const voted     = votedIds.includes(s.id);
+            const active    = i === currentIdx;
+            const waveClass = active && isPlaying ? '' : ' paused';
             return `
-              <div class="music-item${isPlaying ? ' playing' : ''}" onclick="playSong(${i})">
-                <div class="song-wave${isPlaying ? '' : ' paused'}">
+              <div class="music-item${active ? ' playing' : ''}" onclick="playSong(${i})">
+                <div class="song-wave${waveClass}">
                   <span></span><span></span><span></span>
                 </div>
                 <div class="song-info">
@@ -635,27 +650,66 @@
           }).join('');
         }
 
+        // ── now-playing header text ───────────────────────────────
         function updateNowPlaying(song) {
           document.getElementById('now-playing-text').textContent =
             song ? `${song.title}${song.artist ? ' · ' + song.artist : ''}` : 'No songs yet';
         }
 
+        // ── set playing state on button ───────────────────────────
+        function setPlayingState(playing) {
+          isPlaying = playing;
+          const btn = document.getElementById('music-btn');
+          if (playing) btn.classList.add('playing-active');
+          else btn.classList.remove('playing-active');
+          renderList();
+        }
+
+        // ── play / pause toggle ───────────────────────────────────
         window.playSong = function (idx) {
+          // clicking the currently playing song → pause it
+          if (idx === currentIdx && isPlaying) {
+            if (playerIframe) playerIframe.remove();
+            playerIframe = null;
+            setPlayingState(false);
+            return;
+          }
           currentIdx = idx;
           const song = songs[idx];
           if (!song) return;
           updateNowPlaying(song);
           if (playerIframe) playerIframe.remove();
           playerIframe = document.createElement('iframe');
-          playerIframe.src = `https://www.youtube.com/embed/${song.youtube_id}?autoplay=1&mute=0&controls=0&rel=0`;
+          playerIframe.src = `https://www.youtube.com/embed/${song.youtube_id}?autoplay=1&mute=0&controls=0&rel=0&enablejsapi=1`;
           playerIframe.width = '0';
           playerIframe.height = '0';
           playerIframe.style.display = 'none';
           playerIframe.allow = 'autoplay';
+          // auto-advance to next song when this one ends
+          playerIframe.addEventListener('load', () => {
+            clearTimeout(window._songTimer);
+            // YouTube embeds don't fire ended events easily without API;
+            // use a generous 7-min fallback to advance
+            window._songTimer = setTimeout(() => autoNext(), 7 * 60 * 1000);
+          });
           document.body.appendChild(playerIframe);
-          renderList();
+          setPlayingState(true);
         };
 
+        // ── auto-advance to next song ─────────────────────────────
+        function autoNext() {
+          if (!songs.length) return;
+          const nextIdx = (currentIdx + 1) % songs.length;
+          window.playSong(nextIdx);
+          // open panel briefly to show what's playing
+          if (!panelOpen) {
+            panelOpen = true;
+            document.getElementById('music-panel').style.display = 'flex';
+            setTimeout(() => { if (panelOpen) window.closeMusicPanel(); }, 4000);
+          }
+        }
+
+        // ── vote ──────────────────────────────────────────────────
         window.voteSong = async function (id, btn) {
           if (votedIds.includes(id)) return;
           try {
@@ -669,15 +723,17 @@
             localStorage.setItem('mv_voted', JSON.stringify(votedIds));
             btn.classList.add('voted');
             btn.querySelector('.vote-count').textContent = data.votes;
-            // re-sort and re-render
             const song = songs.find(s => s.id === id);
             if (song) song.votes = data.votes;
+            const playingId = songs[currentIdx]?.id;
             songs.sort((a, b) => b.votes - a.votes);
+            // keep currentIdx pointing to the same song after re-sort
+            if (playingId) currentIdx = songs.findIndex(s => s.id === playingId);
             renderList();
           } catch (e) { console.error('Vote failed', e); }
         };
 
-        // Auto-play top song on load
+        // ── init: load songs silently on page load ────────────────
         (async function init() {
           try {
             const res = await fetch(`${API}/api/songs`, { cache: 'no-store' });
@@ -687,7 +743,7 @@
           } catch (e) {}
         })();
 
-        // Refresh every 15s only when panel is open
+        // refresh list every 15s only when panel is open
         setInterval(() => { if (panelOpen) loadSongs(); }, 15000);
       })();
     </script>
