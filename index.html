@@ -200,58 +200,54 @@
         align-items: center;
         gap: 4px;
         cursor: pointer;
-        padding: 4px 8px;
-        border-radius: 20px;
-        background: rgba(255,255,255,0.08);
-        border: 1px solid rgba(255,255,255,0.15);
-        backdrop-filter: blur(6px);
-        transition: background 0.2s;
       }
-      #rating-display:hover {
-        background: rgba(255,255,255,0.15);
-      }
-      #rating-stars-display {
-        display: flex;
-        gap: 1px;
-      }
-      #rating-stars-display span {
-        font-size: 11px;
-        line-height: 1;
-      }
+      #rating-stars-display { display: none; }
       #rating-avg {
         font-family: 'Poppins', sans-serif;
-        font-size: 11px;
+        font-size: 1.4rem;
         font-weight: 700;
-        color: #fff;
+        color: #ffc107;
         letter-spacing: 0.3px;
+      }
+      #rating-avg::before {
+        content: '★ ';
+        font-size: 1.2rem;
+      }
+      /* invisible bridge fills the gap so hover doesn't break */
+      #rating-widget::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        height: 16px;
       }
       #rating-popup {
         position: absolute;
-        top: calc(100% + 12px);
+        top: calc(100% + 16px);
         left: 0;
-        background: rgba(10,10,10,0.92);
+        background: rgba(10,10,10,0.95);
         backdrop-filter: blur(12px);
         border: 1px solid rgba(76,175,80,0.3);
         border-radius: 14px;
         padding: 14px 18px;
-        min-width: 200px;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+        min-width: 180px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.6);
         opacity: 0;
         pointer-events: none;
-        transform: translateY(-6px);
-        transition: opacity 0.2s ease, transform 0.2s ease;
+        transform: translateY(-4px);
+        transition: opacity 0.18s ease, transform 0.18s ease;
         z-index: 99999;
       }
-      #rating-widget:hover #rating-popup,
-      #rating-popup:hover {
+      #rating-widget:hover #rating-popup {
         opacity: 1;
         pointer-events: all;
         transform: translateY(0);
       }
       #rating-prompt {
         font-family: 'Poppins', sans-serif;
-        font-size: 11px;
-        color: #aaa;
+        font-size: 10px;
+        color: #888;
         margin-bottom: 10px;
         text-align: center;
         letter-spacing: 0.5px;
@@ -264,34 +260,24 @@
         margin-bottom: 8px;
       }
       .rstar {
-        font-size: 24px;
+        font-size: 22px;
         cursor: pointer;
-        transition: transform 0.15s ease, filter 0.15s ease;
+        transition: transform 0.12s ease, color 0.12s ease;
         line-height: 1;
-        filter: grayscale(1) brightness(0.6);
+        color: #444;
       }
       .rstar::before { content: '★'; }
-      .rstar.hover, .rstar.selected {
-        filter: none;
-        color: #ffc107;
-        transform: scale(1.25);
-      }
-      .rstar.selected {
-        transform: scale(1.15);
-      }
+      .rstar.hover { color: #ffc107; transform: scale(1.3); }
+      .rstar.selected { color: #ffc107; transform: scale(1.15); }
       #rating-count {
         font-family: 'Poppins', sans-serif;
         font-size: 10px;
-        color: #666;
+        color: #555;
         text-align: center;
       }
       #rating-thanks {
-        font-family: 'Poppins', sans-serif;
-        font-size: 12px;
         color: #4caf50;
-        text-align: center;
-        padding: 4px 0;
-        animation: fadeIn 0.3s ease;
+        font-size: 11px;
       }
     </style>
   </head>
@@ -319,7 +305,6 @@
           <a id="logo">@panwar</a>
           <div id="rating-widget">
             <div id="rating-display">
-              <div id="rating-stars-display"></div>
               <span id="rating-avg">...</span>
             </div>
             <div id="rating-popup">
@@ -430,15 +415,7 @@
         const VOTED_KEY = 'portfolio_rated';
         let hasVoted = !!localStorage.getItem(VOTED_KEY);
 
-        function renderDisplayStars(avg) {
-          const el = document.getElementById('rating-stars-display');
-          el.innerHTML = [1,2,3,4,5].map(i => {
-            const full  = i <= Math.floor(avg);
-            const half  = !full && i === Math.ceil(avg) && avg % 1 >= 0.3;
-            const color = (full || half) ? '#ffc107' : '#555';
-            return `<span style="color:${color}">${half ? '&#9734;' : '&#9733;'}</span>`;
-          }).join('');
-        }
+        function renderDisplayStars(avg) {}
 
         async function loadRating() {
           try {
@@ -446,7 +423,6 @@
             const data = await res.json();
             document.getElementById('rating-avg').textContent = data.average ? `${data.average}` : '—';
             document.getElementById('rating-count').textContent = data.count ? `${data.count} rating${data.count !== 1 ? 's' : ''}` : 'Be the first!';
-            renderDisplayStars(data.average || 0);
             if (hasVoted) markVoted();
           } catch (e) {}
         }

@@ -1095,10 +1095,6 @@
         const msgInput = document.getElementById("message");
         const message = msgInput.value.trim();
         if (!message) return;
-        if (message.length > 2000) {
-          alert("Message too long (max 2000 characters)");
-          return;
-        }
 
         const sendBtn = document.getElementById("send-btn");
         sendBtn.disabled = true;

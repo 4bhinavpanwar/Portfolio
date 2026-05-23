@@ -374,10 +374,6 @@ def send_message():
     message = data.get('message', '').strip()
     if not sender or not message:
         return jsonify({'status': 'error', 'message': 'Invalid data'}), 400
-    if len(sender) > 50:
-        return jsonify({'status': 'error', 'message': 'Sender name too long'}), 400
-    if len(message) > 2000:
-        return jsonify({'status': 'error', 'message': 'Message too long'}), 400
 
     messages_col.insert_one({
         'sender':     sender,
