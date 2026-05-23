@@ -89,17 +89,24 @@ try:
 
     songs_col = db['songs']
     rating_col = db['rating']
+    scores_col = db['scores']
 
     # Seed rating doc if missing
     if not rating_col.find_one({'_id': 'portfolio'}):
         rating_col.insert_one({'_id': 'portfolio', 'total': 0, 'count': 0})
+
+    # Seed scores doc if missing
+    if not scores_col.find_one({'_id': 'skills'}):
+        scores_col.insert_one({'_id': 'skills',
+            'F': 80, 'SM': 60, 'TM': 70, 'PS': 80, 'DM': 60, 'C': 70,
+            'updated_at': None})
 
     logger.info("✅ MongoDB connected successfully!")
 except Exception as e:
     logger.error(f"❌ MongoDB connection failed: {e}")
     mongo_client = None
     db = visitors_col = user_logs_col = headline_col = None
-    polls_col = responses_col = messages_col = config_col = songs_col = rating_col = None
+    polls_col = responses_col = messages_col = config_col = songs_col = rating_col = scores_col = None
 
 # ============ HELPERS ============
 def get_password_value():
@@ -675,6 +682,46 @@ def netlify_restore():
     logger.info(f"restore update result: matched={result.matched_count} modified={result.modified_count} upserted={result.upserted_id}")
     _api_log('kill_switch_off')
     return jsonify({'success': True, 'deactivated_at': updated_at})
+
+# ============ SKILL SCORES ============
+@app.route('/api/scores', methods=['GET', 'OPTIONS'])
+def get_scores():
+    if request.method == 'OPTIONS':
+        r = make_response()
+        r.headers['Access-Control-Allow-Origin'] = '*'
+        r.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+        r.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+        return r
+    if scores_col is None:
+        return jsonify({'error': 'DB unavailable'}), 500
+    doc = scores_col.find_one({'_id': 'skills'}, {'_id': 0})
+    r = make_response(jsonify(doc or {}))
+    r.headers['Access-Control-Allow-Origin'] = '*'
+    return r
+
+@app.route('/api/scores', methods=['POST', 'OPTIONS'])
+def set_scores():
+    if request.method == 'OPTIONS':
+        r = make_response()
+        r.headers['Access-Control-Allow-Origin'] = '*'
+        r.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
+        r.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+        return r
+    if scores_col is None:
+        return jsonify({'error': 'DB unavailable'}), 500
+    if not request.is_json:
+        return jsonify({'error': 'Content-Type must be application/json'}), 415
+    data    = request.json or {}
+    skill   = data.get('skill')
+    value   = data.get('value')
+    if skill not in ('F', 'SM', 'TM', 'PS', 'DM', 'C') or not isinstance(value, int) or not (0 <= value <= 100):
+        return jsonify({'error': 'Invalid skill or value'}), 400
+    scores_col.update_one({'_id': 'skills'},
+        {'$set': {skill: value, 'updated_at': now_ist().strftime('%d %b %Y, %I:%M %p')}},
+        upsert=True)
+    r = make_response(jsonify({'status': 'updated', 'skill': skill, 'value': value}))
+    r.headers['Access-Control-Allow-Origin'] = '*'
+    return r
 
 # ============ RATING ============
 @app.route('/api/rating', methods=['GET', 'OPTIONS'])

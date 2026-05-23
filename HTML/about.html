@@ -236,31 +236,50 @@
     </div>
     <div id="SH">
       <div class="skill-bar">
-        <div class="skill-name">Focus</div>
-        <div class="bar-container">
+        <div class="skill-row">
+          <span class="skill-name">Focus</span>
+          <span class="skill-pct" id="pct-F">80%</span>
+        </div>
+        <div class="bar-container" data-skill="F">
           <div class="bar" id="F"></div>
         </div>
-        <div class="skill-name">Stress Management</div>
-        <div class="bar-container">
+        <div class="skill-row">
+          <span class="skill-name">Stress Management</span>
+          <span class="skill-pct" id="pct-SM">60%</span>
+        </div>
+        <div class="bar-container" data-skill="SM">
           <div class="bar" id="SM"></div>
         </div>
-        <div class="skill-name">Time Management</div>
-        <div class="bar-container">
+        <div class="skill-row">
+          <span class="skill-name">Time Management</span>
+          <span class="skill-pct" id="pct-TM">70%</span>
+        </div>
+        <div class="bar-container" data-skill="TM">
           <div class="bar" id="TM"></div>
         </div>
-        <div class="skill-name">Problem Solving</div>
-        <div class="bar-container">
+        <div class="skill-row">
+          <span class="skill-name">Problem Solving</span>
+          <span class="skill-pct" id="pct-PS">80%</span>
+        </div>
+        <div class="bar-container" data-skill="PS">
           <div class="bar" id="PS"></div>
         </div>
-        <div class="skill-name">Decision Making</div>
-        <div class="bar-container">
+        <div class="skill-row">
+          <span class="skill-name">Decision Making</span>
+          <span class="skill-pct" id="pct-DM">60%</span>
+        </div>
+        <div class="bar-container" data-skill="DM">
           <div class="bar" id="DM"></div>
         </div>
-        <div class="skill-name">Confidence</div>
-        <div class="bar-container">
+        <div class="skill-row">
+          <span class="skill-name">Confidence</span>
+          <span class="skill-pct" id="pct-C">70%</span>
+        </div>
+        <div class="bar-container" data-skill="C">
           <div class="bar" id="C"></div>
         </div>
       </div>
+      <div id="scores-hint">drag bars to rate &nbsp;&bull;&nbsp; last changed: <span id="scores-time">—</span></div>
     </div>
     <div id="B1">
       <button id="experience" class="btn" onclick="f1()">My Experiences</button>
@@ -354,10 +373,10 @@
     <!-- Music Vote Widget -->
     <div id="music-btn" onclick="toggleMusicPanel()">
       <div class="music-bars">
-        <span class="bar b1"></span>
-        <span class="bar b2"></span>
-        <span class="bar b3"></span>
-        <span class="bar b4"></span>
+        <span class="music-bar b1"></span>
+        <span class="music-bar b2"></span>
+        <span class="music-bar b3"></span>
+        <span class="music-bar b4"></span>
       </div>
     </div>
 
@@ -403,14 +422,14 @@
         gap: 3px;
         height: 22px;
       }
-      .bar {
+      .music-bar {
         width: 4px;
         background: white;
         border-radius: 2px;
         animation: bounce 1s ease-in-out infinite;
         animation-play-state: paused;
       }
-      #music-btn.playing-active .bar {
+      #music-btn.playing-active .music-bar {
         animation-play-state: running;
       }
       .b1 { height: 10px; animation-delay: 0s; }
