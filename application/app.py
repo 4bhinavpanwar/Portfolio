@@ -88,13 +88,18 @@ try:
         config_col.insert_one({'_id': 'kill_switch', 'killed': False, 'updated_at': None})
 
     songs_col = db['songs']
+    rating_col = db['rating']
+
+    # Seed rating doc if missing
+    if not rating_col.find_one({'_id': 'portfolio'}):
+        rating_col.insert_one({'_id': 'portfolio', 'total': 0, 'count': 0})
 
     logger.info("✅ MongoDB connected successfully!")
 except Exception as e:
     logger.error(f"❌ MongoDB connection failed: {e}")
     mongo_client = None
     db = visitors_col = user_logs_col = headline_col = None
-    polls_col = responses_col = messages_col = config_col = songs_col = None
+    polls_col = responses_col = messages_col = config_col = songs_col = rating_col = None
 
 # ============ HELPERS ============
 def get_password_value():
@@ -365,10 +370,14 @@ def send_message():
     if messages_col is None:
         return jsonify({'status': 'error', 'message': 'DB unavailable'}), 500
     data    = request.json or {}
-    sender  = data.get('sender')
-    message = data.get('message')
+    sender  = data.get('sender', '').strip()
+    message = data.get('message', '').strip()
     if not sender or not message:
         return jsonify({'status': 'error', 'message': 'Invalid data'}), 400
+    if len(sender) > 50:
+        return jsonify({'status': 'error', 'message': 'Sender name too long'}), 400
+    if len(message) > 2000:
+        return jsonify({'status': 'error', 'message': 'Message too long'}), 400
 
     messages_col.insert_one({
         'sender':     sender,
@@ -670,6 +679,45 @@ def netlify_restore():
     logger.info(f"restore update result: matched={result.matched_count} modified={result.modified_count} upserted={result.upserted_id}")
     _api_log('kill_switch_off')
     return jsonify({'success': True, 'deactivated_at': updated_at})
+
+# ============ RATING ============
+@app.route('/api/rating', methods=['GET', 'OPTIONS'])
+def get_rating():
+    if request.method == 'OPTIONS':
+        r = make_response()
+        r.headers['Access-Control-Allow-Origin'] = '*'
+        r.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+        r.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+        return r
+    if rating_col is None:
+        return jsonify({'error': 'DB unavailable'}), 500
+    doc = rating_col.find_one({'_id': 'portfolio'})
+    total = doc.get('total', 0)
+    count = doc.get('count', 0)
+    avg   = round(total / count, 1) if count else 0
+    r = make_response(jsonify({'average': avg, 'count': count}))
+    r.headers['Access-Control-Allow-Origin'] = '*'
+    return r
+
+@app.route('/api/rating', methods=['POST'])
+def submit_rating():
+    if rating_col is None:
+        return jsonify({'error': 'DB unavailable'}), 500
+    if not request.is_json:
+        return jsonify({'error': 'Content-Type must be application/json'}), 415
+    stars = (request.json or {}).get('stars')
+    if stars not in (1, 2, 3, 4, 5):
+        return jsonify({'error': 'stars must be 1-5'}), 400
+    rating_col.update_one(
+        {'_id': 'portfolio'},
+        {'$inc': {'total': stars, 'count': 1}},
+        upsert=True
+    )
+    doc = rating_col.find_one({'_id': 'portfolio'})
+    avg = round(doc['total'] / doc['count'], 1)
+    r = make_response(jsonify({'average': avg, 'count': doc['count']}))
+    r.headers['Access-Control-Allow-Origin'] = '*'
+    return r
 
 # ============ MUSIC VOTE ============
 @app.route('/api/songs', methods=['GET', 'OPTIONS'])
