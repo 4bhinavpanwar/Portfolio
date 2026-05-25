@@ -1140,81 +1140,80 @@
             "https://abhinavpanwar.onrender.com/get_messages",
           );
 
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
+          if (!response.ok) throw new Error("Network response was not ok");
 
           const data = await response.json();
           const messagesDiv = document.getElementById("messages");
 
-          messagesDiv.innerHTML = data
-            .map((msg) => {
-              // Check if it's a file message
-              if (msg.isFile || msg.fileData) {
-                const fileData = msg.fileData || msg.data;
-                const fileName = msg.fileName || msg.name;
-                const fileType = msg.fileType || msg.type || "";
+          messagesDiv.innerHTML = '';
 
-                // Choose icon based on file type
-                let fileIcon = "📎";
-                if (fileType.startsWith("image/")) fileIcon = "🖼️";
-                else if (fileType.startsWith("video/")) fileIcon = "🎥";
-                else if (fileType.startsWith("audio/")) fileIcon = "🎵";
-                else if (fileType.includes("pdf")) fileIcon = "📄";
+          data.forEach((msg) => {
+            if (msg.isFile || msg.fileData) {
+              const fileData = msg.fileData || msg.data;
+              const fileName = msg.fileName || msg.name;
+              const fileType = msg.fileType || msg.type || "";
+              let fileIcon = "📎";
+              if (fileType.startsWith("image/")) fileIcon = "🖼️";
+              else if (fileType.startsWith("video/")) fileIcon = "🎥";
+              else if (fileType.startsWith("audio/")) fileIcon = "🎵";
+              else if (fileType.includes("pdf")) fileIcon = "📄";
 
-                // For images, show preview
-                if (fileType.startsWith("image/")) {
-                  return `<div class="message file-message" style="background: #e8f5e9; padding: 8px 12px; border-radius: 10px; margin: 5px 0;">
+              const wrapper = document.createElement('div');
+              if (fileType.startsWith("image/")) {
+                wrapper.innerHTML = `<div class="message file-message" style="background:#e8f5e9;padding:8px 12px;border-radius:10px;margin:5px 0;">
   <strong>${escapeHtml(msg.sender)}:</strong>
   <div>
     <a href="${fileData}" download="${fileName}" target="_blank">${fileIcon} ${escapeHtml(fileName)}</a>
-    <div style="margin-top: 5px;">
-      <img src="${fileData}" alt="${escapeHtml(fileName)}" style="max-width: 150px; max-height: 120px; border-radius: 8px; cursor: pointer;" onclick="viewImage('${fileData}', '${escapeHtml(fileName)}')">
-    </div>
+    <div style="margin-top:5px;"><img src="${fileData}" alt="${escapeHtml(fileName)}" style="max-width:150px;max-height:120px;border-radius:8px;cursor:pointer;" onclick="viewImage('${fileData}','${escapeHtml(fileName)}')"></div>
   </div>
-  <span style="color: #888; font-size: 10px;">${msg.time || ""}</span>
+  <span style="color:#888;font-size:10px;">${msg.time || ""}</span>
 </div>`;
-                }
-
-                // For other files
-                return `<div class="message file-message" style="background: #e8f5e9; padding: 8px 12px; border-radius: 10px; margin: 5px 0; display: flex; align-items: center; gap: 10px;">
-                <strong>${escapeHtml(msg.sender)}:</strong>
-                <a href="${fileData}" download="${fileName}" target="_blank">${fileIcon} ${escapeHtml(fileName)}</a>
-                <span style="color: #888; font-size: 10px;">${msg.time || ""}</span>
-              </div>`;
+              } else {
+                wrapper.innerHTML = `<div class="message file-message" style="background:#e8f5e9;padding:8px 12px;border-radius:10px;margin:5px 0;display:flex;align-items:center;gap:10px;">
+  <strong>${escapeHtml(msg.sender)}:</strong>
+  <a href="${fileData}" download="${fileName}" target="_blank">${fileIcon} ${escapeHtml(fileName)}</a>
+  <span style="color:#888;font-size:10px;">${msg.time || ""}</span>
+</div>`;
               }
+              messagesDiv.appendChild(wrapper.firstElementChild);
+              return;
+            }
 
-              // Regular text message
-              const raw = msg.message || '';
-              const isCode = /[{};()=>]|\bfunction\b|\bconst\b|\blet\b|\bvar\b|\bdef\b|\bimport\b|\bclass\b|\breturn\b/.test(raw) && raw.length > 30;
-              if (isCode) {
-                const preview = escapeHtml(raw.length > 80 ? raw.slice(0, 80) + '…' : raw);
-                return `<div class="message" style="background:white;padding:8px 12px;margin:5px 0;border-radius:10px;">
-                  <strong>${escapeHtml(msg.sender)}:</strong>
-                  <div class="code-bubble">
-                    <pre class="code-preview">${preview}</pre>
-                    <button class="copy-btn" onclick="copyCode(this,'${encodeURIComponent(raw)}')">Copy</button>
-                  </div>
-                  <span style="color:#888;font-size:10px;">${msg.time || ''}</span>
-                </div>`;
-              }
-              return `<div class="message" style="background: white; padding: 8px 12px; margin: 5px 0; border-radius: 10px;">
-              <strong>${escapeHtml(msg.sender)}:</strong> ${escapeHtml(msg.message)} 
-              <span style="color: #888; font-size: 10px;">${msg.time || ""}</span>
-            </div>`;
-            })
-            .join("");
+            const raw = msg.message || '';
+            const isCode = /[{};()=>]|\bfunction\b|\bconst\b|\blet\b|\bvar\b|\bdef\b|\bimport\b|\bclass\b|\breturn\b/.test(raw) && raw.length > 30;
 
-          // Auto-scroll to bottom
+            if (isCode) {
+              const preview = escapeHtml(raw.length > 80 ? raw.slice(0, 80) + '\u2026' : raw);
+              const msgDiv = document.createElement('div');
+              msgDiv.className = 'message';
+              msgDiv.style.cssText = 'background:white;padding:8px 12px;margin:5px 0;border-radius:10px;';
+              msgDiv.innerHTML = `<strong>${escapeHtml(msg.sender)}:</strong>
+                <div class="code-bubble">
+                  <pre class="code-preview">${preview}</pre>
+                  <button class="copy-btn">Copy</button>
+                </div>
+                <span style="color:#888;font-size:10px;">${msg.time || ''}</span>`;
+              msgDiv.querySelector('.copy-btn').dataset.code = raw;
+              msgDiv.querySelector('.copy-btn').addEventListener('click', function () { copyCode(this); });
+              messagesDiv.appendChild(msgDiv);
+              return;
+            }
+
+            const plain = document.createElement('div');
+            plain.innerHTML = `<div class="message" style="background:white;padding:8px 12px;margin:5px 0;border-radius:10px;">
+  <strong>${escapeHtml(msg.sender)}:</strong> ${escapeHtml(raw)}
+  <span style="color:#888;font-size:10px;">${msg.time || ""}</span>
+</div>`;
+            messagesDiv.appendChild(plain.firstElementChild);
+          });
+
           messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
-          // Handle new message notifications
           if (data.length > lastMessageCount && data.length > 0) {
             const lastMsg = data[data.length - 1];
             if (lastMsg.message && !lastMsg.isFile && !lastMsg.fileData) {
               updateMessageIcon(lastMsg.message);
             } else {
-              // File message - just play notification
               playNotificationSound();
               const icon = document.getElementById("chat-icon");
               if (icon) icon.style.background = "red";
@@ -1304,8 +1303,9 @@
         if (icon) icon.style.background = "#4caf50";
       }
 
-      function copyCode(btn, encoded) {
-        navigator.clipboard.writeText(decodeURIComponent(encoded)).then(() => {
+      function copyCode(btn) {
+        const code = btn.dataset.code || '';
+        navigator.clipboard.writeText(code).then(() => {
           btn.textContent = 'Copied!';
           btn.style.background = '#388e3c';
           setTimeout(() => { btn.textContent = 'Copy'; btn.style.background = ''; }, 2000);
