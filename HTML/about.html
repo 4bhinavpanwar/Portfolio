@@ -351,8 +351,10 @@
       </div>
     </div>
     <div id="overlay"></div>
-    <!-- Hidden YouTube Player Container -->
-    <div id="youtube-player" style="display: none"></div>
+    <!-- Music YouTube Player Container (used by IFrame API) -->
+    <div id="yt-music-container" style="display:none"></div>
+    <!-- Chat YouTube Player Container -->
+    <div id="yt-chat-container" style="display:none"></div>
     <div id="loginDiv">
       <input
         type="text"
@@ -599,15 +601,46 @@
       }
     </style>
 
+    <!-- YouTube IFrame API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
     <script>
       (function () {
         const API = 'https://abhinavpanwar.onrender.com';
         let songs = [];
-        let currentIdx = -1;   // -1 = nothing playing
+        let currentIdx = -1;
         let isPlaying = false;
         let panelOpen = false;
         let votedIds = JSON.parse(localStorage.getItem('mv_voted') || '[]');
-        let playerIframe = null;
+        let ytPlayer = null;
+        let ytReady = false;
+        let pendingPlay = null; // {videoId, idx} to play once API is ready
+
+        // ── YouTube IFrame API ready callback ─────────────────────
+        window.onYouTubeIframeAPIReady = function () {
+          ytReady = true;
+          const container = document.getElementById('yt-music-container');
+          ytPlayer = new YT.Player(container, {
+            width: '0', height: '0',
+            playerVars: { autoplay: 0, controls: 0, rel: 0 },
+            events: {
+              onStateChange: function (e) {
+                if (e.data === YT.PlayerState.ENDED) autoNext();
+                if (e.data === YT.PlayerState.PLAYING) setPlayingState(true);
+                if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.UNSTARTED) setPlayingState(false);
+              }
+            }
+          });
+          if (pendingPlay) {
+            _loadAndPlay(pendingPlay.videoId, pendingPlay.idx);
+            pendingPlay = null;
+          }
+        };
+
+        function _loadAndPlay(videoId, idx) {
+          currentIdx = idx;
+          ytPlayer.loadVideoById(videoId);
+          setPlayingState(true);
+        }
 
         // ── panel toggle ──────────────────────────────────────────
         function toggleMusicPanel() {
@@ -628,15 +661,23 @@
             const res = await fetch(`${API}/api/songs`, { cache: 'no-store' });
             const data = await res.json();
             const playingId = songs[currentIdx]?.id;
-            songs = (data.songs || []).sort((a, b) => b.votes - a.votes);
+            const newSongs = (data.songs || []).sort((a, b) => b.votes - a.votes);
+            // detect newly added songs
+            const oldIds = new Set(songs.map(s => s.id));
+            const hasNew = newSongs.some(s => !oldIds.has(s.id));
+            songs = newSongs;
             if (playingId) {
               const newIdx = songs.findIndex(s => s.id === playingId);
               currentIdx = newIdx !== -1 ? newIdx : currentIdx;
             }
             renderList();
             if (!isPlaying && songs.length) updateNowPlaying(songs[0]);
+            // if new songs arrived and nothing is playing, start from top
+            if (hasNew && !isPlaying && songs.length) {
+              window.playSong(0);
+            }
           } catch (e) {
-            document.getElementById('music-list').innerHTML = '<div class="music-empty">Could not load songs</div>';
+            if (panelOpen) document.getElementById('music-list').innerHTML = '<div class="music-empty">Could not load songs</div>';
           }
         }
 
@@ -685,41 +726,27 @@
 
         // ── play / pause toggle ───────────────────────────────────
         window.playSong = function (idx) {
-          // clicking the currently playing song → pause it
           if (idx === currentIdx && isPlaying) {
-            if (playerIframe) playerIframe.remove();
-            playerIframe = null;
+            if (ytPlayer && ytReady) ytPlayer.pauseVideo();
             setPlayingState(false);
             return;
           }
-          currentIdx = idx;
           const song = songs[idx];
           if (!song) return;
           updateNowPlaying(song);
-          if (playerIframe) playerIframe.remove();
-          playerIframe = document.createElement('iframe');
-          playerIframe.src = `https://www.youtube.com/embed/${song.youtube_id}?autoplay=1&mute=0&controls=0&rel=0&enablejsapi=1`;
-          playerIframe.width = '0';
-          playerIframe.height = '0';
-          playerIframe.style.display = 'none';
-          playerIframe.allow = 'autoplay';
-          // auto-advance to next song when this one ends
-          playerIframe.addEventListener('load', () => {
-            clearTimeout(window._songTimer);
-            // YouTube embeds don't fire ended events easily without API;
-            // use a generous 7-min fallback to advance
-            window._songTimer = setTimeout(() => autoNext(), 7 * 60 * 1000);
-          });
-          document.body.appendChild(playerIframe);
-          setPlayingState(true);
+          if (!ytReady || !ytPlayer) {
+            pendingPlay = { videoId: song.youtube_id, idx };
+            return;
+          }
+          _loadAndPlay(song.youtube_id, idx);
         };
 
         // ── auto-advance to next song ─────────────────────────────
         function autoNext() {
           if (!songs.length) return;
           const nextIdx = (currentIdx + 1) % songs.length;
-          window.playSong(nextIdx);
-          // open panel briefly to show what's playing
+          updateNowPlaying(songs[nextIdx]);
+          _loadAndPlay(songs[nextIdx].youtube_id, nextIdx);
           if (!panelOpen) {
             panelOpen = true;
             document.getElementById('music-panel').style.display = 'flex';
@@ -745,7 +772,6 @@
             if (song) song.votes = data.votes;
             const playingId = songs[currentIdx]?.id;
             songs.sort((a, b) => b.votes - a.votes);
-            // keep currentIdx pointing to the same song after re-sort
             if (playingId) currentIdx = songs.findIndex(s => s.id === playingId);
             renderList();
           } catch (e) { console.error('Vote failed', e); }
@@ -756,15 +782,14 @@
           try {
             const res = await fetch(`${API}/api/songs`, { cache: 'no-store' });
             const data = await res.json();
-            songs = data.songs || [];
-            if (songs.length) {
-              updateNowPlaying(songs[0]);
-              window.playSong(0);
-            }
+            songs = (data.songs || []).sort((a, b) => b.votes - a.votes);
+            if (songs.length) updateNowPlaying(songs[0]);
           } catch (e) {}
         })();
 
-        // refresh list every 15s only when panel is open
+        // refresh list every 30s always (catches backend updates even when panel is closed)
+        setInterval(loadSongs, 30000);
+        // also refresh every 15s when panel is open for live vote updates
         setInterval(() => { if (panelOpen) loadSongs(); }, 15000);
       })();
     </script>
@@ -1267,23 +1292,14 @@
       }
 
       function playYouTubeAudio(videoId) {
+        const container = document.getElementById('yt-chat-container');
+        container.innerHTML = '';
         const iframe = document.createElement("iframe");
         iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&controls=0&showinfo=0&rel=0`;
         iframe.width = "0";
         iframe.height = "0";
-        iframe.style.display = "none";
         iframe.allow = "autoplay";
-
-        const oldIframe = document.querySelector('iframe[src*="youtube.com"]');
-        if (oldIframe) oldIframe.remove();
-
-        document.body.appendChild(iframe);
-
-        setTimeout(() => {
-          if (iframe && iframe.parentNode) {
-            iframe.remove();
-          }
-        }, 3600000);
+        container.appendChild(iframe);
       }
 
       function playMemeSound(soundFile) {
