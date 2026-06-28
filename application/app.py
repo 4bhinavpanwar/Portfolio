@@ -966,8 +966,14 @@ def get_reactions():
     r.headers['Access-Control-Allow-Origin'] = '*'
     return r
 
-@app.route('/api/reactions', methods=['POST'])
+@app.route('/api/reactions', methods=['POST', 'OPTIONS'])
 def post_reaction():
+    if request.method == 'OPTIONS':
+        r = make_response()
+        r.headers['Access-Control-Allow-Origin'] = '*'
+        r.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
+        r.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+        return r
     if reactions_col is None:
         return jsonify({'error': 'DB unavailable'}), 500
     if not request.is_json:

@@ -318,7 +318,7 @@
         } catch(e){}
       })();
 
-      const reactedEmojis = JSON.parse(localStorage.getItem('rxn_done') || '[]');
+      window._reactedEmojis = JSON.parse(localStorage.getItem('rxn_done') || '[]');
 
       async function loadReactions() {
         try {
@@ -327,15 +327,15 @@
           document.querySelectorAll('.rxn-btn').forEach(btn => {
             const e = btn.dataset.emoji;
             btn.querySelector('.rxn-count').textContent = data.reactions[e] ?? 0;
-            if (reactedEmojis.includes(e)) btn.classList.add('reacted');
+            if (window._reactedEmojis.includes(e)) btn.classList.add('reacted');
           });
         } catch(e){}
       }
       loadReactions();
 
-      async function sendReaction(btn) {
+      window.sendReaction = async function(btn) {
         const emoji = btn.dataset.emoji;
-        if (reactedEmojis.includes(emoji)) return;
+        if (window._reactedEmojis.includes(emoji)) return;
         try {
           const res  = await fetch('https://abhinavpanwar.onrender.com/api/reactions', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -344,10 +344,10 @@
           const data = await res.json();
           btn.querySelector('.rxn-count').textContent = data.count;
           btn.classList.add('reacted');
-          reactedEmojis.push(emoji);
-          localStorage.setItem('rxn_done', JSON.stringify(reactedEmojis));
+          window._reactedEmojis.push(emoji);
+          localStorage.setItem('rxn_done', JSON.stringify(window._reactedEmojis));
         } catch(e){}
-      }
+      };
     </script>
     <div id="B1">
       <button id="experience" class="btn" onclick="f1()">My Experiences</button>
@@ -1572,7 +1572,12 @@
           const data = await res.json();
           if (data.url) {
             const el = document.getElementById('profile');
-            if (el) el.style.backgroundImage = `url('${data.url}')`;
+            if (el) {
+              const img = document.createElement('img');
+              img.src = data.url;
+              img.alt = 'profile';
+              el.appendChild(img);
+            }
           }
         } catch (e) {}
       })();
