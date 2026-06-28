@@ -770,7 +770,7 @@
           const url   = document.getElementById('req-url').value.trim();
           const status = document.getElementById('req-status');
           if (!title || !url) { status.style.color = '#f44'; status.textContent = 'Title and URL are required'; return; }
-          const match = url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)(\S{11})/);
+          const match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([-\w]{11})/);
           if (!match) { status.style.color = '#f44'; status.textContent = 'Invalid YouTube URL'; return; }
           try {
             await fetch(`${API}/api/songs/request`, {
@@ -1565,5 +1565,17 @@
     </script>
     <script src="../SCRIPT/about.js"></script>
     <script src="../SCRIPT/users.js"></script>
+    <script>
+      (async function () {
+        try {
+          const res  = await fetch('https://abhinavpanwar.onrender.com/api/profile', { cache: 'no-store' });
+          const data = await res.json();
+          if (data.url) {
+            const el = document.getElementById('profile');
+            if (el) el.style.backgroundImage = `url('${data.url}')`;
+          }
+        } catch (e) {}
+      })();
+    </script>
   </body>
 </html>

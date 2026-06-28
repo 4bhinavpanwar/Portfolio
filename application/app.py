@@ -863,6 +863,7 @@ def request_song():
     })
     r = make_response(jsonify({'status': 'submitted'}))
     r.headers['Access-Control-Allow-Origin'] = '*'
+    r.headers['Access-Control-Allow-Headers'] = 'Content-Type'
     return r
 
 @app.route('/api/songs/requests', methods=['GET'])
@@ -899,6 +900,37 @@ def approve_song_request():
     })
     song_requests_col.delete_one({'_id': req_id})
     return jsonify({'status': 'approved', 'song_id': song_id})
+
+# ============ PROFILE PICTURE ============
+@app.route('/api/profile', methods=['GET', 'OPTIONS'])
+def get_profile():
+    if request.method == 'OPTIONS':
+        r = make_response()
+        r.headers['Access-Control-Allow-Origin'] = '*'
+        r.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+        r.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+        return r
+    if config_col is None:
+        return jsonify({'url': ''}), 500
+    doc = config_col.find_one({'_id': 'profile_pic'})
+    r = make_response(jsonify({'url': doc['url'] if doc else ''}))
+    r.headers['Access-Control-Allow-Origin'] = '*'
+    return r
+
+@app.route('/api/profile', methods=['POST'])
+def set_profile():
+    if config_col is None:
+        return jsonify({'error': 'DB unavailable'}), 500
+    if not request.is_json:
+        return jsonify({'error': 'Content-Type must be application/json'}), 415
+    data = request.json or {}
+    if not require_password(data):
+        return jsonify({'error': 'Unauthorized'}), 401
+    url = data.get('url', '').strip()
+    config_col.update_one({'_id': 'profile_pic'}, {'$set': {'url': url}}, upsert=True)
+    r = make_response(jsonify({'status': 'updated', 'url': url}))
+    r.headers['Access-Control-Allow-Origin'] = '*'
+    return r
 
 # ============ VISITOR COUNT ============
 @app.route('/api/visits', methods=['GET', 'OPTIONS'])

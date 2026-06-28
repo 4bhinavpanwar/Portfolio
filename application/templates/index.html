@@ -671,6 +671,73 @@
         })();
       </script>
 
+      <!-- Profile Picture Management -->
+      <div class="card">
+        <h2>Profile Picture</h2>
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
+          <img id="profile-preview" src="" alt="preview" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid #444;background:#2a2a2a;display:none;">
+          <div id="profile-current-url" class="current-value" style="flex:1;font-size:0.8rem;word-break:break-all;">Loading...</div>
+        </div>
+        <form id="profileForm">
+          <div class="form-group">
+            <label for="profile_url">Image / GIF URL</label>
+            <input type="text" id="profile_url" placeholder="https://example.com/photo.jpg or .gif" required />
+          </div>
+          <button type="submit">Set Profile Picture</button>
+        </form>
+        <div id="profile-status" class="status-message hidden"></div>
+      </div>
+
+      <script>
+        (function () {
+          const API = window.location.origin;
+
+          async function loadProfile() {
+            try {
+              const res  = await fetch(`${API}/api/profile`);
+              const data = await res.json();
+              const urlEl  = document.getElementById('profile-current-url');
+              const imgEl  = document.getElementById('profile-preview');
+              if (data.url) {
+                urlEl.textContent = data.url;
+                imgEl.src = data.url;
+                imgEl.style.display = 'block';
+              } else {
+                urlEl.textContent = 'No custom URL set (using default)';
+              }
+            } catch (e) {}
+          }
+
+          document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const pwd    = document.getElementById('current-password').textContent.trim();
+            const url    = document.getElementById('profile_url').value.trim();
+            const status = document.getElementById('profile-status');
+            try {
+              const res = await fetch(`${API}/api/profile`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url, password: pwd })
+              });
+              if (!res.ok) throw new Error();
+              document.getElementById('profile_url').value = '';
+              status.textContent = 'Profile picture updated!';
+              status.className = 'success status-message';
+              status.classList.remove('hidden');
+              setTimeout(() => status.classList.add('hidden'), 3000);
+              loadProfile();
+            } catch {
+              status.textContent = 'Failed to update';
+              status.className = 'error status-message';
+              status.classList.remove('hidden');
+              setTimeout(() => status.classList.add('hidden'), 3000);
+            }
+          });
+
+          loadProfile();
+        })();
+      </script>
+
       <!-- Add this to your Render server's HTML page -->
       <div class="card">
         <h2>Site Control</h2>
