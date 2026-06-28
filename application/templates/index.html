@@ -596,6 +596,10 @@
           <button type="submit" class="secondary">Add Song</button>
         </form>
         <div id="song-status" class="status-message hidden"></div>
+        <div style="margin-top:20px;border-top:1px solid #444;padding-top:15px;">
+          <h3 style="color:var(--accent-color);margin-bottom:10px;font-size:1.1rem;">Pending Requests <span id="req-badge" style="background:#f44336;color:#fff;border-radius:50%;padding:1px 7px;font-size:0.8rem;margin-left:6px;display:none"></span></h3>
+          <div id="song-requests-list" style="font-size:0.85rem;color:#888;">Loading...</div>
+        </div>
       </div>
 
       <script>
@@ -626,6 +630,37 @@
               </div>`).join('');
           }
 
+          async function loadRequests() {
+            try {
+              const res  = await fetch(`${API}/api/songs/requests`);
+              const data = await res.json();
+              const reqs = data.requests || [];
+              const badge = document.getElementById('req-badge');
+              const list  = document.getElementById('song-requests-list');
+              if (!reqs.length) {
+                badge.style.display = 'none';
+                list.innerHTML = '<div style="color:#555;">No pending requests</div>';
+                return;
+              }
+              badge.textContent = reqs.length;
+              badge.style.display = 'inline';
+              list.innerHTML = reqs.map(r => `
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#2a2a2a;border-radius:6px;margin-bottom:6px;gap:8px;">
+                  <div style="flex:1;min-width:0;">
+                    <div style="font-size:0.85rem;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${r.title}</div>
+                    <div style="font-size:0.72rem;color:#888;">${r.artist || 'Unknown artist'} · <a href="https://youtube.com/watch?v=${r.youtube_id}" target="_blank" style="color:#4caf50;">▶ Preview</a></div>
+                    <div style="font-size:0.65rem;color:#555;">${r.created_at || ''}</div>
+                  </div>
+                  <div style="display:flex;gap:6px;flex-shrink:0;">
+                    <button style="padding:4px 10px;font-size:0.78rem;background:#4caf50;color:#fff;border:none;border-radius:4px;cursor:pointer;" onclick="approveRequest('${r.id}')">✓ Approve</button>
+                    <button class="danger" style="padding:4px 10px;font-size:0.78rem;" onclick="rejectRequest('${r.id}')">✕ Reject</button>
+                  </div>
+                </div>`).join('');
+            } catch (e) {
+              document.getElementById('song-requests-list').innerHTML = '<div style="color:#f44;">Failed to load</div>';
+            }
+          }
+
           window.deleteSong = async function (id) {
             const pwd = document.getElementById('current-password').textContent.trim();
             await fetch(`${API}/api/songs/delete`, {
@@ -634,6 +669,27 @@
               body: JSON.stringify({ id, password: pwd })
             });
             loadSongs();
+          };
+
+          window.approveRequest = async function (id) {
+            const pwd = document.getElementById('current-password').textContent.trim();
+            await fetch(`${API}/api/songs/approve`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id, password: pwd })
+            });
+            loadSongs();
+            loadRequests();
+          };
+
+          window.rejectRequest = async function (id) {
+            const pwd = document.getElementById('current-password').textContent.trim();
+            await fetch(`${API}/api/songs/reject`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id, password: pwd })
+            });
+            loadRequests();
           };
 
           document.getElementById('songForm').addEventListener('submit', async (e) => {
@@ -668,6 +724,8 @@
           });
 
           loadSongs();
+          loadRequests();
+          setInterval(loadRequests, 20000);
         })();
       </script>
 
