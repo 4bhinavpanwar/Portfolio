@@ -863,27 +863,21 @@ def request_song():
     })
     r = make_response(jsonify({'status': 'submitted'}))
     r.headers['Access-Control-Allow-Origin'] = '*'
-    r.headers['Access-Control-Allow-Headers'] = 'Content-Type'
     return r
 
-@app.route('/api/songs/requests', methods=['GET', 'OPTIONS'])
+@app.route('/api/songs/requests', methods=['GET'])
 def list_song_requests():
-    if request.method == 'OPTIONS':
-        r = make_response()
-        r.headers['Access-Control-Allow-Origin'] = '*'
-        r.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
-        r.headers['Access-Control-Allow-Headers'] = 'Content-Type'
-        return r
     if song_requests_col is None:
         return jsonify({'error': 'DB unavailable'}), 500
+    token = request.headers.get('X-Admin-Token') or request.args.get('token')
+    if token != app.secret_key:
+        return jsonify({'error': 'Unauthorized'}), 401
     reqs = list(song_requests_col.find({'status': 'pending'}, {'_id': 1, 'title': 1, 'artist': 1, 'youtube_id': 1, 'created_at': 1}))
-    for req in reqs:
-        req['id'] = str(req.pop('_id'))
-        if 'created_at' in req and hasattr(req['created_at'], 'strftime'):
-            req['created_at'] = req['created_at'].strftime('%Y-%m-%d %H:%M:%S')
-    r = make_response(jsonify({'requests': reqs}))
-    r.headers['Access-Control-Allow-Origin'] = '*'
-    return r
+    for r in reqs:
+        r['id'] = str(r.pop('_id'))
+        if 'created_at' in r and hasattr(r['created_at'], 'strftime'):
+            r['created_at'] = r['created_at'].strftime('%Y-%m-%d %H:%M:%S')
+    return jsonify({'requests': reqs})
 
 @app.route('/api/songs/approve', methods=['POST'])
 def approve_song_request():
@@ -905,52 +899,6 @@ def approve_song_request():
     })
     song_requests_col.delete_one({'_id': req_id})
     return jsonify({'status': 'approved', 'song_id': song_id})
-
-@app.route('/api/songs/reject', methods=['POST'])
-def reject_song_request():
-    if song_requests_col is None:
-        return jsonify({'error': 'DB unavailable'}), 500
-    if not request.is_json:
-        return jsonify({'error': 'Content-Type must be application/json'}), 415
-    data = request.json or {}
-    if not require_password(data):
-        return jsonify({'error': 'Unauthorized'}), 401
-    req_id = data.get('id')
-    result = song_requests_col.delete_one({'_id': req_id})
-    if result.deleted_count == 0:
-        return jsonify({'error': 'Request not found'}), 404
-    return jsonify({'status': 'rejected'})
-
-# ============ PROFILE PICTURE ============
-@app.route('/api/profile', methods=['GET', 'OPTIONS'])
-def get_profile():
-    if request.method == 'OPTIONS':
-        r = make_response()
-        r.headers['Access-Control-Allow-Origin'] = '*'
-        r.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
-        r.headers['Access-Control-Allow-Headers'] = 'Content-Type'
-        return r
-    if config_col is None:
-        return jsonify({'url': ''}), 500
-    doc = config_col.find_one({'_id': 'profile_pic'})
-    r = make_response(jsonify({'url': doc['url'] if doc else ''}))
-    r.headers['Access-Control-Allow-Origin'] = '*'
-    return r
-
-@app.route('/api/profile', methods=['POST'])
-def set_profile():
-    if config_col is None:
-        return jsonify({'error': 'DB unavailable'}), 500
-    if not request.is_json:
-        return jsonify({'error': 'Content-Type must be application/json'}), 415
-    data = request.json or {}
-    if not require_password(data):
-        return jsonify({'error': 'Unauthorized'}), 401
-    url = data.get('url', '').strip()
-    config_col.update_one({'_id': 'profile_pic'}, {'$set': {'url': url}}, upsert=True)
-    r = make_response(jsonify({'status': 'updated', 'url': url}))
-    r.headers['Access-Control-Allow-Origin'] = '*'
-    return r
 
 # ============ VISITOR COUNT ============
 @app.route('/api/visits', methods=['GET', 'OPTIONS'])
@@ -986,14 +934,8 @@ def get_reactions():
     r.headers['Access-Control-Allow-Origin'] = '*'
     return r
 
-@app.route('/api/reactions', methods=['POST', 'OPTIONS'])
+@app.route('/api/reactions', methods=['POST'])
 def post_reaction():
-    if request.method == 'OPTIONS':
-        r = make_response()
-        r.headers['Access-Control-Allow-Origin'] = '*'
-        r.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
-        r.headers['Access-Control-Allow-Headers'] = 'Content-Type'
-        return r
     if reactions_col is None:
         return jsonify({'error': 'DB unavailable'}), 500
     if not request.is_json:

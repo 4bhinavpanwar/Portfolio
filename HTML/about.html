@@ -318,7 +318,7 @@
         } catch(e){}
       })();
 
-      window._reactedEmojis = JSON.parse(localStorage.getItem('rxn_done') || '[]');
+      const reactedEmojis = JSON.parse(localStorage.getItem('rxn_done') || '[]');
 
       async function loadReactions() {
         try {
@@ -327,15 +327,15 @@
           document.querySelectorAll('.rxn-btn').forEach(btn => {
             const e = btn.dataset.emoji;
             btn.querySelector('.rxn-count').textContent = data.reactions[e] ?? 0;
-            if (window._reactedEmojis.includes(e)) btn.classList.add('reacted');
+            if (reactedEmojis.includes(e)) btn.classList.add('reacted');
           });
         } catch(e){}
       }
       loadReactions();
 
-      window.sendReaction = async function(btn) {
+      async function sendReaction(btn) {
         const emoji = btn.dataset.emoji;
-        if (window._reactedEmojis.includes(emoji)) return;
+        if (reactedEmojis.includes(emoji)) return;
         try {
           const res  = await fetch('https://abhinavpanwar.onrender.com/api/reactions', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -344,10 +344,10 @@
           const data = await res.json();
           btn.querySelector('.rxn-count').textContent = data.count;
           btn.classList.add('reacted');
-          window._reactedEmojis.push(emoji);
-          localStorage.setItem('rxn_done', JSON.stringify(window._reactedEmojis));
+          reactedEmojis.push(emoji);
+          localStorage.setItem('rxn_done', JSON.stringify(reactedEmojis));
         } catch(e){}
-      };
+      }
     </script>
     <div id="B1">
       <button id="experience" class="btn" onclick="f1()">My Experiences</button>
@@ -770,7 +770,7 @@
           const url   = document.getElementById('req-url').value.trim();
           const status = document.getElementById('req-status');
           if (!title || !url) { status.style.color = '#f44'; status.textContent = 'Title and URL are required'; return; }
-          const match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([-\w]{11})/);
+          const match = url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)(\S{11})/);
           if (!match) { status.style.color = '#f44'; status.textContent = 'Invalid YouTube URL'; return; }
           try {
             await fetch(`${API}/api/songs/request`, {
@@ -1565,22 +1565,5 @@
     </script>
     <script src="../SCRIPT/about.js"></script>
     <script src="../SCRIPT/users.js"></script>
-    <script>
-      (async function () {
-        try {
-          const res  = await fetch('https://abhinavpanwar.onrender.com/api/profile', { cache: 'no-store' });
-          const data = await res.json();
-          if (data.url) {
-            const el = document.getElementById('profile');
-            if (el) {
-              const img = document.createElement('img');
-              img.src = data.url;
-              img.alt = 'profile';
-              el.appendChild(img);
-            }
-          }
-        } catch (e) {}
-      })();
-    </script>
   </body>
 </html>
