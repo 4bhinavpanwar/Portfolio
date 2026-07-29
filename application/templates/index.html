@@ -698,7 +698,7 @@
             statusEl.textContent = dpVisible ? 'Visible' : 'Hidden';
             statusEl.style.color = dpVisible ? 'var(--accent-color)' : 'var(--error-color)';
             toggleBtn.textContent = dpVisible ? 'Hide DP' : 'Show DP';
-            toggleBtn.className = dpVisible ? 'danger' : '';
+            toggleBtn.classList.toggle('danger', dpVisible);
           }
 
           toggleBtn.addEventListener('click', async () => {

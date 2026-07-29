@@ -840,7 +840,7 @@
       <div id="messages"></div>
       <div id="chat-input">
         <input type="text" id="name" placeholder="Name" readonly />
-        <input type="text" id="message" placeholder="Message" />
+        <textarea id="message" placeholder="Message (Shift+Enter for new line)" rows="1"></textarea>
         <button id="send-btn" onclick="sendMessage()">Send</button>
         <button
           id="file-plus-btn"
@@ -883,12 +883,18 @@
         align-items: center;
       }
 
-      #chat-input input {
+      #chat-input input, #chat-input textarea {
         flex: 1;
         padding: 10px;
         border: 1px solid #ddd;
         border-radius: 20px;
         outline: none;
+        font-family: inherit;
+        font-size: 14px;
+        resize: none;
+        overflow-y: auto;
+        max-height: 120px;
+        line-height: 1.4;
       }
 
       #chat-input button {
@@ -1190,6 +1196,7 @@
           });
           logEvent({ event: "message", username, message });
           msgInput.value = "";
+          msgInput.style.height = 'auto';
           loadMessages();
         } catch (error) {
           console.error("Error sending message:", error);
@@ -1258,8 +1265,14 @@
                   <button class="copy-btn">Copy</button>
                 </div>
                 <span style="color:#888;font-size:10px;">${msg.time || ''}</span>`;
-              msgDiv.querySelector('.copy-btn').dataset.code = raw;
-              msgDiv.querySelector('.copy-btn').addEventListener('click', function () { copyCode(this); });
+              const copyBtn = msgDiv.querySelector('.copy-btn');
+              copyBtn.addEventListener('click', function () {
+                navigator.clipboard.writeText(raw).then(() => {
+                  copyBtn.textContent = 'Copied!';
+                  copyBtn.style.background = '#388e3c';
+                  setTimeout(() => { copyBtn.textContent = 'Copy'; copyBtn.style.background = ''; }, 2000);
+                });
+              });
               messagesDiv.appendChild(msgDiv);
               return;
             }
@@ -1371,12 +1384,22 @@
       // ============ EVENT LISTENERS ============
       document
         .getElementById("message")
-        .addEventListener("keypress", function (event) {
-          if (event.key === "Enter") {
+        .addEventListener("keydown", function (event) {
+          if (event.key === "Enter" && !event.shiftKey) {
             event.preventDefault();
             sendMessage();
           }
+          // auto-grow
+          setTimeout(() => {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+          }, 0);
         });
+
+      document.getElementById("message").addEventListener("input", function () {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+      });
 
       // Initialize
       loadMessages();
@@ -1470,8 +1493,8 @@
           const res  = await fetch('https://abhinavpanwar.onrender.com/api/dp');
           const data = await res.json();
           if (!data.visible) {
-            document.getElementById('profile').style.visibility = 'hidden';
-            document.getElementById('arc').style.visibility    = 'hidden';
+            document.getElementById('profile').style.display = 'none';
+            document.getElementById('arc').style.display    = 'none';
           }
         } catch (e) {}
       })();
