@@ -838,20 +838,21 @@ def delete_song():
     songs_col.delete_one({'_id': song_id})
     return jsonify({'status': 'deleted'})
 
-@app.route('/api/dp', methods=['GET', 'OPTIONS'])
-def get_dp():
+@app.route('/api/dp', methods=['GET', 'POST', 'OPTIONS'])
+def dp():
     if request.method == 'OPTIONS':
         r = make_response()
         r.headers['Access-Control-Allow-Origin'] = '*'
+        r.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+        r.headers['Access-Control-Allow-Headers'] = 'Content-Type'
         return r
-    doc = config_col.find_one({'_id': 'dp_visible'}) if config_col else None
-    visible = doc.get('visible', True) if doc else True
-    r = make_response(jsonify({'visible': visible}))
-    r.headers['Access-Control-Allow-Origin'] = '*'
-    return r
-
-@app.route('/api/dp', methods=['POST'])
-def set_dp():
+    if request.method == 'GET':
+        doc = config_col.find_one({'_id': 'dp_visible'}) if config_col else None
+        visible = doc.get('visible', True) if doc else True
+        r = make_response(jsonify({'visible': visible}))
+        r.headers['Access-Control-Allow-Origin'] = '*'
+        return r
+    # POST
     if config_col is None:
         return jsonify({'error': 'DB unavailable'}), 500
     if not request.is_json:
@@ -861,7 +862,9 @@ def set_dp():
         return jsonify({'error': 'Unauthorized'}), 401
     visible = bool(data.get('visible', True))
     config_col.update_one({'_id': 'dp_visible'}, {'$set': {'visible': visible}}, upsert=True)
-    return jsonify({'visible': visible})
+    r = make_response(jsonify({'visible': visible}))
+    r.headers['Access-Control-Allow-Origin'] = '*'
+    return r
 
 # ============ VISITOR SKILL RATINGS ============
 visitor_skills_col = db['visitor_skills'] if db is not None else None
