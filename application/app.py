@@ -840,17 +840,25 @@ def delete_song():
 
 @app.route('/api/dp', methods=['GET', 'POST', 'OPTIONS'])
 def dp():
+    origin = request.headers.get('Origin', '')
+    allowed = ['https://abhinavpanwar.netlify.app', 'http://127.0.0.1:5501', 'http://localhost:5501']
+    cors_origin = origin if origin in allowed else 'https://abhinavpanwar.netlify.app'
+
     if request.method == 'OPTIONS':
         r = make_response()
-        r.headers['Access-Control-Allow-Origin'] = '*'
+        r.headers['Access-Control-Allow-Origin'] = cors_origin
         r.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
         r.headers['Access-Control-Allow-Headers'] = 'Content-Type'
         return r
     if request.method == 'GET':
-        doc = config_col.find_one({'_id': 'dp_visible'}) if config_col else None
-        visible = doc.get('visible', True) if doc else True
+        try:
+            doc = config_col.find_one({'_id': 'dp_visible'}) if config_col else None
+            visible = doc.get('visible', True) if doc else True
+        except Exception as e:
+            logger.error(f"dp GET error: {e}")
+            visible = True
         r = make_response(jsonify({'visible': visible}))
-        r.headers['Access-Control-Allow-Origin'] = '*'
+        r.headers['Access-Control-Allow-Origin'] = cors_origin
         return r
     # POST
     if config_col is None:
@@ -863,7 +871,7 @@ def dp():
     visible = bool(data.get('visible', True))
     config_col.update_one({'_id': 'dp_visible'}, {'$set': {'visible': visible}}, upsert=True)
     r = make_response(jsonify({'visible': visible}))
-    r.headers['Access-Control-Allow-Origin'] = '*'
+    r.headers['Access-Control-Allow-Origin'] = cors_origin
     return r
 
 # ============ VISITOR SKILL RATINGS ============
