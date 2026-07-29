@@ -703,6 +703,11 @@
 
           toggleBtn.addEventListener('click', async () => {
             const pwd = document.getElementById('current-password').textContent.trim();
+            if (!pwd || pwd === 'Loading current password...' || pwd === 'Error loading password') {
+              alert('Password not loaded yet, try again.');
+              return;
+            }
+            toggleBtn.disabled = true;
             try {
               const res  = await fetch(`${API}/api/dp`, {
                 method: 'POST',
@@ -710,9 +715,11 @@
                 body: JSON.stringify({ visible: !dpVisible, password: pwd })
               });
               const data = await res.json();
+              if (data.error) { alert('Error: ' + data.error); return; }
               dpVisible = data.visible;
               updateUI();
-            } catch (e) { alert('Failed to update'); }
+            } catch (e) { alert('Failed to update: ' + e.message); }
+            finally { toggleBtn.disabled = false; }
           });
 
           loadDpState();
