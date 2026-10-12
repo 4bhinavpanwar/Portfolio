@@ -1489,12 +1489,19 @@
     <script src="../SCRIPT/users.js"></script>
     <script>
       (async function () {
+        const API = 'https://abhinavpanwar.onrender.com';
         try {
-          const res  = await fetch('https://abhinavpanwar.onrender.com/api/dp');
-          const data = await res.json();
-          if (!data.visible) {
-            document.getElementById('profile').style.display = 'none';
-            document.getElementById('arc').style.display    = 'none';
+          const [dpRes, photoRes] = await Promise.all([
+            fetch(API + '/api/dp', { cache: 'no-store' }),
+            fetch(API + '/api/dp/photo', { cache: 'no-store' })
+          ]);
+          const dpData    = await dpRes.json();
+          const photoData = await photoRes.json();
+          const show = dpData.visible !== false;
+          document.getElementById('profile').style.display = show ? '' : 'none';
+          document.getElementById('arc').style.display    = show ? '' : 'none';
+          if (photoData.photo && show) {
+            document.getElementById('profile').style.backgroundImage = 'url(' + photoData.photo + ')';
           }
         } catch (e) {}
       })();
