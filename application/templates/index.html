@@ -745,12 +745,32 @@
             if (d.photo) { preview.src = d.photo; preview.style.display = 'block'; }
           }).catch(() => {});
 
+          function compressImage(file, maxSize, quality, cb) {
+            const reader = new FileReader();
+            reader.onload = e => {
+              const img = new Image();
+              img.onload = () => {
+                let w = img.width, h = img.height;
+                if (w > maxSize || h > maxSize) {
+                  if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
+                  else       { w = Math.round(w * maxSize / h); h = maxSize; }
+                }
+                const canvas = document.createElement('canvas');
+                canvas.width = w; canvas.height = h;
+                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                cb(canvas.toDataURL('image/jpeg', quality));
+              };
+              img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+          }
+
           fileInput.addEventListener('change', () => {
             const file = fileInput.files[0];
             if (!file) return;
-            const reader = new FileReader();
-            reader.onload = e => { preview.src = e.target.result; preview.style.display = 'block'; };
-            reader.readAsDataURL(file);
+            compressImage(file, 600, 0.8, data => {
+              preview.src = data; preview.style.display = 'block';
+            });
           });
 
           uploadBtn.addEventListener('click', async () => {
@@ -761,22 +781,21 @@
               uploadStatus.textContent = 'Password not loaded yet, try again.'; return;
             }
             uploadBtn.disabled = true;
-            uploadStatus.textContent = 'Uploading...';
-            const reader = new FileReader();
-            reader.onload = async e => {
+            uploadStatus.textContent = 'Compressing...';
+            compressImage(file, 600, 0.8, async compressed => {
+              uploadStatus.textContent = 'Uploading...';
               try {
                 const res  = await fetch(API + '/api/dp/photo', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ photo: e.target.result, password: pwd })
+                  body: JSON.stringify({ photo: compressed, password: pwd })
                 });
                 const data = await res.json();
                 if (data.error) uploadStatus.textContent = 'Error: ' + data.error;
-                else { uploadStatus.textContent = '\u2713 Photo updated!'; fileInput.value = ''; }
+                else { uploadStatus.textContent = [char]0x2713 + ' Photo updated!'; fileInput.value = ''; }
               } catch (err) { uploadStatus.textContent = 'Upload failed: ' + err.message; }
               finally { uploadBtn.disabled = false; }
-            };
-            reader.readAsDataURL(file);
+            });
           });
         })();
       </script>
